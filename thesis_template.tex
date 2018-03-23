@@ -1,0 +1,313 @@
+%%%%% Dokumentenklasse mit verschiedenen Attributen
+\documentclass[a4paper, bibtotocnumbered,liststotoc,12pt]{scrartcl}
+
+%%%%% Betriebssystemabhängige Eingabedekodierung
+\usepackage[T1]{fontenc}
+%\usepackage[latin1]{inputenc} %% für Windows
+% \usepackage[applemac]{inputenc} %% für Mac
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman,english]{babel}
+
+%% Literature
+\usepackage[style=authoryear, giveninits=true]{biblatex}
+\addbibresource{$bibliography$}
+
+%%%%% Zeilenabstand
+\usepackage{setspace}
+\onehalfspacing %anderthalbzeilig
+
+\usepackage{parskip}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{2mm plus2mm minus0mm}
+%\parindent 0pt
+
+%%%%% Mathematik und Symbole
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+%\usepackage{amstext}
+%\usepackage{amsfonts}
+%\usepackage{mathrsfs}
+\usepackage{bm}
+
+%%%%% Seitenränder und Ausrichtung
+\usepackage[paper=a4paper,left=40mm,right=30mm,top=30mm,bottom=35mm]{geometry} %define margins..
+\geometry{a4paper} % hier auch möglich 'letter' oder 'a5paper' ... etc.
+%\usepackage{lmodern}
+%\renewcommand*\familydefault{\sfdefault}
+\usepackage{verbatim}
+%\setkomafont{sectioning}{\rmfamily\bfseries\boldmath}
+
+\usepackage{fontspec} 
+\setmainfont{Bitter}
+\setsansfont{Lato}
+\setmonofont{Fira Mono}
+
+\usepackage[usenames,dvipsnames, svgnames]{xcolor}
+
+%%%%% Überschriften
+\pagestyle{headings} %Fügt Überschrift über jeder Seite ein
+%\usepackage{overcite}
+
+%% Tabellen und Grafiken
+%%%%% Tabellen und Grafiken
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{subfig}
+\usepackage{rotating}
+\usepackage{xtab}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{adjustbox}
+\usepackage{pdfpages} 
+
+%% Sonstiges
+
+%\usepackage[round]{natbib}
+%\usepackage{algorithm}
+%\usepackage{acronym}
+%\usepackage{algpseudocode}
+%\usepackage{rotating} 
+
+
+\usepackage{hyperref} %links in final pdf document
+\hypersetup{%
+colorlinks=false,%
+linkcolor=Black,%
+urlcolor=Black,%
+citecolor=Black,%
+pdftitle={$title$},%
+pdfauthor={$author$}
+}
+
+
+%% Umgebungen für Sätze, Propositionen,...
+\newtheorem{satz}{Satz}
+\newtheorem{prop}{Proposition}
+\newtheorem*{beweis}{Beweis}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
+
+
+%% Selbstdefinierte Kommentare
+\newcommand{\diag}{\mathop{\mathrm{diag}}}
+\newcommand{\btheta}{\bm{\theta}}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\sgn}{\operatorname{sgn}}
+
+\numberwithin{figure}{section}
+\numberwithin{table}{section}
+\numberwithin{equation}{section}
+
+\interfootnotelinepenalty=10000
+
+
+%% default template
+
+\PassOptionsToPackage{unicode=true}{hyperref} % options for packages loaded elsewhere
+\PassOptionsToPackage{hyphens}{url}
+$if(colorlinks)$
+\PassOptionsToPackage{dvipsnames,svgnames*,x11names*}{xcolor}
+$endif$$if(dir)$$if(latex-dir-rtl)$
+\PassOptionsToPackage{RTLdocument}{bidi}
+$endif$$endif$%
+
+$if(linestretch)$
+\usepackage{setspace}
+\setstretch{$linestretch$}
+$endif$
+
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage[$for(microtypeoptions)$$microtypeoptions$$sep$,$endfor$]{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+
+$if(verbatim-in-note)$
+\usepackage{fancyvrb}
+$endif$
+
+\urlstyle{same}  % don't use monospace font for urls
+
+$if(verbatim-in-note)$
+\VerbatimFootnotes % allows verbatim text in footnotes
+$endif$
+
+$if(listings)$
+\usepackage{listings}
+\newcommand{\passthrough}[1]{#1}
+$endif$
+
+$if(lhs)$
+\lstnewenvironment{code}{\lstset{language=Haskell,basicstyle=\small\ttfamily}}{}
+$endif$
+
+$if(highlighting-macros)$
+$highlighting-macros$
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\},fontsize=\small}
+$endif$
+
+
+$if(links-as-notes)$
+% Make links footnotes instead of hotlinks:
+\DeclareRobustCommand{\href}[2]{#2\footnote{\url{#1}}}
+$endif$
+
+$if(strikeout)$
+\usepackage[normalem]{ulem}
+% avoid problems with \sout in headers with hyperref:
+\pdfstringdefDisableCommands{\renewcommand{\sout}{}}
+$endif$
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+$if(numbersections)$
+\setcounter{secnumdepth}{$if(secnumdepth)$$secnumdepth$$else$5$endif$}
+$else$
+\setcounter{secnumdepth}{0}
+$endif$
+$if(beamer)$
+$else$
+$if(subparagraph)$
+$else$
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+$endif$
+$endif$
+
+
+
+
+$if(dir)$
+\ifxetex
+  % load bidi as late as possible as it modifies e.g. graphicx
+  \usepackage{bidi}
+\fi
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \TeXXeTstate=1
+  \newcommand{\RL}[1]{\beginR #1\endR}
+  \newcommand{\LR}[1]{\beginL #1\endL}
+  \newenvironment{RTL}{\beginR}{\endR}
+  \newenvironment{LTR}{\beginL}{\endL}
+\fi
+$endif$
+
+\usepackage{wallpaper}
+
+
+
+\begin{document}
+%% TITLE PAGE 
+\pagenumbering{roman}
+\setcounter{page}{0}
+\begin{titlepage}
+\ThisULCornerWallPaper{0.5}{UoC_Logo.eps}
+\vspace{\fill}
+\begin{center}
+\large{$author$}\\
+\Huge{$title$}
+\end{center}
+\vspace{\fill}
+\large{$type$} \\
+\large{Supervisor: $supervisor$}\\
+\vspace{\fill}\\ 
+$institue$\\
+\\
+
+\end{titlepage}
+
+$if(abstract)$
+  \begin{abstract}
+  $abstract$
+  \end{abstract}
+$endif$
+
+
+%%% Inhalts-, Abbildungs- und Tabellenverzeichnis
+
+
+\newpage % force start of new page
+\tableofcontents %fügt ein Inhaltsverzeichnis ein
+\newpage
+\thispagestyle{plain}
+\listoffigures % fügt ein Abbildungsverzeichnis ein
+\listoftables % fügt ein Tabellenverzeichnis ein
+
+\section*{List of Abbreviations}
+\addcontentsline{toc}{section}{List of Abbreviations}
+\begin{tabular}{ll}
+	cdf & Cumulative distribution function\\
+	iid & Identically and independent distributed\\
+	SMM & Simulated methods of moments\\
+	DGP & Data generating process
+\end{tabular}
+\newpage
+
+%% Hauptteil
+
+\pagenumbering{arabic}
+
+$body$
+
+%Anhang
+\newpage
+\appendix
+\section{Appendix}
+\label{s:appendix}
+%% LITERATURE 
+\newpage
+\printbibliography
+
+
+
+
+
+%% EIDESSTATTLICHE ERKLÄRUNG  
+\newpage
+\thispagestyle{plain}
+\section{Statutory Declaration}
+
+
+\begin{otherlanguage}{ngerman}
+	
+	\section*{Eidesstattliche Versicherung}
+	
+	 Hiermit versichere ich an Eides statt, dass ich die vorliegende Arbeit selbstständig und ohne die Benutzung anderer als der angegebenen Hilfsmittel angefertigt habe. Alle Stellen, die wörtlich oder sinngemäß aus veröffentlichten und nicht veröffentlichten Schriften entnommen wurden, sind als solche kenntlich gemacht. Die Arbeit ist in gleicher oder ähnlicher Form oder auszugsweise im Rahmen einer anderen Prüfung noch nicht vorgelegt worden. Ich versichere, dass die eingereichte elektronische Fassung der eingereichten Druckfassung vollständig entspricht. \\
+	\\
+	K\"oln, den \today
+	\\
+	\\
+	\\
+	(Malte Bonart)
+\end{otherlanguage}
+
+
+%% Lebenslauf
+%\newpage
+%\newpage
+%\thispagestyle{plain}
+%\includepdf[pages={1},pagecommand=\section{Curriculum Vitae}]{cv.pdf}
+%\includepdf[pages={2}]{cv.pdf}
+
+\end{document}
