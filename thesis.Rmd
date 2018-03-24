@@ -2,12 +2,12 @@
 title: Testing for Structural Breaks in Factor Copula Models - Implementation and Application in Social Media Topic Analysis
 author: Malte Bonart
 type: Master's thesis
+logo: "UoC-Logo.eps"
 institue: "Submitted for the Master Examination in Economics at the Faculty of Management, Economics and Social Sciences of the University of Cologne in June 2018."
 supervisor: "Prof.Dr. Dominik Wied"
 bibliography: "./literature.bib"
 output: 
   pdf_document:
-    keep_tex: true
     highlight: tango
     latex_engine: xelatex
     template: thesis_template.tex
@@ -348,9 +348,9 @@ The $21$ observable variables were partitioned in $3$ groups of equal size. Ther
 Figure \ref{f:breaktest} shows the result of the break test for a single recursive run of the simulation for $t = 300, \dots, 1500$. Both the moments and copula based versions are shown together with the estimated critical value based on $1000$ bootstrap replications.
 
 \begin{figure}[H]
-	\subfloat[Test based on moments]{\includegraphics[width = 1\textwidth]{./figures/fig3a}} \\
-	\subfloat[Tets based on factor copula]{\includegraphics[width= 1\textwidth]{./figures/fig3b}}
-	\caption{Structural break test for a bloc-equidependence model with $N = 21$ and $3$ groups of equal size. The theoretical breakpoint is at $t = 1000$.}	
+	\subfloat[Copula based test.]{\includegraphics[width = \textwidth]{./figures/fig3a}} \\
+	\subfloat[Moments based test.]{\includegraphics[width= \textwidth]{./figures/fig3b}}
+	\caption{Structural break test for a bloc-equidependence model with $N = 21$ and $3$ groups of equal size. The theoretical breakpoint is at $t = 1000$ and is modelled as a change of the intra- and interdependenvy of the first group from $0$ to $1.5$.}	
 	\label{f:breaktest}  
 \end{figure}
 

@@ -6,6 +6,10 @@ library(dplyr)
 library(ggthemes)
 library(ggrepel)
 
+detectOutlier <- function(y, k){
+  yDiff <- abs(diff(y))
+  which(y > mean(yDiff) + k*sd(yDiff))
+}
 
 options(scipen = 9999)
 
@@ -39,39 +43,54 @@ cop <- fc_create(Z, eps, beta)
 Y <- readRDS("./Y.rds")
 #Y <- qnorm(rbind(cop(theta0, brk), cop(theta1, t-brk)))
 U <- apply(Y, 2, factorcopula:::empDist)
-matrix(factorcopula:::moments(U[1:brk, ], k), ncol = 5)
-matrix(factorcopula:::moments(U[(brk+1):t, ], k), ncol = 5)
-matrix(factorcopula:::moments(U, k), ncol = 5)
+matrix(factorcopula:::moments(U[1:brk, ], k), ncol = 5, byrow = TRUE)
+matrix(factorcopula:::moments(U[(brk+1):t, ], k), ncol = 5, byrow = TRUE)
 
 #saveRDS(Y, "./Y.rds")
 
 # Copula recursive estimation ---------------------------------------------
-opt <- cheops_slurmcontrol(nodes = 60, tasks = 4, mem = "2gb", time = "03:00:00", mail = "bonartm@uni-koeln.de")
-job_bloc <- cheops_run(fc_fit, opt, "bloc-equ",
-           args = list(Y = Y, copFun = cop, lower = lower, upper = upper, k = k, recursive = TRUE,
-                       control = list(stopval = 0, xtol_rel = 1e-13, maxeval = 3000), S = 25000), packages = "factorcopula")
-
-cheops_jobs()
-cat(cheops_getlog("bloc-equ"), sep = "\n")
+# opt <- cheops_slurmcontrol(nodes = 80, tasks = 4, mem = "3gb", time = "08:00:00", mail = "bonartm@uni-koeln.de")
+# #opt <- cheops_slurmcontrol(nodes = 2, tasks = 2, mem = "1gb", time = "00:10:00", partition = "devel")
+# 
+# job_bloc <- cheops_lapply(tSeq, function(t, Y, Z, eps, beta, lower, upper, k){
+#   fc_fit(Y = Y[1:t, ], Z, eps, beta, lower, upper, recursive = FALSE, S = 25000, k = k, cl = NULL, trials = 6, 
+#          control = list(stopval = 0, xtol_rel = 1e-10, maxeval = 3000))
+# }, options = opt, jobname = "bloc-equ", packages = "factorcopula", load.balancing = TRUE, 
+# args = list(Y = Y, Z = Z, eps = eps, beta = beta, lower = lower, upper = upper, k = k))
+# 
+# cheops_jobs()
+# cat(cheops_getlog("bloc-equ"), sep = "\n")
 #cheops_cancel(job_bloc$name)
 
 res <- cheops_readRDS("./bloc-equ/res.rds")
+res <- data.frame(do.call(rbind, res))
+res$p <- fc_pstat(res[,1:6], res$t)
 
-pStats <- fc_pstat(res[-1], res$t)
-#pCrit <- fc_critval("copula", Y, 1000, tSeq, cop, res[nrow(res), ], k = k)
-pCrit <- 17
+out <- detectOutlier(res$p, 15)
+res$p[out] <- NA
 
-result <- data.frame(t = tSeq, P = pStats)
-result$labelP[result$t == brk] <- "theoretical breakpoint"
-result$labelP[which.max(result$P)] <- "observed breakpoint"
-ggplot(result, aes(x = t, y = P, label = labelP)) +
+res$pSecond <- fc_pstat(res[,c("beta2", "beta5", "beta3", "beta6")], res$t)
+
+# opt <- cheops_slurmcontrol(nodes = 40, tasks = 2, mem = "2gb", time = "00:20:00")
+# job_crit <- cheops_run(fc_critval, options = opt, jobname = "cop-crit",
+#                        args = list(type = "copula", Y = Y, B = 1000, tSeq = tSeq, k = k, 
+#                                    config_factor = Z, config_error = eps, config_beta = beta, theta = res[nrow(res), 1:6]),
+#                        packages = "factorcopula")
+# cheops_jobs()
+# cat(cheops_getlog("cop-crit"), sep = "\n")
+pCrit <- cheops_readRDS("./cop-crit/res.rds")
+
+res <- tidyr::gather(res[, c("t", "p", "pSecond")], key = "group", value = "P", p, pSecond)
+
+ggplot(res, aes(x = t, y = P)) +
   geom_hline(yintercept = quantile(pCrit, 1-0.05), color = "black", linetype = 2) +
-  geom_label_repel(stat = "unique", aes(x = max(t)), y = quantile(pCrit, 1-0.05), label = "critival value", point.padding = 1, nudge_y = 1) +
-  geom_line(color = "indianred3") +
-  geom_label_repel(na.rm = TRUE, box.padding = 0.3, point.padding = 1, alpha = 0.8) +
-  geom_vline(xintercept = brk, color = "gray", linetype = 2) +
-  geom_smooth() +
+  #geom_label_repel(stat = "unique", aes(x = max(t)), y = quantile(pCrit, 1-0.05), label = "critical value", point.padding = 1, nudge_y = 20) +
+  #geom_label_repel(stat = "unique", x = brk, y = 10, label = "theoretical breakpoint", point.padding = 1, nudge_x = - 2) +
+  geom_line(color = "indianred") +
+  geom_vline(xintercept = brk, color = "black", linetype = 2) +
+  facet_grid(~ group, labeller = as_labeller(c(p = "all groups", pSecond = "second and third group"))) +
   theme_hc()
+
 
 
 
@@ -81,33 +100,28 @@ cl <- makeCluster(4)
 mStats <- fc_mstat(Y, tSeq, k, cl)
 stopCluster(cl)
 
-opt <- cheops_slurmcontrol(nodes = 40, tasks = 4, mem = "2gb", time = "00:20:00")
-job_crit <- cheops_run(fc_critval, options = opt, jobname = "mom-crit",
-                       args = list(type = "moments", Y = Y, B = 1000, tSeq = tSeq, k = k),
-                       packages = "factorcopula")
+# opt <- cheops_slurmcontrol(nodes = 40, tasks = 2, mem = "2gb", time = "00:20:00")
+# job_crit <- cheops_run(fc_critval, options = opt, jobname = "mom-crit",
+#                        args = list(type = "moments", Y = Y, B = 1000, tSeq = tSeq, k = k),
+#                        packages = "factorcopula")
+# 
+# cheops_jobs()
+# #cheops_cancel(job_crit$name)
+# cat(cheops_getlog("mom-crit"), sep = "\n")
+mCrit <- cheops_readRDS("./mom-crit/res.rds")
 
-cheops_jobs()
-#cheops_cancel(job_crit$name)
-cat(cheops_getlog(job_crit$name), sep = "\n")
-mCrit <- cheops_readRDS(job_crit$results)
 
-
-result <- data.frame(t = tSeq, M = mStats, P = pStats)
+result <- data.frame(t = tSeq, M = mStats)
 
 result$labelM[result$t == brk] <- "theoretical breakpoint"
-result$labelM[which.max(result$M)] <- "observed breakpoint"
-
-#result$labelP[result$t == brk] <- "Real breakpoint"
-#result$labelP[which.max(result$P)] <- "Estimated breakpoint"
 
 ggplot(result, aes(x = t, y = M, label = labelM)) +
   geom_hline(yintercept = quantile(mCrit, 1-0.05), color = "black", linetype = 2) +
   geom_label_repel(stat = "unique", aes(x = max(t)), y = quantile(mCrit, 1-0.05), label = "critival value", point.padding = 1, nudge_y = 1) +
   geom_line(color = "indianred3") +
-  geom_label_repel(na.rm = TRUE, box.padding = 0.3, point.padding = 1, alpha = 0.8) +
-  geom_vline(xintercept = brk, color = "gray", linetype = 2) +
+  geom_label_repel(na.rm = TRUE, box.padding = 0.3, point.padding = 1, alpha = 0.8, nudge_x = 100) +
+  geom_vline(xintercept = brk, color = "black", linetype = 2) +
   theme_hc()
-
 
 
 
