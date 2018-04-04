@@ -8,7 +8,7 @@ library(ggrepel)
 
 detectOutlier <- function(y, k){
   yDiff <- abs(diff(y))
-  which(y > mean(yDiff) + k*sd(yDiff))
+  which(yDiff > mean(yDiff) + k*sd(yDiff))
 }
 
 options(scipen = 9999)
@@ -49,24 +49,24 @@ matrix(factorcopula:::moments(U[(brk+1):t, ], k), ncol = 5, byrow = TRUE)
 #saveRDS(Y, "./Y.rds")
 
 # Copula recursive estimation ---------------------------------------------
-# opt <- cheops_slurmcontrol(nodes = 80, tasks = 4, mem = "3gb", time = "08:00:00", mail = "bonartm@uni-koeln.de")
-# #opt <- cheops_slurmcontrol(nodes = 2, tasks = 2, mem = "1gb", time = "00:10:00", partition = "devel")
-# 
+opt <- cheops_slurmcontrol(nodes = 80, tasks = 5, mem = "3gb", time = "08:00:00", mail = "bonartm@uni-koeln.de")
+#opt <- cheops_slurmcontrol(nodes = 2, tasks = 2, mem = "1gb", time = "00:10:00", partition = "devel")
+
 # job_bloc <- cheops_lapply(tSeq, function(t, Y, Z, eps, beta, lower, upper, k){
-#   fc_fit(Y = Y[1:t, ], Z, eps, beta, lower, upper, recursive = FALSE, S = 25000, k = k, cl = NULL, trials = 6, 
-#          control = list(stopval = 0, xtol_rel = 1e-10, maxeval = 3000))
-# }, options = opt, jobname = "bloc-equ", packages = "factorcopula", load.balancing = TRUE, 
+#   fc_fit(Y = Y[1:t, ], Z, eps, beta, lower, upper, recursive = FALSE, S = 25000, k = k, cl = NULL, trials = 10,
+#          control = list(stopval = 0, xtol_rel = 1e-9, maxeval = 3000))
+# }, options = opt, jobname = "bloc-equ", packages = "factorcopula", load.balancing = TRUE,
 # args = list(Y = Y, Z = Z, eps = eps, beta = beta, lower = lower, upper = upper, k = k))
-# 
-# cheops_jobs()
-# cat(cheops_getlog("bloc-equ"), sep = "\n")
+
+cheops_jobs()
+cat(cheops_getlog("bloc-equ"), sep = "\n")
 #cheops_cancel(job_bloc$name)
 
 res <- cheops_readRDS("./bloc-equ/res.rds")
 res <- data.frame(do.call(rbind, res))
 res$p <- fc_pstat(res[,1:6], res$t)
 
-out <- detectOutlier(res$p, 15)
+out <- detectOutlier(res$p, 3)
 res$p[out] <- NA
 
 res$pSecond <- fc_pstat(res[,c("beta2", "beta5", "beta3", "beta6")], res$t)

@@ -174,7 +174,7 @@ A lower bound for the number of parameters $P = |\bm{\theta}|$ to be estimated i
 
 For the first model it is assumed that $K = 1$ and $\bm{\beta} = (\beta, \dots, \beta)'$. Thus, the model consists of a single latent factor and a single factor loading $\beta$ which is the same for all variables. This implies that each pairwise dependency is the same for all observable variables.  
 
-\begin{figure}
+\begin{figure}[H]
 	\includegraphics[width=\textwidth]{./figures/fig1}
 	\caption{Illustration of different equidependence factor copula models with $N = 2$, $\beta = 1.5$, standard normal distributed marginals and different distributions for the latent variable and the error term.}	
 	\label{f:equidependence}  
@@ -208,7 +208,6 @@ where $\bm{\beta}$ is of size $N \times (D+1), N = \sum_{i = 1}^{D}s_i$ but with
 
 
 
- 
 
 ## Simulated methods of moments estimation for factor copulas
 \label{s:SMM}
@@ -284,22 +283,30 @@ In the following a structural break test is presented \parencite{Wied2017}.
 
 ## Overview and usage
 
-The package consists of a set of main functions which can be used to construct, simulate and fit a factor copula model. The definition of the model is handled by the functions `config_factor`, `config_error` and `config_beta` for difining the distriution of the latent variables, the error term and the factor loadings matrix:
+The package consists of a set of main functions which can be used to construct, simulate and fit a factor copula model. The construction of the model is handled by the functions `config_factor`, `config_error` and `config_beta` for difining the distriution of the latent variables, the error term and the factor loadings matrix:
 
 ```{r}
 library(factorcopula)
-k <- c(1, 2, 3)
+k <- c(1, 1, 1)
 Z <- config_factor(rst = list(nu = 1/0.25, lambda = -0.8))
 eps <- config_error(rt = list(df = 1/0.25))
 beta <- config_beta(k, Z = 1)
 ```
-The vector $k$ defines the group for each variable $i = 1, \dots, N$. Thus, an equidependence model can be specified with $k = (1, 1, \dots, 1)$, an unrestrictive model with $k = (1, \dots, N)$ and a bloc-equidependence model with $k = (1, 1, \dots, 2, 2, \dots, M,M, \dots)$, where $M$ is the number of groups. Instead of havin fixed distributional parameters one can also specify them as non-standard evaluated model parameters:
+The vector $k$ defines the group for each variable $i = 1, \dots, N$. Thus, an equidependence model can be specified with $k = (1, 1, \dots, 1)$, an unrestrictive model with $k = (1, \dots, N)$ and a bloc-equidependence model with $k = (1, 1, \dots, 2, 2, \dots, M,M, \dots)$, where $M$ is the number of groups. Instead of having fixed distributional parameters one can also include them as model parameters:
 
 ```{r}
-Z <- config_factor(rst = list(nu = 1/df, lambda = lambda), 
-                   par = c("df", "lambda"))
+Z <- config_factor(rst = list(nu = 1/0.25, lambda = lambda), 
+                   par = c("lambda"))
 ```
-The central function `fc_create` creates the actual copula model from the specifications. It returns a function which can be used to simulate values from the copula model given a \emph{named} parameter vector $\theta$. During optimazation it is crucial that the random seed is fixed otherwise numerical instabilities can occur \parencite[app. to][p. 12f]{Patton2013}. This can be achieved by passing a seed integer to the function. The function is optimized in such a way that given a fixed seed, it tries to call the random number generators specified in `config_factor` or `config_error` as less as possible. Simulating new random values is costly and can be avoided if the seed is fixed and only the beta parameters change. Therefore, the function keeps track of the previous state and only updates the random numbers if nescessary. This can improve the performance in the optimizataion process massively, especially when only beta parameters are about to be optimized.  
+The function `fc_create` creates the actual copula model from the specifications. It returns a function which can be used to simulate values from the copula model given a \emph{named} parameter vector $\theta$. During optimazation it is crucial that the random seed is fixed otherwise numerical instabilities can occur \parencite[app. to][p. 12f]{Patton2013}. This can be achieved by passing a seed integer to the function. The function is optimized in such a way that given a fixed seed, it tries to minimize the calls to the random number generators specified in `config_factor` or `config_error`. 
+
+Simulating new random values is only nescessary if the seed or the distributional parameters change. In all other cases this can and should be avoided. Therefore, the function keeps track of the previous state and only updates the random numbers if nescessary. This improves the performance in the optimizataion process massively, especially when only beta parameters are about to be optimized. 
+
+```{r}
+copfun <- fc_create(Z, eps, beta)
+copfun(c(beta1 = 2, lambda = -0.8), 10)
+```
+
 
 
 
@@ -371,10 +378,12 @@ The set of public pages was created by manually researching facebook accounts of
 
 For this analysis the data is restricted on textual posts created between January 2014 and December 2017. This results in $663638$ posts from $1217$ candidates and parties. In early 2014 approximately 500 accounts were active. This number increased steadily to roughly 750 accounts in mid 2016. From then until the election in September 2017 the number increased rapidly to 1200 active accounts. After the election one can observe a drop down in active accounts.
 
-[insert figure here]
 
-
-
+\begin{figure}[h]
+	\includegraphics[width=\textwidth]{./figures/nPosts}
+	\caption{Number of active accounts and number of posts per party and month.}	
+	\label{f:nPosts}  
+\end{figure}
 
 
 
@@ -384,6 +393,12 @@ For this analysis the data is restricted on textual posts created between Januar
 
 
 ## Data processing and descriptive analysis
+
+\begin{figure}[h]
+	\includegraphics[width=\textwidth]{./figures/flucht}
+	\caption{Relative monthly frequency of posts matching the regular expression \emph{\{flucht | fluecht | migrant | asyl | integration | abschieb\}}.}	
+	\label{f:nPosts}  
+\end{figure}
 
 
 ## Factor copula estimation
@@ -397,6 +412,18 @@ For this analysis the data is restricted on textual posts created between Januar
 
 
 # Discussion
+
+\newpage
+\appendix
+
+\section{Appendix}
+
+\begin{figure}[H]
+	\subfloat[Observed daily relative frequency of posts which match the regular expression.]{\includegraphics[width = \textwidth]{./figures/flucht_observed}} \\
+	\subfloat[Residuals of ARIMA models applied to the time series.]{\includegraphics[width= \textwidth]{./figures/flucht_residual}}
+	\caption{}	
+	\label{f:residuals}  
+\end{figure}
 
 
 
