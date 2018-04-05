@@ -14,9 +14,10 @@ detectOutlier <- function(y, k){
 options(scipen = 9999)
 
 #devtools::install_github("bonartm/cheopsr")
+# devtools::install_github("bonartm/factorcopula")
 options(cheopsr.account = "AG-Wied")
 options(cheopsr.username = "bonartm")
-#cheops_install_github("bonartm/factorcopula", ref = "dev")
+# cheops_install_github("bonartm/factorcopula", ref = "master")
 
 tSeq <- 300:1500
 t <- max(tSeq)
@@ -40,7 +41,7 @@ Z <- config_factor(rst = list(nu = 1/0.25, lambda = -0.8), rt = list(df = 1/0.25
 eps <- config_error(rt = list(df = 1/0.25))
 cop <- fc_create(Z, eps, beta)
 
-Y <- readRDS("./Y.rds")
+Y <- readRDS("./figures/Y.rds")
 #Y <- qnorm(rbind(cop(theta0, brk), cop(theta1, t-brk)))
 U <- apply(Y, 2, factorcopula:::empDist)
 matrix(factorcopula:::moments(U[1:brk, ], k), ncol = 5, byrow = TRUE)

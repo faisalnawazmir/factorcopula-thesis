@@ -355,8 +355,8 @@ The $21$ observable variables were partitioned in $3$ groups of equal size. Ther
 Figure \ref{f:breaktest} shows the result of the break test for a single recursive run of the simulation for $t = 300, \dots, 1500$. Both the moments and copula based versions are shown together with the estimated critical value based on $1000$ bootstrap replications.
 
 \begin{figure}[H]
-	\subfloat[Copula based test.]{\includegraphics[width = \textwidth]{./figures/fig3a}} \\
-	\subfloat[Moments based test.]{\includegraphics[width= \textwidth]{./figures/fig3b}}
+	\subfloat[Moments based test.]{\includegraphics[width = \textwidth]{./figures/fig3b}} \\
+	\subfloat[Copula based test.]{\includegraphics[width= \textwidth]{./figures/fig3a}}
 	\caption{Structural break test for a bloc-equidependence model with $N = 21$ and $3$ groups of equal size. The theoretical breakpoint is at $t = 1000$ and is modelled as a change of the intra- and interdependenvy of the first group from $0$ to $1.5$.}	
 	\label{f:breaktest}  
 \end{figure}
@@ -376,40 +376,120 @@ The dataset consists of posts from public pages created on the social media plat
 
 The set of public pages was created by manually researching facebook accounts of political candidates which competed in the German federal election held in late September 2017. In addition, official pages from political parties both on the federal and regional level, were included. Candidates and organizations from the seven largest parties (CDU, CSU, SPD, Die Linke, Bündnis 90/ Die Grünen, AfD, FDP) were tracked. 
 
-For this analysis the data is restricted on textual posts created between January 2014 and December 2017. This results in $663638$ posts from $1217$ candidates and parties. In early 2014 approximately 500 accounts were active. This number increased steadily to roughly 750 accounts in mid 2016. From then until the election in September 2017 the number increased rapidly to 1200 active accounts. After the election one can observe a drop down in active accounts.
-
-
-\begin{figure}[h]
+\begin{figure}[H]
 	\includegraphics[width=\textwidth]{./figures/nPosts}
 	\caption{Number of active accounts and number of posts per party and month.}	
 	\label{f:nPosts}  
 \end{figure}
 
+For this analysis the data is restricted on textual posts created between January 2014 and December 2017. This results in $663638$ posts from $1217$ candidates and parties. In early 2014 approximately 500 accounts were active. This number increased steadily to roughly 750 accounts in mid 2016. From then until the election in September 2017 the number increased rapidly to 1200 active accounts. After the election one can observe a drop in the number of active accounts (see Figure \ref{f:nPosts}). 
 
+Table \ref{t:facebook} shows the overall number of posts, accounts, likes and shares of posts per party. 
 
-
+\begin{table}[H]
+\centering
+\begin{tabular}{rlrrrr}
+  \toprule
+ party & posts & accounts & likes (in million) & shares (in million) \\ 
+  \midrule
+AfD & 74724 & 162 & 18.36 & 7.59 \\ 
+  CDU/CSU & 169115 & 267 & 14.72 & 1.83 \\ 
+  FDP & 71083 & 201 & 6.32 & 0.77 \\ 
+  Grüne & 67188 & 139 & 4.03 & 1.28 \\ 
+  Linke & 84723 & 158 & 16.03 & 4.23 \\ 
+  SPD & 196805 & 290 & 10.11 & 1.57 \\
+  \midrule
+  Sum & 663638 & 1217 & 69.58 & 17.27\\
+  \bottomrule
+\end{tabular}
+\caption{Number of posts, accounts, likes and shares over the observation period from "2014-01-01" - "2017-12-31"}
+\label{t:facebook}
+\end{table}
 
 
 
 
 ## Data processing and descriptive analysis
 
+\begin{table}[H]
+\centering
+\begin{tabular}{rlllll}
+  \toprule
+  & Rank - & \multicolumn{4}{c}{Quantile-dependence}\\
+ Pairs &  correlation & 0.05 & 0.1 & 0.90 & 0.95 \\ 
+  \midrule
+AfD-CDU/CSU & 0.05 & 0.14 & 0.22 & 0.18 & 0.10 \\ 
+  AfD-FDP & 0.06 & 0.16 & 0.21 & 0.16 & 0.18 \\ 
+  AfD-Grüne & 0.04 & 0.14 & 0.19 & 0.13 & 0.15 \\ 
+  AfD-Linke & 0.10 & 0.15 & 0.20 & 0.22 & 0.14 \\ 
+  AfD-SPD & 0.09 & 0.15 & 0.21 & 0.18 & 0.21 \\ 
+  CDU/CSU-FDP & 0.17 & 0.36 & 0.38 & 0.24 & 0.22 \\ 
+  CDU/CSU-Grüne & 0.12 & 0.26 & 0.30 & 0.25 & 0.10 \\ 
+  CDU/CSU-Linke & 0.07 & 0.23 & 0.27 & 0.19 & 0.12 \\ 
+  CDU/CSU-SPD & 0.17 & 0.26 & 0.30 & 0.26 & 0.15 \\ 
+  FDP-Grüne & 0.10 & 0.23 & 0.29 & 0.21 & 0.16 \\ 
+  FDP-Linke & 0.09 & 0.21 & 0.23 & 0.21 & 0.12 \\ 
+  FDP-SPD & 0.12 & 0.29 & 0.30 & 0.26 & 0.21 \\
+  Grüne-Linke & 0.10 & 0.16 & 0.26 & 0.23 & 0.18 \\ 
+  Grüne-SPD & 0.14 & 0.27 & 0.31 & 0.23 & 0.21 \\ 
+  Linke-SPD & 0.14 & 0.15 & 0.25 & 0.27 & 0.19 \\
+  \midrule 
+  Average & 0.10 & 0.21 & 0.26 & 0.21 & 0.16\\
+   \bottomrule
+\end{tabular}
+\end{table}
+
+
+
 \begin{figure}[h]
-	\includegraphics[width=\textwidth]{./figures/flucht}
-	\caption{Relative monthly frequency of posts matching the regular expression \emph{\{flucht | fluecht | migrant | asyl | integration | abschieb\}}.}	
-	\label{f:nPosts}  
+	\includegraphics[width=\textwidth]{./figures/eigenvalues}
+	\caption{Scree-plot of ranked eigenvalues based on the pairwise rank-correlation matrix.}	
+	\label{f:eigenvalues}  
 \end{figure}
 
-
-## Factor copula estimation
-
-
-## Structural break test
 
 
 ## Results
 
 
+The unrestrictive moments based test detects a breakpoint at "2016-04-24" with a test statistics of $464$. The estimated critical value for an alpha of $0.05$ is $103$. 
+
+Moments based test based on equidependence detect the same breakpoint with a test statistics of $27$ and a critical value of $3.61$. 
+
+\begin{figure}
+	\includegraphics[width=\textwidth]{./figures/flucht}
+	\caption{Relative weighted monthly frequency of posts matching the regular expression \texttt{flucht|fluecht}. The vertical line indicates the breakpoint detected by the moments based test.}	
+	\label{f:flucht}  
+\end{figure}
+
+
+Various factor copula models were fitted before and after the break
+
+
+\begin{table}[h]
+\centering
+\begin{tabular}{rllllllll}
+  \toprule
+  & \multicolumn{4}{c}{Equidependence}& \multicolumn{4}{c}{Unrestrictive} \\ 
+  & \multicolumn{2}{c}{t-t copula} & \multicolumn{2}{c}{skew t-t copula} & \multicolumn{2}{c}{skew t-t copula} & \multicolumn{2}{c}{t-t copula}\\
+  & before & after &  before & after &  before & after &  before & after\\
+  \midrule
+  $\beta_1$ & 0.41 & 0.30 & 1.01 & 0.54 & 0.46 & 0.23 & 0.15 & 0.14\\ 
+  $\beta_2$ & - & - & - & - & 0.77 & 0.35 & 0.23 & 0.19\\ 
+  $\beta_3$ & - & - & - & - & 0.69 & 0.36 & 0.29 & 0.22 \\ 
+  $\beta_4$ & - & - & - & - & 0.59 & 0.54 & 0.17 & 0.35 \\ 
+  $\beta_5$ & - & - & - & - & 0.50 & 0.46 & 0.23  &0.26 \\ 
+  $\beta_6$ & - & - & - & - & 0.74& 0.67 &  0.29 & 0.37\\ 
+  \midrule
+   $df$ & 2.11 & 2.20 & 2.26 &  2.35 & 2.69 & 3.12  & 1.00 & 1.63 \\ 
+  $\lambda$ & - & - & -0.10 & 0.06 & -0.42 & 0.16 & - & - \\ 
+  \midrule
+  $Q$ & 0.04 & 0.00 & 0.01 & 0.00 & 0.27 &  0.12 & 0.24 & 0.11\\ 
+  $T$ & 845 & 616 & 845 & 616 & 845 & 616 & 845 & 616\\ 
+  \bottomrule
+\end{tabular}
+\caption{Estimation results for different one-factor copula specifications before and after the breakpoint detected by the moments based test.}
+\end{table}
 
 # Discussion
 
@@ -424,6 +504,15 @@ For this analysis the data is restricted on textual posts created between Januar
 	\caption{}	
 	\label{f:residuals}  
 \end{figure}
+
+\begin{figure}[h]
+	\includegraphics[width=\textwidth]{./figures/pairwise_scatter}
+	\caption{Pairwise scatterplot of the estimated residuals.}	
+	\label{f:pairwise_scatter}  
+\end{figure}
+
+
+
 
 
 

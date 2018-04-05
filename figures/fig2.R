@@ -61,14 +61,12 @@ options(scipen = 9999)
 theta$mseLabel <- paste0("mse = ", round(theta$mse, 2), "\nbias = ", round(theta$bias, 2))
 
 ggplot(theta, aes(x = beta1, label = mseLabel)) +
-  geom_density(fill = "indianred3", kernel = "gaussian") +
+  geom_density(fill = "indianred3", kernel = "gaussian", alpha = 0.7) +
   facet_grid(tLabel ~ nLabel) +
-  geom_vline(aes(xintercept = mean(beta1)), linetype = 3, color = "black") +
+  #geom_vline(aes(xintercept = mean(beta1)), linetype = 3, color = "black") +
   geom_text(x = 1, y = 11, stat = "unique", hjust = 0) +
   scale_x_continuous(limits = c(1, 2)) +
-  theme_hc() +
-  theme(strip.text = element_text(size = 14))
-
+  theme_hc()
 
 
 
