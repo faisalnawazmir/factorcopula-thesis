@@ -89,7 +89,7 @@ ggplot(res, aes(x = t, y = P)) +
   #geom_label_repel(stat = "unique", x = brk, y = 10, label = "theoretical breakpoint", point.padding = 1, nudge_x = - 2) +
   geom_line(color = "indianred") +
   geom_vline(xintercept = brk, color = "black", linetype = 2) +
-  facet_grid(~ group, labeller = as_labeller(c(p = "all groups", pSecond = "second and third group"))) +
+  facet_grid(group ~ . , labeller = as_labeller(c(p = "all groups", pSecond = "second and third group"))) +
   theme_hc()
 
 
