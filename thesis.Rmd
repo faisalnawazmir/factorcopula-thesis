@@ -370,28 +370,37 @@ The moments based test detects a breakpoint at $t = 962$ which is close to the t
 
 # Modelling topic dependencies over time with factor copulas
 
+In this chapter we apply the previously discussed methods to a set of relative frequencies over time. The frequencies are derived by counting the relative number of times a specific regular expression appeared in documents of a large text collection of social media posts. 
 
-## The \emph{btw17} dataset
+First the dataset is presented. Second, we give a detailed description of the feature generation process and some descriptive overview. Third, the model setup is explaind and estimation results of various factor copula models applied to the residuals of the word frequencies are presented. Finally, we apply both the moments and copula based structural break test.  
 
-The dataset consists of posts from public pages created on the social media platform \emph{facebook}. The data was collected by a \emph{Java} program which was built using the \emph{restfb} client software to call Facebook's official \emph{Graph API} and the \emph{Mongo DB} client software to store the data in a document-oriented database \parencite{Facebook2018, restfb2018, MongoDB2018}. 
 
-The set of public pages was created by manually researching facebook accounts of political candidates which competed in the German federal election held in late September 2017. In addition, official pages from political parties both on the federal and regional level, were included. Candidates and organizations from the seven largest parties (CDU, CSU, SPD, Die Linke, Bündnis 90/ Die Grünen, AfD, FDP) were tracked. 
+## The \emph{btw17} social media dataset
 
-\begin{figure}[H]
+The original dataset consists of social media posts published by public pages on \emph{Facebook} between January 2014 and December 2017. 
+
+Using the official list of the candidates for the Bundestag election in 2017 (btw17), the public facebook page for each of the politicians was manually researched. Only candidates from the seven largest parties (CDU, CSU, SPD, Die Linke, Bündnis 90/ Die Grünen, AfD, FDP) were considerd. Arround 83.8\% of all 2516 candidates have an account on Facebook \parencite[see][p. 16]{Stier2018}.
+
+Due to API and privacy restrictions only information from public pages can be accessed such that only arround 52.4\% of the social media accounts could be considered for the data collection. In addition, 113 official pages from political parties, both on the federal and regional level, were added.
+
+The data collection software used the \emph{restfb} Java client library to call Facebook's official \emph{Graph API}. The posts were stored in a document orientated database on servers in Germany. In addition to the posts's content, they are tagged with a timestamp, the user-id of the author and the number of likes and shares the post has gained uppon collecting it from the API.  \parencite{Facebook2018, restfb2018, MongoDB2018}.
+
+For this analysis the data is restricted on textual posts only. This results in nearly 664 thousand posts. Figure \ref{f:nPosts} shows the monthly number of active accounts and the monthly number of posts by party.\footnote{An account was defined active if it has at least one post in the month considered.} In early 2014 approximately 500 accounts were active. This number increased steadily to roughly 750 accounts in mid 2016. From then until the election in September 2017 the number increased rapidly to almost 1200 active accounts followed by drop after the election. One can also observe a sharp rise in the number of posts in the month of the election, followed by a decline afterwards. 
+
+\begin{figure}[h]
+\flushleft \textbf{Accounts and posts by party over time}\\[1.5em]
 	\includegraphics[width=\textwidth]{./figures/nPosts}
 	\caption{Number of active accounts and number of posts per party and month.}	
 	\label{f:nPosts}  
 \end{figure}
 
-For this analysis the data is restricted on textual posts created between January 2014 and December 2017. This results in $663638$ posts from $1217$ candidates and parties. In early 2014 approximately 500 accounts were active. This number increased steadily to roughly 750 accounts in mid 2016. From then until the election in September 2017 the number increased rapidly to 1200 active accounts. After the election one can observe a drop in the number of active accounts (see Figure \ref{f:nPosts}). 
+Table \ref{t:facebook} shows the overall number of \emph{textual} posts, accounts, likes and shares per party. The likes and shares are based on the aggregated sum of the number of likes and shares for each post from this party. Allthough the right and left wing parties \emph{AfD} and \emph{Linke} have a relatively small number of accounts and posts they generate by far the greatest number of attention in terms of likes and shares. The social democratics party \emph{SPD} has over twive more posts than the \emph{AfD} but roughly generates only half of the likes and only a fifth of the shares. 
 
-Table \ref{t:facebook} shows the overall number of posts, accounts, likes and shares of posts per party. 
-
-\begin{table}[H]
+\begin{table}[h]
 \centering
 \begin{tabular}{rlrrrr}
   \toprule
- party & posts & accounts & likes (in million) & shares (in million) \\ 
+ party & posts & avtive accounts & likes (in million) & shares (in million) \\ 
   \midrule
 AfD & 74724 & 162 & 18.36 & 7.59 \\ 
   CDU/CSU & 169115 & 267 & 14.72 & 1.83 \\ 
@@ -407,10 +416,16 @@ AfD & 74724 & 162 & 18.36 & 7.59 \\
 \label{t:facebook}
 \end{table}
 
-
-
-
 ## Data processing and descriptive analysis
+
+For this analysis we focus on how the German refugee crisis in 2015 and 2016 is perceived by the political partys in the social media. 
+
+First, each post in the dataset is cleaned by removing links and stopwords, transforming umlauts and converting the text to lowercase letters.
+
+Second, a post is considered to be related to the refugee crisis if it matches the regular expression `flucht|fluecht`. For example a match occurs if a post contains the words "flüchtlingskrise", "fluchtursachen", "flüchten" or "flüchtlingsheime". 
+
+Third, for each party and day we count the relative number of posts related to the refugee crisis. Thus, the resulting dataset consists of a column for each party where each row represent the relative frequency of a day (compare to Figure \ref{f:residuals} in the Appendix).  
+
 
 \begin{table}[H]
 \centering
