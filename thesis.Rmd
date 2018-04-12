@@ -286,6 +286,7 @@ In the following a structural break test is presented \parencite{Wied2017}.
 The package consists of a set of main functions which can be used to construct, simulate and fit a factor copula model. The construction of the model is handled by the functions `config_factor`, `config_error` and `config_beta` for difining the distriution of the latent variables, the error term and the factor loadings matrix:
 
 ```{r}
+# devtools::install_github("bonartm/factorcopula")
 library(factorcopula)
 k <- c(1, 1, 1)
 Z <- config_factor(rst = list(nu = 1/0.25, lambda = -0.8))

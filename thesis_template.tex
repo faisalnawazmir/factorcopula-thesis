@@ -39,10 +39,22 @@
 %\setkomafont{sectioning}{\rmfamily\bfseries\boldmath}
 
 \usepackage{fontspec} 
-\setmainfont{Bitter}
-\setsansfont{Lato}
-\setmonofont{Fira Mono}
-
+\setmainfont[   Path              = fonts/Bitter/,
+                Extension         = .ttf,
+                BoldFont          = Bitter-Bold,
+                ItalicFont        = Bitter-Italic,
+            ]{Bitter-Regular}
+\setsansfont[   Path              = fonts/Lato/,
+                Extension         = .ttf,
+                BoldFont          = Lato-Bold,
+                ItalicFont        = Lato-Italic,
+                BoldItalicFont    = Lato-BoldItalic
+            ]{Lato-Regular}
+\setmonofont[   Path              = fonts/Fira_Mono/,
+                Extension         = .ttf,
+                BoldFont          = FiraMono-Bold
+            ]{FiraMono-Regular}
+            
 \usepackage[usenames,dvipsnames, svgnames]{xcolor}
 
 %%%%% Überschriften
