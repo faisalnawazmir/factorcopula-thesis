@@ -399,7 +399,7 @@ AfD & 74724 & 162 & 18.36 & 7.59 \\
   Linke & 84723 & 158 & 16.03 & 4.23 \\ 
   SPD & 196805 & 290 & 10.11 & 1.57 \\
   \midrule
-  Sum & 663638 & 1217 & 69.58 & 17.27\\
+  Sum & 663638 & 1217 & 69.57 & 17.27\\
   \bottomrule
 \end{tabular}
 \caption{Number of posts, accounts, likes and shares over the observation period from "2014-01-01" - "2017-12-31"}
@@ -440,7 +440,6 @@ AfD-CDU/CSU & 0.05 & 0.14 & 0.22 & 0.18 & 0.10 \\
 \end{table}
 
 
-
 \begin{figure}[h]
 	\includegraphics[width=\textwidth]{./figures/eigenvalues}
 	\caption{Scree-plot of ranked eigenvalues based on the pairwise rank-correlation matrix.}	
@@ -451,22 +450,58 @@ AfD-CDU/CSU & 0.05 & 0.14 & 0.22 & 0.18 & 0.10 \\
 
 ## Results
 
+First various factor copula models were fitted to the complete residuals.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{rllllll}
+  \toprule
+  & \multicolumn{3}{c}{Equidependence}& \multicolumn{3}{c}{Unrestrictive} \\ 
+  & norm-norm & t-t & skewt-t & norm-norm & t-t & skewt-t\\
+  \midrule
+  $\beta_1$ & 0.5526 & 0.4002 & 2.9903 & 0.2910 & 0.2195 & 0.9460 \\ 
+  $\beta_2$ &      - &      - &      - & 0.6499 & 0.5053 & 2.1030 \\ 
+  $\beta_3$ &      - &      - &      - & 0.6821 & 0.5297 & 2.3059 \\ 
+  $\beta_4$ &      - &      - &      - & 0.5178 & 0.4012 & 1.8858 \\ 
+  $\beta_5$ &      - &      - &      - & 0.4397 & 0.3377 & 1.4266 \\ 
+  $\beta_6$ &      - &      - &      - & 0.6674 & 0.5148 & 2.1945 \\ 
+  \midrule
+   $df$ & - & 0.4787 & 0.4900 &  - & 0.4893 & 0.4703 \\ 
+  $\lambda$ & - & - & -0.1111 & - & - & -0.3160 \\ 
+  \midrule
+  $Q$ & 0.0299 & 0.0124 & 0.0110 & 0.5384 & 0.2704 &  0.2702\\ 
+  \bottomrule
+\end{tabular}
+\caption{Estimation results for different one-factor copula specifications.}
+\end{table}
+
+
 
 The unrestrictive moments based test detects a breakpoint at "2016-04-24" with a test statistics of $464$. The estimated critical value for an alpha of $0.05$ is $103$. 
 
 Moments based test based on equidependence detect the same breakpoint with a test statistics of $27$ and a critical value of $3.61$. 
 
-\begin{figure}
+\begin{figure}[H]
 	\includegraphics[width=\textwidth]{./figures/flucht}
 	\caption{Relative weighted monthly frequency of posts matching the regular expression \texttt{flucht|fluecht}. The vertical line indicates the breakpoint detected by the moments based test.}	
 	\label{f:flucht}  
 \end{figure}
 
 
-Various factor copula models were fitted before and after the break
+We also estimated a recursive equidependence skewt-t factor copula model with fixed distributional parameters. 
 
 
-\begin{table}[h]
+
+
+
+
+
+
+
+We also fitted various factor copula models before and after the break detected by the moments based test.
+
+
+\begin{table}[H]
 \centering
 \begin{tabular}{rllllllll}
   \toprule
@@ -505,7 +540,7 @@ Various factor copula models were fitted before and after the break
 	\label{f:residuals}  
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\includegraphics[width=\textwidth]{./figures/pairwise_scatter}
 	\caption{Pairwise scatterplot of the estimated residuals.}	
 	\label{f:pairwise_scatter}  
