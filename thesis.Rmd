@@ -309,12 +309,7 @@ copfun(c(beta1 = 2, lambda = -0.8), 10)
 ```
 
 
-
-
-
-
-## Optimization strategy
-
+As its core the function `fc_fit` uses the `sbplx` function from the `nloptr` package \parencite{nlopt}. The function is a re-implementation of the Subplex algorithm by \parencite{Rowan1990} with support for bound constraints. It is based on the well known Nelder-Mead simplex method and solves the objective function on subspaces. 
 
 
 ## Simulation study
@@ -424,8 +419,14 @@ First, each post in the dataset is cleaned by removing links and stopwords, tran
 
 Second, a post is considered to be related to the refugee crisis if it matches the regular expression `flucht|fluecht`. For example a match occurs if a post contains the words "flüchtlingskrise", "fluchtursachen", "flüchten" or "flüchtlingsheime". 
 
-Third, for each party and day we count the relative number of posts related to the refugee crisis. Thus, the resulting dataset consists of a column for each party where each row represent the relative frequency of a day (compare to Figure \ref{f:residuals} in the Appendix).  
+Third, for each party and day we count the relative number of posts related to the refugee crisis. To account for the importance of a post for the public audience we calculate a weighted average using the weights $log(l_i+1)$, where $l_i$ is the number of likes of the post. The resulting dataset consists of a columns for each party, six in total. Each row represents the daily weighted relative frequency of posts matching the regular expression (compare to Figure \ref{f:residuals} in the Appendix). Using the full time span of four years results in $T = 1461$ observations. Thus, the aggregated dataset can be seen as an indicator for how much a party discusses and talks about the topic "refugee crisis" on each day. A positive dependence between all parties would indicate that this topic is relevant for all parties whereas we would see no dependence if the partys talk about this topic independently from each other. 
 
+To remove time dependence as discussed in \ref{where?}, we estimate an ARIMA model for each of the time series. The best univariate model was choosen by running some model candidates over a range of parameters. The model candidate with the lowest Akaike information criterion was considered. All univariate models used $I = 1$, $AR \in \{0, 1\}$ and $MA \in \{0, 1\}$. In the following the estimated standardized residuals are used. 
+ 
+
+## Results
+
+Table \ref{t:correlations} shows the overall pairwise dependency measures used also for the SMM procedure. The dependencies are very weak to weak. 
 
 \begin{table}[H]
 \centering
@@ -453,18 +454,14 @@ AfD-CDU/CSU & 0.05 & 0.14 & 0.22 & 0.18 & 0.10 \\
   Average & 0.10 & 0.21 & 0.26 & 0.21 & 0.16\\
    \bottomrule
 \end{tabular}
+\label{t:correlations}
 \end{table}
 
-
-\begin{figure}[h]
-	\includegraphics[width=\textwidth]{./figures/eigenvalues}
-	\caption{Scree-plot of ranked eigenvalues based on the pairwise rank-correlation matrix.}	
-	\label{f:eigenvalues}  
+\begin{figure}[H]
+	\includegraphics[width=\textwidth]{./figures/flucht}
+	\caption{Relative weighted monthly frequency of posts matching the regular expression \texttt{flucht|fluecht}. The vertical line indicates the breakpoint detected by the moments based test.}	
+	\label{f:flucht}  
 \end{figure}
-
-
-
-## Results
 
 First various factor copula models were fitted to the complete residuals.
 
@@ -497,11 +494,7 @@ The unrestrictive moments based test detects a breakpoint at "2016-04-24" with a
 
 Moments based test based on equidependence detect the same breakpoint with a test statistics of $27$ and a critical value of $3.61$. 
 
-\begin{figure}[H]
-	\includegraphics[width=\textwidth]{./figures/flucht}
-	\caption{Relative weighted monthly frequency of posts matching the regular expression \texttt{flucht|fluecht}. The vertical line indicates the breakpoint detected by the moments based test.}	
-	\label{f:flucht}  
-\end{figure}
+
 
 
 We also estimated a recursive equidependence skewt-t factor copula model with fixed distributional parameters. 
@@ -548,6 +541,12 @@ We also fitted various factor copula models before and after the break detected 
 \appendix
 
 \section{Appendix}
+
+\begin{figure}[h]
+	\includegraphics[width=\textwidth]{./figures/eigenvalues}
+	\caption{Scree-plot of ranked eigenvalues based on the pairwise rank-correlation matrix.}	
+	\label{f:eigenvalues}  
+\end{figure}
 
 \begin{figure}[H]
 	\subfloat[Observed daily relative frequency of posts which match the regular expression.]{\includegraphics[width = \textwidth]{./figures/flucht_observed}} \\
