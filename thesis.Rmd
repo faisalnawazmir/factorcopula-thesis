@@ -1,7 +1,7 @@
 ---
 title: Testing for Structural Breaks in Factor Copula Models - Implementation and Application in Social Media Topic Analysis
 author: Malte Bonart
-type: Master's thesis
+type: Master thesis
 logo: "UoC-Logo.eps"
 institue: "Submitted for the Master Examination in Economics at the Faculty of Management, Economics and Social Sciences of the University of Cologne in June 2018."
 supervisor: "Prof.Dr. Dominik Wied"
@@ -18,6 +18,8 @@ abstract: "This is my abstract."
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, out.width = "\\textwidth")
+#install.packages("devtools")
+#devtools::install_github("bonartm/factorcopula")
 ```
 
 # Introduction
@@ -281,35 +283,51 @@ In the following a structural break test is presented \parencite{Wied2017}.
 
 # \emph{factorcopula} - an R package for simulation and estimation of factor copulas
 
+In this chapter we present the implementation of the previous methods, using the programming language \emph{R}. The functions are bundled in an R-package such that the methods can be easily installed and distributed. The validity of the package is tested in a simulation study. 
+
 ## Overview and usage
 
-The package consists of a set of main functions which can be used to construct, simulate and fit a factor copula model. The construction of the model is handled by the functions `config_factor`, `config_error` and `config_beta` for difining the distriution of the latent variables, the error term and the factor loadings matrix:
+The package consists of a set of high level functions which can be used to construct, simulate and fit various factor copula models. The definition of the factor copula model is handled by the functions `config_factor`, `config_error` and `config_beta` which define the distriution of the latent variables $\bm{Z}$, the error term $\bm{\epsilon}$ and the matrix of factor loadings $\bm{\beta}$. 
+
+For the specification of the distributions, the function name of any available random number generator can be used. Additional arguments for the function can be declared in a named list. Distributional parameters can either be pre-defined or passed as expressions which are not immediately evaluated. To distinguish model parameters from pre-defined distributional parameters, an additional character vector with the name of the model parameters has to be passed to `config_factor` or `config_error`.  
+
+In the following example, a factor copula with two latent variables is defined. The first factor is skewed-t distributed, the second is normal distributed. The error term is t distributed with 4 degrees of freedom. The distributional parameters of the skewed-t distribution are not pre-defined and will be included in the estimation process.
 
 ```{r}
-# devtools::install_github("bonartm/factorcopula")
 library(factorcopula)
+Z <- config_factor(rst = list(nu = 1/dfInv, lambda = lambda), 
+                   rnorm = list(),
+                   par = c("dfInv", "lambda"))
+eps <- config_error(rt = list(df = 4))
+```
+
+For specifying the matrix of factor loadings one can either manually construct a character matrix of parameters or use the function `config_beta` which accepts an input vector `k` and the number of latent variables. 
+
+The vector $k$ defines the group for each variable $i = 1, \dots, N$. Thus, an equidependence model can be specified with $k = (1, 1, \dots, 1)$, an unrestrictive model with $k = (1, \dots, N)$ and a bloc-equidependence model with $k = (1, 1, \dots, 2, 2, \dots, M,M, \dots)$, where $M$ is the number of groups. 
+
+In this example an equidependence model, with one $\beta$-parameter for each latent variable is constructed:
+```{r}
 k <- c(1, 1, 1)
-Z <- config_factor(rst = list(nu = 1/0.25, lambda = -0.8))
-eps <- config_error(rt = list(df = 1/0.25))
-beta <- config_beta(k, Z = 1)
+beta <- config_beta(k, Z = 2)
 ```
-The vector $k$ defines the group for each variable $i = 1, \dots, N$. Thus, an equidependence model can be specified with $k = (1, 1, \dots, 1)$, an unrestrictive model with $k = (1, \dots, N)$ and a bloc-equidependence model with $k = (1, 1, \dots, 2, 2, \dots, M,M, \dots)$, where $M$ is the number of groups. Instead of having fixed distributional parameters one can also include them as model parameters:
 
-```{r}
-Z <- config_factor(rst = list(nu = 1/0.25, lambda = lambda), 
-                   par = c("lambda"))
-```
-The function `fc_create` creates the actual copula model from the specifications. It returns a function which can be used to simulate values from the copula model given a \emph{named} parameter vector $\theta$. During optimazation it is crucial that the random seed is fixed otherwise numerical instabilities can occur \parencite[app. to][p. 12f]{Patton2013}. This can be achieved by passing a seed integer to the function. The function is optimized in such a way that given a fixed seed, it tries to minimize the calls to the random number generators specified in `config_factor` or `config_error`. 
+The two functions `fc_create` and `fc_fit` are used to either simulate values from a factor copula or to fit a model to a real dataset. 
 
-Simulating new random values is only nescessary if the seed or the distributional parameters change. In all other cases this can and should be avoided. Therefore, the function keeps track of the previous state and only updates the random numbers if nescessary. This improves the performance in the optimizataion process massively, especially when only beta parameters are about to be optimized. 
+The function `fc_create` returns itself a function which can be used to simulate values from the copula model. The simulation function accepts a \emph{named} vector $\theta$ of parameters, the number of simulations $S$ and an optional random seed. If a random seed is provided the functions always uses the same underlying random numbers.
 
-```{r}
+The simulation of new values is a time consuming part. To avoid unnescessary calls to the random number generators, the function remembers the state of the $Z$ and $\epsilon$ matrix over the function calls and only updates the values if nescessary. Thus if neither the seed nor the distributional parameters change, the function directly proceeds to the calculation of $\bm{\beta}\bm{Z} + \bm{epsilon}$. 
+
+During optimazation, the random seed is kept fixed to avoid numerical instabilities \parencite[app. to][p. 12f]{Patton2013}. Therefore, by using the described memory functionability one can greatly save computational costs. This improves the performance of the optimizataion process massively, especially when only beta parameters are about to be optimized. In this case, the random number generators are only called once. 
+
+```{r, eval = FALSE}
 copfun <- fc_create(Z, eps, beta)
-copfun(c(beta1 = 2, lambda = -0.8), 10)
+theta <- c(beta1 = 2, beta2 = 1, dfInv = 0.25, lambda = -0.8)
+X <- copfun(theta, S = 10)
 ```
 
+As its core, the function `fc_fit` uses the `sbplx` function from the `nloptr` package \parencite{nlopt}. The function is a re-implementation of the Subplex algorithm by \parencite{Rowan1990} with support for bound constraints. It is based on the well known Nelder-Mead simplex method and solves the objective function on subspaces of the input space. For parallel computations, the function `fc_fit` accepts a cluster object created by the `snow` or `parallel` ackage. The function uses several randomly selected starting values. The number of different starting values can also be specified with the `trials` argument.
 
-As its core the function `fc_fit` uses the `sbplx` function from the `nloptr` package \parencite{nlopt}. The function is a re-implementation of the Subplex algorithm by \parencite{Rowan1990} with support for bound constraints. It is based on the well known Nelder-Mead simplex method and solves the objective function on subspaces. 
+
 
 
 ## Simulation study
