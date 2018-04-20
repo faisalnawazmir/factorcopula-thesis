@@ -47,11 +47,22 @@ matlab/
 
 zeitplan
 
-# Latex files
+# Latex temporary files
 
 *.bcf
 *.log
 *.run.xml
+*.log
+*.lot
+*.tog
+*.blg
+*.toc
+*.aux
+*.bbl
+*.lof
+*.out
+*.tex
+tinytex_*.pdf
 
 
 

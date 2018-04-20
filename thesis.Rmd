@@ -247,7 +247,7 @@ $$
 \textcite[p. 691ff]{Patton2013} showed that under a set of assumptions, the SMM estimator is weakly consistent and asymptotically normal distributed:
 \begin{align}
 \begin{split}
-\hat{\bm{\theta}} \sim N(\bm{\theta_0}, \frac{1}{1/T+1/S}\bm{\Omega}) \text{ for }T, S \rightarrow \infty,
+\hat{\bm{\theta}} \sim N(\bm{\theta_0}, (1/T+1/S)\bm{\Omega}) \text{ for }T, S \rightarrow \infty,
 \end{split}
 \end{align}
 with covariance matrix $\bm{\Omega} = \bm{(G'WG)^{-1}G'W'\Sigma WG(G'WG)^{-1}}$, where $\bm{G} = \frac{\partial \bm{g(\theta)}}{\partial \bm{\theta}_0}$ is the Jacobian matrix of the first order derivitives of the moments function $\bm{g(\theta)}$ and $\bm{\Sigma}$ is the asymptotic variance of the moments estimator $\hat{\bm{m}}$. 
