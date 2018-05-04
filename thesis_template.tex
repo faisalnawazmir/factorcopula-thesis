@@ -29,31 +29,31 @@
 %\usepackage{amsfonts}
 %\usepackage{mathrsfs}
 \usepackage{bm}
+\usepackage{numprint}
 
 %%%%% Seitenränder und Ausrichtung
 \usepackage[paper=a4paper,left=40mm,right=30mm,top=30mm,bottom=35mm]{geometry} %define margins..
 \geometry{a4paper} % hier auch möglich 'letter' oder 'a5paper' ... etc.
-%\usepackage{lmodern}
-%\renewcommand*\familydefault{\sfdefault}
+\usepackage{lmodern}
 \usepackage{verbatim}
 %\setkomafont{sectioning}{\rmfamily\bfseries\boldmath}
 
-\usepackage{fontspec} 
-\setmainfont[   Path              = fonts/Bitter/,
-                Extension         = .ttf,
-                BoldFont          = Bitter-Bold,
-                ItalicFont        = Bitter-Italic,
-            ]{Bitter-Regular}
-\setsansfont[   Path              = fonts/Lato/,
-                Extension         = .ttf,
-                BoldFont          = Lato-Bold,
-                ItalicFont        = Lato-Italic,
-                BoldItalicFont    = Lato-BoldItalic
-            ]{Lato-Regular}
-\setmonofont[   Path              = fonts/Fira_Mono/,
-                Extension         = .ttf,
-                BoldFont          = FiraMono-Bold
-            ]{FiraMono-Regular}
+% \usepackage{fontspec} 
+% \setmainfont[   Path              = fonts/Bitter/,
+%                 Extension         = .ttf,
+%                 BoldFont          = Bitter-Bold,
+%                 ItalicFont        = Bitter-Italic,
+%             ]{Bitter-Regular}
+% \setsansfont[   Path              = fonts/Lato/,
+%                 Extension         = .ttf,
+%                 BoldFont          = Lato-Bold,
+%                 ItalicFont        = Lato-Italic,
+%                 BoldItalicFont    = Lato-BoldItalic
+%             ]{Lato-Regular}
+% \setmonofont[   Path              = fonts/Fira_Mono/,
+%                 Extension         = .ttf,
+%                 BoldFont          = FiraMono-Bold
+%             ]{FiraMono-Regular}
             
 \usepackage[usenames,dvipsnames, svgnames]{xcolor}
 
@@ -78,7 +78,7 @@
 %% Sonstiges
 
 %\usepackage[round]{natbib}
-%\usepackage{algorithm}
+\usepackage[]{algorithm2e}
 %\usepackage{acronym}
 %\usepackage{algpseudocode}
 %\usepackage{rotating} 
@@ -245,8 +245,9 @@ $endif$
 \vspace{\fill}\\ 
 $institue$\\
 \\
-
 \end{titlepage}
+
+
 
 $if(abstract)$
   \begin{abstract}
@@ -264,6 +265,7 @@ $endif$
 \thispagestyle{plain}
 \listoffigures % fügt ein Abbildungsverzeichnis ein
 \listoftables % fügt ein Tabellenverzeichnis ein
+\listofalgorithms
 
 \section*{List of Abbreviations}
 \addcontentsline{toc}{section}{List of Abbreviations}

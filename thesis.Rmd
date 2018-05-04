@@ -9,7 +9,8 @@ bibliography: "./literature.bib"
 output: 
   pdf_document:
     highlight: tango
-    latex_engine: xelatex
+    #latex_engine: xelatex
+    latex_engine: pdflatex
     template: thesis_template.tex
     citation_package: biblatex
     number_sections: true
@@ -205,6 +206,7 @@ To have a valid conditional multivariate distribution, the conditioning set must
 
 For this work we use a semiparametric copula-based multivariate dynamic model as described in \textcite[p. 129 ff]{Chen2006}. The conditional means and variances of $\bm{Y}_t|\mathcal{F}_{t-1}$ are estimated parametrically. If we denote the parametrized conditional mean of a single variable as $\mu_{it} = E(Y_{it}|\mathcal{F}_{t-1}; \bm{\phi})$ and the parametrized conditional standard deviation as $\sigma_{it} = \sqrt{V(Y_{it}|\mathcal{F}_{t-1}; \bm{\phi})}$ we can write the multivariate time series as:
 \begin{equation}
+\label{eq:model}
 \bm{Y}_t = \bm{\mu}_t + \bm{\sigma}_t\bm{\eta}_t,
 \end{equation}
 with $\bm{\sigma}_t = \diag(\sigma_{1t}, \dots, \sigma_{Nt})$. The innovations $\bm{\eta}_t = (\eta_{1t}, \dots, \eta_{Nt})'$ have a standardized conditional distribution which can be modelled with a conditional copula. 
@@ -230,6 +232,7 @@ Formally, the estimator is given by
 \end{equation} 
 with
 \begin{equation}
+\label{eq:momentcondition}
 \bm{g(\theta)} = \hat{\bm{m}} - \tilde{\bm{m}}(\bm{\theta}),
 \end{equation}
 where $\hat{\bm{m}}$ and $\tilde{\bm{m}}$ are vectors of empirical dependency measures computed from the observable and the simulated data respectively. 
@@ -244,58 +247,95 @@ $$
 \hat{\lambda}_{ij} = 
 $$
 
-\textcite[p. 691ff]{Patton2013} showed that under a set of assumptions, the SMM estimator is weakly consistent and asymptotically normal distributed:
+\textcite[p. 691ff]{Patton2013} showed that given some assumptions the SMM estimator is weakly consistent and asymptotically normal distributed. The assumptions ensure that for both the iid and the time series case the sample dependency measures converge in probability to their theoretical population values. Further it is important to note, that it is assumed that the population version of the moment conditions \eqref{eq:momentcondition} is differentiable at the true parameter $\bm{\theta}_0$ while this is not true for the finite sample version. 
+
+The convergence can be summarized as:
 \begin{align}
+\label{eq:asymptotic}
 \begin{split}
-\hat{\bm{\theta}} \sim N(\bm{\theta_0}, (1/T+1/S)\bm{\Omega}) \text{ for }T, S \rightarrow \infty,
+\hat{\bm{\theta}} \sim N(\bm{\theta_0}, (\frac{1}{T}+\frac{1}{S})\bm{\Omega}) \text{ ~for~ }T, S \rightarrow \infty,
 \end{split}
 \end{align}
-with covariance matrix $\bm{\Omega} = \bm{(G'WG)^{-1}G'W'\Sigma WG(G'WG)^{-1}}$, where $\bm{G} = \frac{\partial \bm{g(\theta)}}{\partial \bm{\theta}_0}$ is the Jacobian matrix of the first order derivitives of the moments function $\bm{g(\theta)}$ and $\bm{\Sigma}$ is the asymptotic variance of the moments estimator $\hat{\bm{m}}$. 
+with covariance matrix $\bm{\Omega} = \bm{(G'WG)^{-1}G'W'\Sigma WG(G'WG)^{-1}}$, where $\bm{G} = \frac{\partial \bm{g(\theta)}}{\partial \bm{\theta}_0}$ is the Jacobian matrix of the first order derivitives of the moments function $\bm{g(\theta)}$ and $\bm{\Sigma}$ is the asymptotic variance of the moments estimator $\hat{\bm{m}}$.
 
-The matrix $\bm{W}$ is a positive definite weight matrix and if the efficient weight matrix $\bm{W} = \bm{\Sigma}^{-1}$ is used the aymptotic variance simplifies to $\bm{\Omega} = \bm{(G'WG)^{-1}}$. 
+The matrix $\bm{W}$ is a positive definite weight matrix and can be choosen to be the identity matrix. If the efficient weight matrix $\bm{W} = \bm{\Sigma}^{-1}$ is used the aymptotic variance simplifies to $\bm{\Omega} = \bm{(G'WG)^{-1}}$. 
 
+It is crucial to note, that the standard error of the copula parameters $\hat{\bm{\theta}}$ is not affected by the error arriving from estimating $\hat{\bm{\phi}}$, which is the parameter vector for the marginal models for the conditional mean and variance of $\bm{Y}_t$ (see \eqref{eq:model}). The asymptotic results as they are state here are ony valid if the marginal distribution of the residuals is estimated non-parametically by using the empirical distribution function.
 
+The asymptotic variance $\bm{\Sigma}$ can be estimated using an iid bootstrap procedure:
 
+\begin{algorithm}
+\KwIn{$\hat{\bm{\epsilon}}_t$}
+\KwOut{$\hat{\bm{\Sigma}}_{T,B}$}
+  \For{$b\gets1$ \KwTo $B$}{
+    sample with replacement: $\{\hat{\bm{\epsilon}}_t^{(b)}\}_{t = 1}^T$\;
+    compute bootstrap sample moments: $\hat{\bm{m}}_T^{(b)}$\;
+    }
+    compute sample moments: $\hat{\bm{m}}_T$\;
+    compute difference: $\bm{g}_{T,B} = \hat{\bm{m}}_T^{(b)} - \hat{\bm{m}}_T$\;
+    $\hat{\bm{\Sigma}}_{T,B} = \frac{T}{B}\sum_{b = 1}^B(\bm{g}_{T,B}\bm{g}_{T,B}')$\;
+    \KwRet $\hat{\bm{\Sigma}}_{T,B}$\;
+  \caption{Estimation of the covariance matrix of $\hat{\bm{m}}_T$.}
+\end{algorithm}
 
+The derivative $\bm{G}$ can be estimated using a numerical approximation arround the parameter estimator $\hat{\bm{\theta}}$. For the $k$th column we can write:
+$$
+\hat{\bm{G}}_{T, S, k} = \frac{\bm{g}_{T, S}(\hat{\bm{\theta}}+\bm{e}_k\epsilon_{T, S}) - \bm{g}_{T, S}(\hat{\bm{\theta}}-\bm{e}_k\epsilon_{T, S})}{2\epsilon_{T, S}},
+$$
+where $\bm{e}$ is the $k$th unit vector and $\epsilon_{T, S}$ the step size which is usually set to $\epsilon_{T, S} = 0.1$. 
 
 
 ## Structural break test for factor copulas
 
+In the following section a structural break test based on \parencite{Wied2017} for a change of the copula parameters in \eqref{eq:model} is presented. Note that it is assumed that the functional form of the copula is time invariant while the copula's parameters $\theta_t$ for $t = 1, \dots, T$ can vary over time. The model presented in \ref{s:dynamiccopula} allows for a wide variety of parametrization and copula functions. Here, we focus on the factor copula model and the SMM estimation procedure as presented in the previous sections. 
 
-Note that we assume that the functional form of the copula is time invariant while the copula's parameters can vary over time \parencite[p. 542]{Patton2006}. 
+The test is based on recursive estimations of the copula model at each timepoint $t \in \epsilon 1, \dots, T$. $\theta_t$ is the estimated parameter using the data up to point $t$. The strictly positive trimming parameter $\epsilon$ has to be choosen such that the model parameters don't fluctutate too much just because of small sample sizes. The null hyopthesis states that the estimator is time invariant while the alternative indicates at least one significant break point in time. 
+$$
+H_0: \theta_1 = \theta_2 = \dots = \theta_T \hspace{2em} H_1: \theta_t \neq \theta_{t+1} \text{ for some } t = \{1, \dots, T\}
+$$
 
-The model presented in \ref{s:dynamiccopula} allows for a wide variety of parametrization and copula functions. Here, we focus on the factor copula model and the SMM estimation procedure as presented in the previous sections. 
-
-$H_0: \theta_1 = \theta_2 = \dots = \theta_T$ \hspace{2em} $H_1: \theta_t \neq \theta_{t+1} \text{ for some } t = \{1, \dots, T\}$
-
-The test statistics is
+The the test statistics is the maximum of the scaled squared distance between the full model and the recursive estimator:
 \begin{equation}
-P = \underset{s \in [\epsilon, 1]}{\sup} s^2T(\btheta_{sT, S}- \btheta_{T, S})'(\btheta_{sT, S}- \btheta_{T, S})
+P = \underset{\epsilon T \leq t \leq T}{\max} \frac{t}{T}^2T(\btheta_{t, S}- \btheta_{T, S})'(\btheta_{t, S}- \btheta_{T, S}).
 \end{equation}
 
-Under the null hypothesis and given some assumptions the test statistics converges in distribution to
+An alternative test statistic is solely based on the moment generating functions and does not involve the estimation of a copula model:
 \begin{equation}
-P \overset{d}{\rightarrow} \underset{s \in [\epsilon, 1]}{\sup} (\bm{A}^*(s) - s\bm{A}^*(1))'(\bm{A}^*(s) - s\bm{A}^*(1)), 
+M = \underset{\epsilon T \leq t \leq T}{\max} \frac{t}{T}^2T(\bm{\hat{m}}_t - \bm{\hat{m}}_T)'(\bm{\hat{m}}_t - \bm{\hat{m}}_T).
 \end{equation}
-with $\bm{A}^*(s) = (G'WG)^{-1}G'W(A(s) - \frac{s}{\sqrt{k}}A(1))$ and $T, S \rightarrow \infty, \frac{S}{T} \rightarrow k \text{ or } \frac{S}{T} \rightarrow \infty$.
 
+If the test statistic is larger than some critical value, the time $t$ where the test statistic occurs can be interpreted as the detected breakpoint.
 
+Under the null hypothesis and given some assumptions which are similar in spirit to the assumptions for the asymptotic distribtion as in \eqref{eq:asymptotic} the test statistics converges in distribution to 
+\begin{equation}
+P \overset{d}{\rightarrow} \underset{\epsilon T \leq t \leq T}{\max} (\bm{A}^*(t) - s\bm{A}^*(T))'(\bm{A}^*(t) - s\bm{A}^*(T)), 
+\end{equation}
+with $\bm{A}^*(t) = (G'WG)^{-1}G'W(A(t) - \frac{s}{\sqrt{k}}A(1))$ and $T, S \rightarrow \infty, \frac{S}{T} \rightarrow k \text{ or } \frac{S}{T} \rightarrow \infty$.
 
-In the following a structural break test is presented \parencite{Wied2017}.
+The distribution under the null hypothesis can be estimated using the following bootstrap procedure:
 
-
-
-
- 
-\parencite{Patton2009}
- 
-
-\parencite{Patton2013}
-
-
-
-\parencite{Wied2017}
-
+\begin{algorithm}
+\KwIn{$\hat{\bm{\epsilon}}_t; \alpha$}
+\KwOut{$K$}
+  compute full sample moments $\hat{\bm{m}}_T$\;
+  \eIf{copula based test}{
+      $L \gets (\hat{G}'\hat{W}\hat{G})^{-1}\hat{G}'$\;
+  }{
+      $L \gets  1$\;
+  }
+  \For{$b\gets1$ \KwTo $B$}{
+    generate bootstrap sample $\{\hat{\bm{\epsilon}}_t^{(b)}\}_{t = 1}^T$\;
+    \For{$t\gets T$ \KwTo $\epsilon T$}{
+      compute recursive bootstrap sample moments $\hat{\bm{m}}_t^{(b)}$\;
+      $A^{(b)*}_t \gets L\frac{t}{T}\sqrt{T}(\hat{\bm{m}}_t^{(b)} - \hat{\bm{m}}_T)$\;
+      $K^{(b)}_t \gets (A^{(b)*}_t - \frac{t}{T}A^{(b)*}_T)'(A^{(b)*}_t - \frac{t}{T}A^{(b)*}_T)$\;
+    }
+    calculate the maximum $K^{(b)}$ over all $K^{(b)}_t$\;
+  }
+  calculate the $1-\alpha$ sample quantile $K$ from all $K^{(b)}$\;
+  \KwRet K;
+  \caption{Estimation of the critical value.}
+\end{algorithm}
 
 
 # \emph{factorcopula} - an R package for simulation and estimation of factor copulas
@@ -392,7 +432,28 @@ Figure \ref{f:breaktest} shows the result of the break test for a single recursi
 	\label{f:breaktest}  
 \end{figure}
 
-The moments based test detects a breakpoint at $t = 962$ which is close to the true value. The null hypothesis of no break is clearly rejected since the test statistic fluctuates too strong.  
+The moments based test detects a breakpoint at $t = 962$ which is close to the true value but less precise than the copula based test. The null hypothesis of no break is clearly rejected since the test statistic fluctuates too strong.  
+
+\begin{table}[H]
+\centering
+\begin{tabular}{rlll}
+  \toprule
+  coefficient & before ($t \leq 1000$) & after ($t > 1000)$ & full model \\
+  \midrule
+  $\beta_1$ & 0.00 (0.07) & 1.87 (0.70) & 0.00 (0.14) \\ 
+  $\beta_2$ & 1.14 (0.35) & 0.88 (0.29) & 1.18 (0.30) \\ 
+  $\beta_3$ & 0.99 (0.32) & 0.83 (0.30) & 1.11 (0.26) \\ 
+  $\beta_4$ & 0.01 (1.32) & 1.63 (0.69) & 0.89 (0.15) \\ 
+  $\beta_5$ & 0.93 (0.20) & 1.01 (0.31) & 0.98 (0.18) \\ 
+  $\beta_6$ & 1.03 (0.23) & 1.11 (0.37) & 1.04 (0.19) \\
+  \midrule
+  $Q$ & 0.0007 & 0.0027 & 0.0031 \\ 
+  $T$ & 1000 & 500 & 1500 \\
+  $S$ & 37500 & 37500 & 37500 \\
+  \bottomrule
+\end{tabular}
+\caption{Estimation results for the bloc-equidependence factor copula model before and after the breakpoint and for the full dataset. Standard errors in paranthesis (estimated with $ B = 1000$ bootstrap samples).}
+\end{table}
 
 
 
@@ -420,7 +481,7 @@ For this analysis the data is restricted on textual posts only. This results in 
 \begin{figure}[h]
 \flushleft \textbf{Accounts and posts by party over time}\\[1.5em]
 	\includegraphics[width=\textwidth]{./figures/nPosts}
-	\caption{Number of active accounts and number of posts per party and month.}	
+	\caption{Number of active accounts and number of posts per party and month. The bottom panel shows the number of posts matching the regular expression \texttt{flucht|fluecht}. The vertical line indicates the breakpoint detected by the moments based test.}	
 	\label{f:nPosts}  
 \end{figure}
 
@@ -428,21 +489,23 @@ Table \ref{t:facebook} shows the overall number of \emph{textual} posts, account
 
 \begin{table}[h]
 \centering
-\begin{tabular}{rlrrrr}
+\footnotesize
+\begin{tabular}{rcccccc}
   \toprule
- party & posts & avtive accounts & likes (in million) & shares (in million) \\ 
-  \midrule
-AfD & 74724 & 162 & 18.36 & 7.59 \\ 
-  CDU/CSU & 169115 & 267 & 14.72 & 1.83 \\ 
-  FDP & 71083 & 201 & 6.32 & 0.77 \\ 
-  Grüne & 67188 & 139 & 4.03 & 1.28 \\ 
-  Linke & 84723 & 158 & 16.03 & 4.23 \\ 
-  SPD & 196805 & 290 & 10.11 & 1.57 \\
-  \midrule
-  Sum & 663638 & 1217 & 69.57 & 17.27\\
+ party & posts & accounts & likes & shares & weighted (\%) & non-weighted (\%) \\ 
+ & & &\multicolumn{2}{c} {(in Million)} &  \multicolumn{2}{c} {share of posts related to "refugees"}\\ 
+\cmidrule(r){1-1} \cmidrule(lr){2-3} \cmidrule(lr){4-5}  \cmidrule(l){6-7}
+AfD & 74724 & 162 & 18.36 & 7.59 & 8.14 & 6.96 \\ 
+  CDU/CSU & 169115 & 267 & 14.72 & 1.83 & 3.67 & 3.49 \\ 
+  FDP & 71083 & 201 & 6.32 & 0.77 & 2.83 & 2.39 \\ 
+  Grüne & 67188 & 139 & 4.03 & 1.28 & 5.07 & 4.62 \\ 
+  Linke & 84723 & 158 & 16.03 & 4.23 & 6.97 & 6.23 \\ 
+  SPD & 196805 & 290 & 10.11 & 1.57 & 3.96 & 3.66 \\ 
+\cmidrule(r){1-1} \cmidrule(lr){2-3} \cmidrule(lr){4-5}  \cmidrule(l){6-7}
+  All parties & \numprint{663638} & 1217 & 69.57 & 17.27 &  4.86 & 4.28\\
   \bottomrule
 \end{tabular}
-\caption{Number of posts, accounts, likes and shares over the observation period from "2014-01-01" - "2017-12-31"}
+\caption{Overall number of posts, active accounts, likes and shares over the observation period from "2014-01-01" - "2017-12-31". The last two columns show the (weighted) fraction of posts matching the regular expression \texttt{flucht|fluecht}. The number of shares, comments and likes are used as weights.}
 \label{t:facebook}
 \end{table}
 
@@ -492,12 +555,6 @@ AfD-CDU/CSU & 0.05 & 0.14 & 0.22 & 0.18 & 0.10 \\
 \label{t:correlations}
 \end{table}
 
-\begin{figure}[H]
-	\includegraphics[width=\textwidth]{./figures/flucht}
-	\caption{Relative weighted monthly frequency of posts matching the regular expression \texttt{flucht|fluecht}. The vertical line indicates the breakpoint detected by the moments based test.}	
-	\label{f:flucht}  
-\end{figure}
-
 First various factor copula models were fitted to the complete residuals.
 
 \begin{table}[H]
@@ -523,7 +580,20 @@ First various factor copula models were fitted to the complete residuals.
 \caption{Estimation results for different one-factor copula specifications.}
 \end{table}
 
-
+\begin{table}[H]
+\centering
+\begin{tabular}{rcccc}
+  \toprule
+  & \multicolumn{2}{c}{Moments based test}& \multicolumn{2}{c}{Copula based test} \\ 
+  & unrestrictive & restrictive & unrestrictive & restrictive \\
+  \cmidrule(r){1-1} \cmidrule(lr){2-3} \cmidrule(l){4-5}
+  test statistics & 26.85 & 466.26 &  -&  -  \\ 
+  critical value  &      0.72 &      101.80 &      - & - \\ 
+  breakpoint      &  2016-04-24    &  2016-04-24  &      - & - \\ 
+  \bottomrule
+\end{tabular}
+\caption{Summary of break point detection methods for the social media dataset.}
+\end{table}
 
 The unrestrictive moments based test detects a breakpoint at "2016-04-24" with a test statistics of $464$. The estimated critical value for an alpha of $0.05$ is $103$. 
 
@@ -585,7 +655,7 @@ We also fitted various factor copula models before and after the break detected 
 
 \begin{figure}[H]
 	\subfloat[Observed daily relative frequency of posts which match the regular expression.]{\includegraphics[width = \textwidth]{./figures/flucht_observed}} \\
-	\subfloat[Residuals of ARIMA models applied to the time series.]{\includegraphics[width= \textwidth]{./figures/flucht_residual}}
+	\subfloat[Residuals of ARIMA models applied to the time series.]{\includegraphics[width= \textwidth]{./figures/flucht_residuals}}
 	\caption{}	
 	\label{f:residuals}  
 \end{figure}

@@ -62,6 +62,7 @@ zeitplan
 *.lof
 *.out
 *.tex
+*.loa
 tinytex_*.pdf
 
 

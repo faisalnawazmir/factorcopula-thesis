@@ -7,17 +7,18 @@ library(ggthemes)
 library(ggrepel)
 
 detectOutlier <- function(y, k){
-  yDiff <- abs(diff(y))
+  ySmooth <- smooth(y)
+  yDiff <- abs(y - ySmooth)
   which(yDiff > mean(yDiff) + k*sd(yDiff))
 }
 
 options(scipen = 9999)
 
 #devtools::install_github("bonartm/cheopsr")
-# devtools::install_github("bonartm/factorcopula")
+#devtools::install_github("bonartm/factorcopula")
 options(cheopsr.account = "AG-Wied")
 options(cheopsr.username = "bonartm")
-# cheops_install_github("bonartm/factorcopula", ref = "master")
+#cheops_install_github("bonartm/factorcopula", ref = "master")
 
 tSeq <- 300:1500
 t <- max(tSeq)
@@ -49,51 +50,120 @@ matrix(factorcopula:::moments(U[(brk+1):t, ], k), ncol = 5, byrow = TRUE)
 
 #saveRDS(Y, "./Y.rds")
 
-# Copula recursive estimation ---------------------------------------------
-opt <- cheops_slurmcontrol(nodes = 80, tasks = 5, mem = "3gb", time = "08:00:00", mail = "bonartm@uni-koeln.de")
+# Full Copula recursive estimation ---------------------------------------------
+opt <- cheops_slurmcontrol(nodes = 60, tasks = 4, mem = "8gb", time = "06:00:00")
 #opt <- cheops_slurmcontrol(nodes = 2, tasks = 2, mem = "1gb", time = "00:10:00", partition = "devel")
 
-# job_bloc <- cheops_lapply(tSeq, function(t, Y, Z, eps, beta, lower, upper, k){
-#   fc_fit(Y = Y[1:t, ], Z, eps, beta, lower, upper, recursive = FALSE, S = 25000, k = k, cl = NULL, trials = 10,
-#          control = list(stopval = 0, xtol_rel = 1e-9, maxeval = 3000))
-# }, options = opt, jobname = "bloc-equ", packages = "factorcopula", load.balancing = TRUE,
-# args = list(Y = Y, Z = Z, eps = eps, beta = beta, lower = lower, upper = upper, k = k))
+job_bloc <- cheops_lapply(tSeq, function(t, Y, Z, eps, beta, lower, upper, k){
+  fc_fit(Y = Y[1:t, ], Z, eps, beta, lower, upper, S = 37500, k = k, 
+         control.first.stage = list(algorithm = "NLOPT_GN_MLSL_LDS", stopval = 0, xtol_rel = 1e-10, maxeval = 2000,
+                                    local_opts = list(algorithm = "NLOPT_LN_SBPLX", xtol_rel = 1e-10, maxeval = 2000)), 
+         control.second.stage = list(algorithm = "NLOPT_LN_SBPLX", xtol_rel = 1e-16, maxeval = 2000))
+}, options = opt, jobname = "bloc-equ", packages = "factorcopula", load.balancing = TRUE,
+args = list(Y = Y, Z = Z, eps = eps, beta = beta, lower = lower, upper = upper, k = k))
 
 cheops_jobs()
 cat(cheops_getlog("bloc-equ"), sep = "\n")
-#cheops_cancel(job_bloc$name)
+#cheops_cancel("bloc-equ")
 
 res <- cheops_readRDS("./bloc-equ/res.rds")
-res <- data.frame(do.call(rbind, res))
+res <- data.frame(t(vapply(res, function(x) x$theta.second.stage[1:6], numeric(6))))
+names(res) <- names(lower)
+res$t <- tSeq
 res$p <- fc_pstat(res[,1:6], res$t)
 
-out <- detectOutlier(res$p, 3)
+out <- detectOutlier(res$p, 1)
 res$p[out] <- NA
 
-res$pSecond <- fc_pstat(res[,c("beta2", "beta5", "beta3", "beta6")], res$t)
-
 # opt <- cheops_slurmcontrol(nodes = 40, tasks = 2, mem = "2gb", time = "00:20:00")
-# job_crit <- cheops_run(fc_critval, options = opt, jobname = "cop-crit",
+# job_crit <- cheops_run(fc_critval, options = opt, jobname = "bloc-crt",
 #                        args = list(type = "copula", Y = Y, B = 1000, tSeq = tSeq, k = k, 
 #                                    config_factor = Z, config_error = eps, config_beta = beta, theta = res[nrow(res), 1:6]),
 #                        packages = "factorcopula")
 # cheops_jobs()
-# cat(cheops_getlog("cop-crit"), sep = "\n")
+#cat(cheops_getlog("cop-crit"), sep = "\n")
 pCrit <- cheops_readRDS("./cop-crit/res.rds")
+crit <- quantile(pCrit, 1-0.05)
+estBrk <- res$t[which.max(res$p)]
+res$group <- ifelse(res$p < crit & res$t < estBrk, 1, 
+                    ifelse(res$p < crit & res$t >= estBrk, 3, 2))
+res$group <- as.factor(res$group)
 
-res <- tidyr::gather(res[, c("t", "p", "pSecond")], key = "group", value = "P", p, pSecond)
 
-ggplot(res, aes(x = t, y = P)) +
+ggplot(res, aes(x = t, y = p)) +
   geom_hline(yintercept = quantile(pCrit, 1-0.05), color = "black", linetype = 2) +
-  #geom_label_repel(stat = "unique", aes(x = max(t)), y = quantile(pCrit, 1-0.05), label = "critical value", point.padding = 1, nudge_y = 20) +
-  #geom_label_repel(stat = "unique", x = brk, y = 10, label = "theoretical breakpoint", point.padding = 1, nudge_x = - 2) +
-  geom_line(color = "indianred") +
+  geom_label_repel(stat = "unique", aes(x = max(t)), y = quantile(pCrit, 1-0.05), label = "0.05-CV", point.padding = 1, nudge_y = 20) +
+  geom_label_repel(stat = "unique", x = brk, y = 10, label = "breakpoint", point.padding = 1, nudge_x = - 2) +
+  geom_line(col = "indianred3") + 
   geom_vline(xintercept = brk, color = "black", linetype = 2) +
-  facet_grid(group ~ . , labeller = as_labeller(c(p = "all groups", pSecond = "second and third group"))) +
   theme_hc()
 
 
+# Only second and third group copula recursive estimation ---------------------------------------------
+beta[beta == "beta1"] <- 0
+beta[beta == "beta4"] <- 0.88
+beta
+lower <- rep(0, 4)
+upper <- rep(5, 4)
+names(lower) <- paste0("beta", c(2, 3, 5, 6))
+names(upper) <- names(lower)
 
+opt <- cheops_slurmcontrol(nodes = 60, tasks = 4, mem = "4gb", time = "04:00:00")
+#opt <- cheops_slurmcontrol(nodes = 2, tasks = 2, mem = "1gb", time = "00:10:00", partition = "devel")
+
+cheops_lapply(tSeq, function(t, Y, Z, eps, beta, lower, upper, k){
+  fc_fit(Y = Y[1:t, ], Z, eps, beta, lower, upper, S = 37500, k = k, 
+         control.first.stage = list(algorithm = "NLOPT_GN_MLSL_LDS", stopval = 0, xtol_rel = 1e-10, maxeval = 2000,
+                                    local_opts = list(algorithm = "NLOPT_LN_SBPLX", xtol_rel = 1e-10, maxeval = 2000)), 
+         control.second.stage = list(algorithm = "NLOPT_LN_SBPLX", xtol_rel = 1e-16, maxeval = 2000))
+}, options = opt, jobname = "group-23", packages = "factorcopula", load.balancing = TRUE,
+args = list(Y = Y, Z = Z, eps = eps, beta = beta, lower = lower, upper = upper, k = k))
+
+cheops_jobs()
+cat(cheops_getlog("group-23"), sep = "\n")
+#cheops_cancel("group-23")
+
+res <- cheops_readRDS("./group-23/res.rds")
+res <- data.frame(t(vapply(res, function(x) x$theta.second.stage[1:4], numeric(4))))
+res$t <- tSeq
+res$p <- fc_pstat(res[,1:4], res$t)
+
+out <- detectOutlier(res$p, 1)
+res$p[out] <- NA
+
+
+opt <- cheops_slurmcontrol(nodes = 40, tasks = 2, mem = "2gb", time = "00:20:00")
+cheops_run(fc_critval, options = opt, jobname = "gp23-crt",
+                       args = list(type = "copula", Y = Y, B = 1000, tSeq = tSeq, k = k,
+                                   factor = Z, error = eps, beta = beta, theta = res[nrow(res), 1:4]),
+                       packages = "factorcopula")
+cheops_jobs()
+cat(cheops_getlog("gp23-crt"), sep = "\n")
+
+
+
+# Copula estimation full, before and after the breakpoint detected by the test ---
+beta <- config_beta(k)
+lower <- c(rep(0, P))
+upper <- c(rep(6, P))
+names(lower) <- paste0("beta", 1:P)
+names(upper) <- paste0("beta", 1:P)
+
+cl <- makeCluster(3)
+clusterExport(cl, ls())
+cluster_library(cl, "factorcopula")
+models <- parLapply(cl, X = list(full = 1:nrow(Y), before = 1:1000, after = 1001:nrow(Y)), function(tSeq){
+  fc_fit(Y = Y[tSeq, ], Z, eps, beta, lower, upper, se = TRUE, S = 37500, B = 1000, k = k,
+         control.first.stage = list(algorithm = "NLOPT_GN_MLSL_LDS", xtol_rel = 1e-6, maxeval = 400,
+                                    local_opts = list(algorithm = "NLOPT_LN_SBPLX", xtol_rel = 1e-4, maxeval = 200)), 
+         control.second.stage =  list(algorithm = "NLOPT_LN_SBPLX", xtol_rel = 1e-12, maxeval = 3000))
+})
+
+stopCluster(cl)
+
+lapply(models, function(x) round(x$objective, 4))
+lapply(models, function(x) round(x$solution, 2))
+lapply(models, function(x) x$message)
 
 # Moments based test ------------------------------------------------------
 
