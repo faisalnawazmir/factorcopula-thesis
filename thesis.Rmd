@@ -24,16 +24,13 @@ knitr::opts_chunk$set(echo = TRUE, out.width = "\\textwidth")
 ```
 
 # Introduction
+\label{s:introduction}
 
-Models with copula functions became increasingly popular since the 1990th \parencite[p. 1]{Nelsen1999}. The concept was first introduced in the work by \textcite{Sklar1959}. They are mainly used in two ways: First, to model the dependence structure of multivariate distributions independent of their underlying marginal distributions and second, to construct bivariate or multivariate distributions \parencite[p. 302]{Sempi2011}. This paper focuses on the first application.
-
+Statistical models involving copula functions became increasingly popular since the 1990th \parencite[p. 1]{Nelsen1999}. The concept was first introduced in the work by \textcite{Sklar1959}. Copulas are mainly used in two ways: First, to model the dependence structure of multivariate distributions independent of their underlying marginal distributions and second, to construct bivariate or multivariate distributions \parencite[p. 302]{Sempi2011}. This paper focuses on the first application. Up to the year 1999 the there are 38 publication listed for the topics \emph{copula} and \emph{dependence}. From 2000 - 2008 there were 334 publication and from 2009 - 2017 this number increased to 2048 publication.\footnote{Numbers are taken from the \emph{Web of Science Core Collection} for the search term \texttt{TOPIC: (copula) AND TOPIC: (dependence)}.} 
 
 Skalr's theorem can be used to construct multivariate models first, by specifying the marginal distributions of the random variables involved and second, by specifying the dependence structure among the variables via a copula function \cite{Sempi2011}. By doing so, one allows for non-parametrized or semi-parametrized estimation of the marginal distributions together with a parametrized copula. High dimensional problems become traceable since the number of parameters can be drastically reduced \parencite[p. 777]{Patton2009}. 
 
-For time series data copula theory can be used in two ways: First, to describe the cross sectional dependence structure by estimating the conditional copula function of the conditional joint distribution $F(\mathbf{y}|\mathcal{F}_{t-1})$ with $\mathbf{Y}_t = [Y_{1t}, \dots, Y_{nt}]'$ and past information $\mathcal{F}_{t-1}$. To obtain a valid distribution, the information set must be the same for both the copula and the marginal distributions \parencite[p. 771]{Patton2009}.
-
-Second, copulas can be used to describe the dependence between observations of a univariate time series $[Y_t, Y_{t+1}, \dots, Y_{t+n}]'$. This is related to the study of Markov processes. \parencite[p. 774 ff]{Patton2009}. This paper focuses on the first application. 
-
+For time series data copula theory can be used in two ways: First, to describe the cross sectional dependence structure by estimating the conditional copula function of the conditional joint distribution $F(\mathbf{y}|\mathcal{F}_{t-1})$ with $\mathbf{Y}_t = [Y_{1t}, \dots, Y_{nt}]'$ and past information $\mathcal{F}_{t-1}$. To obtain a valid distribution, the information set must be the same for both the copula and the marginal distributions. Second, copulas can be used to describe the dependence between observations of a univariate time series $[Y_t, Y_{t+1}, \dots, Y_{t+n}]'$. This is related to the study of Markov processes. \parencite[p. 771 ff]{Patton2009}. This paper focuses on the first application. 
 
 Applications for copula modeling can be found in various disciplines but they became increasingly popular in the field of finance, actuarial science and hydrology \cite{Sempi2011}. 
 
@@ -46,116 +43,76 @@ Rank correlation matrices such as \emph{Spearman's rho} are invariant under mono
 
 Copulas are usefull whenever one wants to draw conclusion about the full joint distribution but other models are more suited if one focuses on predicting the conditional mean \parencite[p. 769]{Patton2009} 
 
-Research question: What do I want to analyze?
+This thesis summarizes and strucutures the current developement in the field of factor copula models. It contributes to the sicentific disucssion in two ways: First, a software library for a consistent specification, simulation and estimation of factor copula models is presented. With the library, the methods and the strucutral break test are made avalaible to a broader scientific audience and can be used by applied reasearchers. Second, we study novel ways of applying the discussed methods to areas outside of the finance community. The strucutral break test is applied to an aggregated dataset of social media posts from german politicians and political parties.
+
+The thesis is structured in four main chapters: The first chapter lays the theoretical foundation by summarizing important aspects of copula theory and by presenting the factor copula approach, its estimation strategy via simulated methods of moments and a suitable test for time varying dependence structures. The second chapter presents implementational details of the software library \emph{factorcopula}, written in the statistical programming language R \parencite{Bonart2018}. To ensure the validity of the package and its performance two simulation studies are performed. In the last chapter, the methods are applied to a large dataset of textual social media posts from german politicians and political parties. The goal is to illustrate and assess novel ways of applying the factor copula approach and the structural break test.
 
 
-
-How similar is the dependency structure of the political communication on social media channels compared to financial markets?
-
-Can we detect structural breaks in the dependency structure of the political communication on social media channels? This could be an indicator of political eruptions such as elections, scandals or political events. 
-
-extreme dependence during economic crisis (-> elections)
-
-
-Relevance: Why do I ask this question? Why is it relevant?
-
-
-
-
-
-The thesis is structured in four main chapters: The first chapter lays the theoretical foundation by summarizing important aspects of copula theory and by presenting the factor copula approach, its estimation strategy via simulated methods of moments and a suitable test for time varying dependence structures. The second chapter presents implementation details of the software package \emph{factorcopula}, written in the statistical programming language R \parencite{Bonart2018}. With the package, factor copulas can be fitted to real data and structural breaks can be detected. The validity of the package and the methods is illustrated by a small simulation study. In the last chapter, the methods are applied to a large dataset of textual social media posts from german politicians and political parties. Here, the goal is to identify temporal dependencies between different topics and to test for changes in the dependence structure due to important political  events. The last chapter summarizes the findings and critically discusses the presented methods. 
 
 
 # Theoretical foundation
 
+In this chapter we present and summarize the theoretical foundation of this thesis. First, the general idea behind copula functions is introduced. Second, a special class of copula models, the so called \emph{factor copula} model is presented. Third, we discuss copula models in the context of time series data and present a specific framework for modelling dependencies of multivariate time series. Fourth, the \emph{simulated methods of moments} is explained. It is the estimation method which is used throughout this work. Finally we summarize the ideas of a structural break test for the possibly time varying parameters of a factor copula model. 
+
 ## Copula theory
+\label{s:copulatheory}
 
-A function of the type $C: [0, 1]^N \rightarrow [0,1]$, with $N \geq 2$ is called a \emph{copula} if 
-\begin{enumerate}
-	\item $C(u_1, \dots, u_N) = 0$, if $\exists i \in \{1, \dots, N\}: u_i = 0$ 
-	\item $C(1, \dots, 1, x_i, 1, \dots, 1) = x_i$
-	\item The \emph{$C$-volume} of every \emph{N-box} is postive
-\end{enumerate}
-The last property is also called the \emph{N-increasing} property \parencite[p. 302]{Sempi2011}. From this definition it follows that, in a statistical sense, a copula function is a multivariate distribution $C(u_1, \dots, u_N) = P(U_1 \leq u_1, \dots, U_N \leq u_N)$ with uniform marginals $U_i \sim U(0, 1) \forall i \in \{1, \dots, N\}$ \parencite[p. 7]{Joe2015}.
+The joint cumulative distribution function $F_Y(y_1, \dots, y_N) = P(Y \leq y_1, \dots, Y \leq y_N)$ for some multivariate random variable $Y$ of dimension $N$ and its corresponding marginal distributions $F_{Y_i}(y_i) = P(Y_i \leq y_i) ~\forall~ i = 1, \dots, N$ can be used to describe a joint probability distribution. Estimating $F_Y$ is computationally demanding espacialy if $N$ becomes large. Therefore, a copula function is introduced which can be used to link the marginal and the joint distribution function. 
 
-\textcite{Sklar1959} showed, that every d-variate distribution $F(x_1,\dots, x_n)$ can be expressed in terms of its marginal distributions $F_1(x), \dots, F_n(x)$ and a copula function $C(u_1, \dots, u_N)$ such that 
-$$
+A function of the type $C: [0, 1]^N \rightarrow [0,1]$, with $N \geq 2$ is called a \emph{copula} if first, it shares the common properties of a multivariate distribution function such that $C_U(u_1, \dots, u_N) = P(U_1 \leq u_1, \dots, U_N \leq u_N)$ and if second, its marginal distributions are $U_i \sim U(0, 1)$, e.g. uniformly distributed \parencite[p. 7]{Joe2015}. A thereom by \textcite{Sklar1959} states, that every d-variate distribution function $F_Y(y_1,\dots, y_n)$ can be eypressed in terms of its marginal distributions and a copula function such that 
+\begin{equation}
 \label{eq:sklar}
-F(\mathbf{x}) = C(F_1(x_1), \dots, F_N(x_N)).
-$$
+F(y_1, \dots, y_N) = C(F_1(y_1), \dots, F_N(y_N)).
+\end{equation}
 
-If $F$ is \emph{continuous} with marginal quantile functions $F^{-1}_1, \dots, F^{-1}_N$ then $C(\mathbf{u})$ is uniquely determined by $C(\mathbf{u}) = F(F_1^{-1}(u_1), \dots, F_n^{-1}(u_N))$. 
+If $F_Y$ is \emph{continuous} with marginal quantile functions $F^{-1}_{Y_1}, \dots, F^{-1}_{Y_N}$ then $C(\mathbf{u})$ is uniquely determined by $C(\mathbf{u}) = F(F_{Y_1}^{-1}(u_1), \dots, F_{Y_N}^{-1}(u_N))$. 
 
-Some bivariate measures of dependency share the property of \emph{scale invariance}. Thus, the measures are invariant with respect to the marginal distributions and can therefore be expressed as a function of their copula \parencite[p. 210]{Schmid2010}. Two widely used measures are Spearman's 
+Some bivariate measures of dependency share the property of \emph{scale invariance}. Thus, the measures are invariant with respect to the marginal distributions and can therefore expressed as a function of their copula \parencite[p. 210]{Schmid2010}. The widely used linear correlation coefficient is dependend on both the copula and the marginal distributions \parencite[p. 768]{Patton2009}. Two scale invariant measures are Spearman's rank correlation
 
 \begin{equation}
 \label{eq:spearman}
-\rho_{X_1,X_2} = 12\int\int_{[0,1]^2} u_1u_2 dC(u_1, u_2)-3 
+\rho_{Y_i,Y_j} = 12\int\int_{[0,1]^2} u_1u_2 dC(u_i, u_j)-3,
 \end{equation}
 
 and Kendal's rank correlation
 \begin{equation}
 \label{eq:kendalls}
-\tau_{X_1, X_2} = 4\int\int_{[0,1]^2} C(u_1, u_2)dC(u_1, u_2)-1 = 4E(C(U_1, U_2))-1.
+\tau_{Y_i, Y_j} = 4\int\int_{[0,1]^2} C(u_i, u_j)dC(u_i, u_j)-1 = 4E(C(U_i, U_j))-1.
 \end{equation}
 
-In contrast, linear correlation is dependend on both the copula and the marginal distributions \parencite[p. 768]{Patton2009}. 
-
-
-
-Bivariate measures can be extended to the multivariate case where there measure the strength of association embedded in the $N$-dimensional copula of a multivariate vector $\bm{X}$. 
-
-One can also use the average over all bivariate dependency measures. 
-
-Multivariate versions of Spearman's rank correlation can be defined in terms of an underlying copula function as (\parencite[p. 215ff]{Schmid2010}):
-\begin{equation}
-\label{eq:mvspearman}
-\rho = \frac{N+1}{2^N-(N+1)}(2^N\int_{[0,1]^N} C(\bm{u})d\bm{u}-1) 
-\end{equation}
-
-Analogously, Kendall's rank correlation is defined as 
-\begin{equation}
-\label{eq:mvkendalls}
-\tau = \frac{1}{2^{N-1}-1}(2^N\int_{[0,1]^N} C(\bm{u})d\bm{u}-1). 
-\end{equation}
-
-
-Lower and upper tail dependency for two variables $X$ and $Y$ is defined as 
+Lower and upper tail dependency is defined as 
 
 \begin{align}
 \label{eq:taildependency}
 \begin{split}
-\tau^L_{XY} &= \underset{q \rightarrow 0}{\lim} \frac{P(X \leq F_X^{-1}(q), Y \leq F_Y^{-1}(q))}{q}\\
-\tau^U_{XY} &= \underset{q \rightarrow 1}{\lim} \frac{P(X > F_X^{-1}(q), Y > F_Y^{-1}(q))}{q}\\
+\tau^L_{Y_i, Y_j} &= \underset{q \rightarrow 0}{\lim} \frac{P(Y_i \leq F_{Y_i}^{-1}(q), Y_j \leq F_{Y_j}^{-1}(q))}{q}\\
+\tau^U_{Y_i, Y_j} &= \underset{q \rightarrow 1}{\lim} \frac{P(Y_i > F_{Y_i}^{-1}(q), Y_j > F_{Y_j}^{-1}(q))}{q}\\
 \end{split}
 \end{align}
 
 ## Factor copulas
-
 \label{s:factorcopula}
-\parencite{Patton2017}
 
-Factor copulas are a family of copulas for which the copula function $C(u_1, \dots, u_N)$ is based on a latent factor structure as defined in \textcite[p. 140 ff]{Patton2017}. 
+Factor copulas are a family of copula models for which the copula function $C(u_1, \dots, u_N)$ is based on a latent factor structure as defined in \textcite[p. 140 ff]{Patton2017}. 
 
-Consider a set of artificial variables $X_i =  \sum_{k = 1}^{K}\beta_{ik}Z_k+ \epsilon_i$ with $i = 1, \dots, N$ the dimension of the observable data $\bm{Y} = (Y_1, \dots, Y_N)'$ and $k = 1, \dots, K$ the number of latent variables. The latent variables $Z_k$ and the error term $e_i$ follow some parametrized distributions such that $\epsilon_i \overset{iid}{\sim} F_\epsilon(\bm{\gamma_\epsilon})$ and $Z_k \sim F_{Z_k}(\bm{\gamma_{Z_k}})$ with $Z_{i} \perp Z_{j} \forall i \neq j$, $Z_k \perp \epsilon_i \forall i,k$ and $\bm{\gamma_\epsilon}$, $\bm{\gamma_{Z_k}}$ some distribution specific parameter vectors. 
+Consider a set of artificial variables $X_i, i = 1, \dots,N$ which linearly depend on some latent factors $Z_k, k = 1, \dots, K$ and some error $e_i$ such that $X_i =  \sum_{k = 1}^{K}\beta_{ik}Z_k+ \epsilon_i$, with the linear coefficients $\beta_{ik}$. The latent variables $Z_k$ and the error term $\epsilon_i$ follow some parametrized distributions, e.g. $\epsilon_i \overset{iid}{\sim} F_\epsilon(\bm{\gamma_\epsilon})$ and $Z_k \sim F_{Z_k}(\bm{\gamma_{Z_k}})$ with $Z_{i} \perp Z_{j} \forall i \neq j$, $Z_k \perp \epsilon_i \forall i,k$ and $\bm{\gamma_\epsilon}$, $\bm{\gamma_{Z_k}}$ some distribution specific parameter vectors. 
 
-The joint probability function $F_{\bm{X}}(x_1, \dots, x_N)$ of the artificial variables can then be expressed in terms of its marginal distributions $F_{X_i}(x)$ and a copula function $C_\theta(u_1, \dots, u_N)$ such that $F_{\bm{X}}(x_1, \dots, x_N) = C_\theta(F_{X_1}(x_1), \dots, F_{X_N}(x_N); \bm{\theta})$. 
+The joint probability function $F_{X}(x_1, \dots, x_N)$ of the artificial variables can then be expressed in terms of its marginal distributions $F_{X_i}(x)$ and a factor copula function $C_U(u_1, \dots, u_N)$ such that $F_{X}(x_1, \dots, x_N) = C_U(F_{X_1}(x_1), \dots, F_{X_N}(x_N); \bm{\theta})$. 
 
-The factor copula is therefore completely defined via the parameter vector $\bm{\theta} = (\beta_{11}, \dots, \beta_{i1}, \dots, \beta_{ik}, \bm{\gamma_{Z_1}}', \dots, \bm{\gamma_{Z_K}}', \bm{\gamma_\epsilon}')'$. The number of latent variables $K$ and the distribution functions $F_{Z_1}, \dots, F_{Z_k}, F_\epsilon$ are hyper-parameters of the model which have to be chosen prior to the estimation.\footnote{\textcite[p. 143ff]{Patton2017} provide a heuristic of finding the number of latent variables by analyzing so called \emph{scree-plots}: Ordered eigenvalues from the sample rank-correlation matrix of the data.}
+Thus, the factor copula model is completely defined by specifiying the parameter vector $\bm{\theta} = (\beta_{11}, \dots, \beta_{i1}, \dots, \beta_{ik}, \bm{\gamma_{Z_1}}', \dots, \bm{\gamma_{Z_K}}', \bm{\gamma_\epsilon}')'$. The number of latent variables $K$ and the distribution functions $F_{Z_1}, \dots, F_{Z_k}, F_\epsilon$ are hyper-parameters of the model which have to be chosen prior to the estimation.\footnote{\textcite[p. 143ff]{Patton2017} provide a heuristic of finding the number of latent variables by analyzing so called \emph{scree-plots}: Ordered eigenvalues from the sample rank-correlation matrix of the data.}
 
-The latent factor structure is linked to the observable data via the copula function because it holds that $F_{\bm{Y}}(y_1, \dots, y_n) = C_\theta(F_{Y_1}(y_1),\dots, F_{Y_N}(y_N))$. The model can be summarized in the following set of equations:
+The artifical variables are only used to construct the factor copula function $C_U(u_1, \dots, u_N)$ which is then used to model the joint distribution of the observable variables such that $F_{Y}(y_1, \dots, y_n) = C_U(F_{Y_1}(y_1),\dots, F_{Y_N}(y_N))$. Once this copula function is determined, the artificial variables and its marginal distributions $F_{X_i}(x)$ are of no interest. Using matrix notation, the model can be summarized in the following set of equations:
 \begin{align}
 \label{eq:factorcopula}
 \begin{split}
 \bm{Y} &= (Y_1, \dots, Y_N)' \\
-F_{\bm{Y}} &= C_f(F_{Y_1}(y_1),\dots, F_{Y_N}(y_N); \bm{\theta})\\
 \bm{X} &= (X_1, \dots, X_N)' = \bm{\beta Z} + \bm{\epsilon}\\
-F_{\bm{X}} &= C_f(F_{X_1}(x_1), \dots, F_{X_N}(x_N); \bm{\theta})
+F_{Y} &= C_U(F_{Y_1}(y_1),\dots, F_{Y_N}(y_N); \bm{\theta})\\
+F_{X} &= C_U(F_{X_1}(x_1), \dots, F_{X_N}(x_N); \bm{\theta})
 \end{split}
 \end{align}
-It is important to note, that the artificial variables $\bm{X}$ are only used for the construction of the factor copula function $C_f(u_1, \dots, u_N)$. Once this copula function is determined, the artificial variables and its marginal distributions $F_{X_i}(x)$ are of no interest. Using the copula function together with the marginal distributions of the observable variables $F_{Y_i}(y)$ one can then determine the joint distribution of $\bm{Y}$.
 
-This approach allows for a two-stage estimation in which first the marginal distributions are estimated flexibly and second the factor structure for the possibly high dimensional copula function is fitted to the data. For the factor copula and the joint distribution of the artificial variables as defined in \eqref{eq:factorcopula} a closed form usually does not exist. Therefore, one has to rely on simulation methods as described in section \ref{s:SMM}. 
+This approach allows for a two-stage estimation: First, the marginal distributions $\hat{F}_{Y_i}$ are estimated parametrically or non-parametrically, e.g. by using the empirical distribution function. Second, the factor structure for the possibly high dimensional copula function is fitted to the data by finding $\hat{\bm{\theta}}$. For the factor copula and the joint distribution of the artificial variables as defined in \eqref{eq:factorcopula} a closed form usually does not exist. Therefore, one has to rely on simulation methods as described in section \ref{s:SMM}. 
 
 A lower bound for the number of parameters $P = |\bm{\theta}|$ to be estimated is given by the size of the factor matrix $\bm{\beta}$ which is $|\bm{\beta}| = N \times K$. To reduce the number of parameters \textcite{Patton2017} present two restrictions on $\bm{\beta}$: the \emph{equidependence} and the \emph{block-equidependence} model. 
 
@@ -163,11 +120,11 @@ For the first model it is assumed that $K = 1$ and $\bm{\beta} = (\beta, \dots, 
 
 \begin{figure}[H]
 	\includegraphics[width=\textwidth]{./figures/fig1}
-	\caption{Illustration of different equidependence factor copula models with $N = 2$, $\beta = 1.5$, standard normal distributed marginals and different distributions for the latent variable and the error term.}	
+	\caption{Illustration of different equidependence factor copula models with $N = 2$, $\beta = 1.5$, $Y_i \sim N(0, 1)$ and different distributions for the latent variable and the error term.}	
 	\label{f:equidependence}  
 \end{figure}
 
-Figure \ref{f:equidependence} shows four different simulations from a one factor equidependence factor copula model. The marginal distributions are standard normal while the distributions of the latent variable and the error term differ.
+Figure \ref{f:equidependence} shows four different simulations from a two dimensional one factor equidependence factor copula model. The marginal distributions are standard normal, the linear coefficient is fixed at $\beta = 1.5$ but the distributions of the latent variable and the error term differ. All models produce positive dependence and the rank correlation 
 
 The block-equidependence model is less restrictive and is especially suitable for variables which can be naturally partitioned into different groups.\footnote{E.g. this could be stock market prices grouped into different industry sectors.} The model assumes a common factor for all groups and a group specific factor for each group. Thus, each variable is only affected by two factors. For the factor matrix, it is further assumed that all variables in the same group have the same factor loading while variables in different groups can have different loadings. This implies that the pairwise intra-group dependencies are equal while the pairwise inter-group dependencies can vary between the groups. 
 
@@ -426,8 +383,9 @@ The $21$ observable variables were partitioned in $3$ groups of equal size. Ther
 Figure \ref{f:breaktest} shows the result of the break test for a single recursive run of the simulation for $t = 300, \dots, 1500$. Both the moments and copula based versions are shown together with the estimated critical value based on $1000$ bootstrap replications.
 
 \begin{figure}[H]
-	\subfloat[Moments based test.]{\includegraphics[width = \textwidth]{./figures/fig3b}} \\
-	\subfloat[Copula based test.]{\includegraphics[width= \textwidth]{./figures/fig3a}}
+	\subfloat[Copula based test.]{\includegraphics[width = 0.495\textwidth]{./figures/fig3b}} 
+	\subfloat[Copula based test. Only second and third group.]{\includegraphics[width= 0.495\textwidth]{./figures/fig3b}} \\
+	\subfloat[Moments based test.]{\includegraphics[width = \textwidth]{./figures/fig3c}} \\
 	\caption{Structural break test for a bloc-equidependence model with $N = 21$ and $3$ groups of equal size. The theoretical breakpoint is at $t = 1000$ and is modelled as a change of the intra- and interdependenvy of the first group from $0$ to $1.5$.}	
 	\label{f:breaktest}  
 \end{figure}
@@ -440,14 +398,14 @@ The moments based test detects a breakpoint at $t = 962$ which is close to the t
   \toprule
   coefficient & before ($t \leq 1000$) & after ($t > 1000)$ & full model \\
   \midrule
-  $\beta_1$ & 0.00 (0.07) & 1.87 (0.70) & 0.00 (0.14) \\ 
-  $\beta_2$ & 1.14 (0.35) & 0.88 (0.29) & 1.18 (0.30) \\ 
-  $\beta_3$ & 0.99 (0.32) & 0.83 (0.30) & 1.11 (0.26) \\ 
-  $\beta_4$ & 0.01 (1.32) & 1.63 (0.69) & 0.89 (0.15) \\ 
-  $\beta_5$ & 0.93 (0.20) & 1.01 (0.31) & 0.98 (0.18) \\ 
-  $\beta_6$ & 1.03 (0.23) & 1.11 (0.37) & 1.04 (0.19) \\
+  $\beta_1$ & 0.00 (0.10) & 1.96 (0.69) & 0.00 (0.13) \\ 
+  $\beta_2$ & 1.17 (0.37) & 0.88 (0.29) & 1.28 (0.30) \\ 
+  $\beta_3$ & 0.96 (0.27) & 0.83 (0.30) & 0.99 (0.27) \\ 
+  $\beta_4$ & 0.03 (0.15) & 1.55 (0.64) & 0.88 (0.15) \\ 
+  $\beta_5$ & 0.92 (0.18) & 1.01 (0.32) & 0.92 (0.18) \\ 
+  $\beta_6$ & 1.04 (0.20) & 1.13 (0.40) & 1.09 (0.20) \\
   \midrule
-  $Q$ & 0.0007 & 0.0027 & 0.0031 \\ 
+  $Q$ & 0.0008 & 0.0026 & 0.0025 \\ 
   $T$ & 1000 & 500 & 1500 \\
   $S$ & 37500 & 37500 & 37500 \\
   \bottomrule
@@ -490,22 +448,22 @@ Table \ref{t:facebook} shows the overall number of \emph{textual} posts, account
 \begin{table}[h]
 \centering
 \footnotesize
-\begin{tabular}{rcccccc}
+\begin{tabular}{rccccc}
   \toprule
- party & posts & accounts & likes & shares & weighted (\%) & non-weighted (\%) \\ 
- & & &\multicolumn{2}{c} {(in Million)} &  \multicolumn{2}{c} {share of posts related to "refugees"}\\ 
-\cmidrule(r){1-1} \cmidrule(lr){2-3} \cmidrule(lr){4-5}  \cmidrule(l){6-7}
-AfD & 74724 & 162 & 18.36 & 7.59 & 8.14 & 6.96 \\ 
-  CDU/CSU & 169115 & 267 & 14.72 & 1.83 & 3.67 & 3.49 \\ 
-  FDP & 71083 & 201 & 6.32 & 0.77 & 2.83 & 2.39 \\ 
-  Grüne & 67188 & 139 & 4.03 & 1.28 & 5.07 & 4.62 \\ 
-  Linke & 84723 & 158 & 16.03 & 4.23 & 6.97 & 6.23 \\ 
-  SPD & 196805 & 290 & 10.11 & 1.57 & 3.96 & 3.66 \\ 
-\cmidrule(r){1-1} \cmidrule(lr){2-3} \cmidrule(lr){4-5}  \cmidrule(l){6-7}
-  All parties & \numprint{663638} & 1217 & 69.57 & 17.27 &  4.86 & 4.28\\
+ party & posts & accounts & likes & shares & share of posts related to "refugees" \\ 
+ & & &\multicolumn{2}{c} {(in Million)} &  (in \%) \\ 
+\cmidrule(r){1-1} \cmidrule(lr){2-3} \cmidrule(lr){4-5}  \cmidrule(l){6-6}
+AfD & 74724 & 162 & 18.36 & 7.59 & 6.96 \\ 
+  CDU/CSU & 169115 & 267 & 14.72 & 1.83 & 3.49 \\ 
+  FDP & 71083 & 201 & 6.32 & 0.77 & 2.39 \\ 
+  Grüne & 67188 & 139 & 4.03 & 1.28 & 4.62 \\ 
+  Linke & 84723 & 158 & 16.03 & 4.23 & 6.23 \\ 
+  SPD & 196805 & 290 & 10.11 & 1.57 & 3.66 \\
+\cmidrule(r){1-1} \cmidrule(lr){2-3} \cmidrule(lr){4-5}  \cmidrule(l){6-6}
+  All parties & \numprint{663638} & 1217 & 69.57 & 17.27 & 4.28\\
   \bottomrule
 \end{tabular}
-\caption{Overall number of posts, active accounts, likes and shares over the observation period from "2014-01-01" - "2017-12-31". The last two columns show the (weighted) fraction of posts matching the regular expression \texttt{flucht|fluecht}. The number of shares, comments and likes are used as weights.}
+\caption{Overall number of posts, active accounts, likes and shares over the observation period from "2014-01-01" - "2017-12-31". The last two columns show the fraction of posts matching the regular expression \texttt{flucht|fluecht}.}
 \label{t:facebook}
 \end{table}
 
@@ -520,6 +478,19 @@ Second, a post is considered to be related to the refugee crisis if it matches t
 Third, for each party and day we count the relative number of posts related to the refugee crisis. To account for the importance of a post for the public audience we calculate a weighted average using the weights $log(l_i+1)$, where $l_i$ is the number of likes of the post. The resulting dataset consists of a columns for each party, six in total. Each row represents the daily weighted relative frequency of posts matching the regular expression (compare to Figure \ref{f:residuals} in the Appendix). Using the full time span of four years results in $T = 1461$ observations. Thus, the aggregated dataset can be seen as an indicator for how much a party discusses and talks about the topic "refugee crisis" on each day. A positive dependence between all parties would indicate that this topic is relevant for all parties whereas we would see no dependence if the partys talk about this topic independently from each other. 
 
 To remove time dependence as discussed in \ref{where?}, we estimate an ARIMA model for each of the time series. The best univariate model was choosen by running some model candidates over a range of parameters. The model candidate with the lowest Akaike information criterion was considered. All univariate models used $I = 1$, $AR \in \{0, 1\}$ and $MA \in \{0, 1\}$. In the following the estimated standardized residuals are used. 
+
+\begin{table}[H]
+\centering
+\begin{tabular}{rcccccc}
+  \toprule
+  Party & AfD & CDU/CSU & FDP & Grüne & Linke & SPD \\
+  AR & 4 & 1 & 2 & 3 & 2 & 1\\
+  MA & 1 & 2 & 1 & 3 & 2 & 1\\
+  \bottomrule
+\end{tabular}
+\caption{ARMA Model parameters for the ARIMA-GARCH model used to estimate the standardized residuals.}
+\end{table}
+
  
 
 ## Results
@@ -533,23 +504,23 @@ Table \ref{t:correlations} shows the overall pairwise dependency measures used a
   & Rank - & \multicolumn{4}{c}{Quantile-dependence}\\
  Pairs &  correlation & 0.05 & 0.1 & 0.90 & 0.95 \\ 
   \midrule
-AfD-CDU/CSU & 0.05 & 0.14 & 0.22 & 0.18 & 0.10 \\ 
-  AfD-FDP & 0.06 & 0.16 & 0.21 & 0.16 & 0.18 \\ 
-  AfD-Grüne & 0.04 & 0.14 & 0.19 & 0.13 & 0.15 \\ 
-  AfD-Linke & 0.10 & 0.15 & 0.20 & 0.22 & 0.14 \\ 
-  AfD-SPD & 0.09 & 0.15 & 0.21 & 0.18 & 0.21 \\ 
-  CDU/CSU-FDP & 0.17 & 0.36 & 0.38 & 0.24 & 0.22 \\ 
-  CDU/CSU-Grüne & 0.12 & 0.26 & 0.30 & 0.25 & 0.10 \\ 
-  CDU/CSU-Linke & 0.07 & 0.23 & 0.27 & 0.19 & 0.12 \\ 
-  CDU/CSU-SPD & 0.17 & 0.26 & 0.30 & 0.26 & 0.15 \\ 
-  FDP-Grüne & 0.10 & 0.23 & 0.29 & 0.21 & 0.16 \\ 
-  FDP-Linke & 0.09 & 0.21 & 0.23 & 0.21 & 0.12 \\ 
-  FDP-SPD & 0.12 & 0.29 & 0.30 & 0.26 & 0.21 \\
-  Grüne-Linke & 0.10 & 0.16 & 0.26 & 0.23 & 0.18 \\ 
-  Grüne-SPD & 0.14 & 0.27 & 0.31 & 0.23 & 0.21 \\ 
-  Linke-SPD & 0.14 & 0.15 & 0.25 & 0.27 & 0.19 \\
+AfD-CDU/CSU & 0.07 & 0.14 & 0.17 & 0.13 & 0.10 \\ 
+  AfD-FDP & 0.08 & 0.10 & 0.14 & 0.13 & 0.07 \\ 
+  AfD-Grüne & 0.03 & 0.07 & 0.16 & 0.09 & 0.10 \\ 
+  AfD-Linke & 0.08 & 0.07 & 0.15 & 0.19 & 0.08 \\ 
+  AfD-SPD & 0.09 & 0.11 & 0.16 & 0.16 & 0.08 \\ 
+  CDU/CSU-FDP & 0.17 & 0.16 & 0.25 & 0.18 & 0.14 \\ 
+  CDU/CSU-Grüne & 0.13 & 0.11 & 0.20 & 0.14 & 0.07 \\ 
+  CDU/CSU-Linke & 0.10 & 0.10 & 0.18 & 0.16 & 0.14 \\ 
+  CDU/CSU-SPD & 0.20 & 0.22 & 0.22 & 0.19 & 0.14 \\ 
+  FDP-Grüne & 0.10 & 0.08 & 0.19 & 0.15 & 0.10 \\ 
+  FDP-Linke & 0.10 & 0.10 & 0.16 & 0.17 & 0.10 \\ 
+  FDP-SPD & 0.12 & 0.19 & 0.23 & 0.18 & 0.07 \\ 
+  Grüne-Linke & 0.09 & 0.07 & 0.12 & 0.19 & 0.08 \\ 
+  Grüne-SPD & 0.12 & 0.14 & 0.21 & 0.16 & 0.14 \\ 
+  Linke-SPD & 0.15 & 0.16 & 0.16 & 0.23 & 0.21 \\ 
   \midrule 
-  Average & 0.10 & 0.21 & 0.26 & 0.21 & 0.16\\
+  Average & 0.11 & 0.12 & 0.18 & 0.16 & 0.11 \\ 
    \bottomrule
 \end{tabular}
 \label{t:correlations}
@@ -564,17 +535,17 @@ First various factor copula models were fitted to the complete residuals.
   & \multicolumn{3}{c}{Equidependence}& \multicolumn{3}{c}{Unrestrictive} \\ 
   & norm-norm & t-t & skewt-t & norm-norm & t-t & skewt-t\\
   \midrule
-  $\beta_1$ & 0.5526 & 0.4002 & 2.9903 & 0.2910 & 0.2195 & 0.9460 \\ 
-  $\beta_2$ &      - &      - &      - & 0.6499 & 0.5053 & 2.1030 \\ 
-  $\beta_3$ &      - &      - &      - & 0.6821 & 0.5297 & 2.3059 \\ 
-  $\beta_4$ &      - &      - &      - & 0.5178 & 0.4012 & 1.8858 \\ 
-  $\beta_5$ &      - &      - &      - & 0.4397 & 0.3377 & 1.4266 \\ 
-  $\beta_6$ &      - &      - &      - & 0.6674 & 0.5148 & 2.1945 \\ 
+  $\beta_1$ & 0.43 & 0.42 & 0.42 & 0.23 & 0.23 & 0.25 \\ 
+  $\beta_2$ &      - &      - &      - & 0.62 & 0.52 & 0.63 \\ 
+  $\beta_3$ &      - &      - &      - & 0.42 & 0.44 & 0.43 \\ 
+  $\beta_4$ &      - &      - &      - & 0.32 & 0.34 & 0.33 \\ 
+  $\beta_5$ &      - &      - &      - & 0.37 & 0.41 & 0.35 \\ 
+  $\beta_6$ &      - &      - &      - & 0.63 & 0.60 & 0.67 \\ 
   \midrule
-   $df$ & - & 0.4787 & 0.4900 &  - & 0.4893 & 0.4703 \\ 
-  $\lambda$ & - & - & -0.1111 & - & - & -0.3160 \\ 
+   $df$ & - & 99 & 96 &  - & 58 & 38 \\ 
+  $\lambda$ & - & - & -0.34 & - & - & -0.36 \\ 
   \midrule
-  $Q$ & 0.0299 & 0.0124 & 0.0110 & 0.5384 & 0.2704 &  0.2702\\ 
+  $Q$ & 0.0036 & 0.0034 & 0.0026 & 0.1081 & 0.0979 &  0.0903\\ 
   \bottomrule
 \end{tabular}
 \caption{Estimation results for different one-factor copula specifications.}
@@ -582,62 +553,35 @@ First various factor copula models were fitted to the complete residuals.
 
 \begin{table}[H]
 \centering
-\begin{tabular}{rcccc}
+\begin{tabular}{rccc}
   \toprule
-  & \multicolumn{2}{c}{Moments based test}& \multicolumn{2}{c}{Copula based test} \\ 
-  & unrestrictive & restrictive & unrestrictive & restrictive \\
-  \cmidrule(r){1-1} \cmidrule(lr){2-3} \cmidrule(l){4-5}
-  test statistics & 26.85 & 466.26 &  -&  -  \\ 
-  critical value  &      0.72 &      101.80 &      - & - \\ 
-  breakpoint      &  2016-04-24    &  2016-04-24  &      - & - \\ 
+  & \multicolumn{2}{c}{Moments based test}& Copula based test \\ 
+  & unrestrictive & restrictive & restrictive \\
+  \cmidrule(r){1-1} \cmidrule(lr){2-3} \cmidrule(l){4-4}
+  test statistics & 6.05 &            116.95  &   1.51 \\ 
+  95\%-CV  &      1.98 &       61.90 &      1.67 (p-value: 0.0685)  \\ 
+  breakpoint      &  2015-09-18    &  2015-09-18  &      2015-03-13 \\ 
   \bottomrule
 \end{tabular}
 \caption{Summary of break point detection methods for the social media dataset.}
 \end{table}
 
-The unrestrictive moments based test detects a breakpoint at "2016-04-24" with a test statistics of $464$. The estimated critical value for an alpha of $0.05$ is $103$. 
-
-Moments based test based on equidependence detect the same breakpoint with a test statistics of $27$ and a critical value of $3.61$. 
-
-
-
-
-We also estimated a recursive equidependence skewt-t factor copula model with fixed distributional parameters. 
-
-
-
-
-
-
-
-
-
-We also fitted various factor copula models before and after the break detected by the moments based test.
-
 
 \begin{table}[H]
 \centering
-\begin{tabular}{rllllllll}
+\begin{tabular}{rlll}
   \toprule
-  & \multicolumn{4}{c}{Equidependence}& \multicolumn{4}{c}{Unrestrictive} \\ 
-  & \multicolumn{2}{c}{t-t copula} & \multicolumn{2}{c}{skew t-t copula} & \multicolumn{2}{c}{skew t-t copula} & \multicolumn{2}{c}{t-t copula}\\
-  & before & after &  before & after &  before & after &  before & after\\
+  coefficient & before ($t \leq 626$) & after ($t > 626)$ & full model \\
   \midrule
-  $\beta_1$ & 0.41 & 0.30 & 1.01 & 0.54 & 0.46 & 0.23 & 0.15 & 0.14\\ 
-  $\beta_2$ & - & - & - & - & 0.77 & 0.35 & 0.23 & 0.19\\ 
-  $\beta_3$ & - & - & - & - & 0.69 & 0.36 & 0.29 & 0.22 \\ 
-  $\beta_4$ & - & - & - & - & 0.59 & 0.54 & 0.17 & 0.35 \\ 
-  $\beta_5$ & - & - & - & - & 0.50 & 0.46 & 0.23  &0.26 \\ 
-  $\beta_6$ & - & - & - & - & 0.74& 0.67 &  0.29 & 0.37\\ 
+  $\beta_1$ &  &  &  \\ 
+  $\lambda$ & & & \\
   \midrule
-   $df$ & 2.11 & 2.20 & 2.26 &  2.35 & 2.69 & 3.12  & 1.00 & 1.63 \\ 
-  $\lambda$ & - & - & -0.10 & 0.06 & -0.42 & 0.16 & - & - \\ 
-  \midrule
-  $Q$ & 0.04 & 0.00 & 0.01 & 0.00 & 0.27 &  0.12 & 0.24 & 0.11\\ 
-  $T$ & 845 & 616 & 845 & 616 & 845 & 616 & 845 & 616\\ 
+  $Q$ &  &  &  \\ 
+  $T$ & 626 &  835 & 1461 \\
+  $S$ & 36525 & 36525 & 36525 \\
   \bottomrule
 \end{tabular}
-\caption{Estimation results for different one-factor copula specifications before and after the breakpoint detected by the moments based test.}
+\caption{Estimation results for the btw17 dataset. A bloc-equidependence factor copula model is estimated before and after the breakpoint at $t = 626$. Standard errors in paranthesis (estimated with $ B = 2000$ bootstrap samples). Degrees of freedom were fixed at the full model estimate of $df = 96$. }
 \end{table}
 
 # Discussion
