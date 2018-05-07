@@ -65,6 +65,10 @@ zeitplan
 *.loa
 tinytex_*.pdf
 
+# Secret files
+data/posts.rds
+data/URI
+
 
 
 

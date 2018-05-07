@@ -383,9 +383,7 @@ The $21$ observable variables were partitioned in $3$ groups of equal size. Ther
 Figure \ref{f:breaktest} shows the result of the break test for a single recursive run of the simulation for $t = 300, \dots, 1500$. Both the moments and copula based versions are shown together with the estimated critical value based on $1000$ bootstrap replications.
 
 \begin{figure}[H]
-	\subfloat[Copula based test.]{\includegraphics[width = 0.495\textwidth]{./figures/fig3b}} 
-	\subfloat[Copula based test. Only second and third group.]{\includegraphics[width= 0.495\textwidth]{./figures/fig3b}} \\
-	\subfloat[Moments based test.]{\includegraphics[width = \textwidth]{./figures/fig3c}} \\
+	\includegraphics[width = \textwidth]{./figures/fig3}
 	\caption{Structural break test for a bloc-equidependence model with $N = 21$ and $3$ groups of equal size. The theoretical breakpoint is at $t = 1000$ and is modelled as a change of the intra- and interdependenvy of the first group from $0$ to $1.5$.}	
 	\label{f:breaktest}  
 \end{figure}
@@ -543,9 +541,9 @@ First various factor copula models were fitted to the complete residuals.
   $\beta_6$ &      - &      - &      - & 0.63 & 0.60 & 0.67 \\ 
   \midrule
    $df$ & - & 99 & 96 &  - & 58 & 38 \\ 
-  $\lambda$ & - & - & -0.34 & - & - & -0.36 \\ 
+  $\lambda$ & - & - & -0.29 & - & - & -0.36 \\ 
   \midrule
-  $Q$ & 0.0036 & 0.0034 & 0.0026 & 0.1081 & 0.0979 &  0.0903\\ 
+  $Q$ & 0.0036 & 0.0034 & 0.0031 & 0.1081 & 0.0979 &  0.0903\\ 
   \bottomrule
 \end{tabular}
 \caption{Estimation results for different one-factor copula specifications.}
@@ -573,10 +571,10 @@ First various factor copula models were fitted to the complete residuals.
   \toprule
   coefficient & before ($t \leq 626$) & after ($t > 626)$ & full model \\
   \midrule
-  $\beta_1$ &  &  &  \\ 
-  $\lambda$ & & & \\
+  $\beta_1$ & 0.39 (0.03) & 0.41 (0.03) & 0.42 (0.03) \\ 
+  $\lambda$ & -0.55 (0.75) & -0.33 (0.54) & -0.29 (0.37) \\
   \midrule
-  $Q$ &  &  &  \\ 
+  $Q$ &  0.0029&  0.0023 & 0.0031 \\ 
   $T$ & 626 &  835 & 1461 \\
   $S$ & 36525 & 36525 & 36525 \\
   \bottomrule

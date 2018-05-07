@@ -6,10 +6,13 @@ library(dplyr)
 library(ggthemes)
 library(ggrepel)
 
-detectOutlier <- function(y, k){
+replaceOutlier <- function(y, k){
   ySmooth <- smooth(y)
   yDiff <- abs(y - ySmooth)
-  which(yDiff > mean(yDiff) + k*sd(yDiff))
+  ind <- which(yDiff > mean(yDiff) + k*sd(yDiff))
+  y[ind] <- ySmooth[ind]
+  cat("replaced", length(ind), "outlier\n")
+  y
 }
 
 options(scipen = 9999)
@@ -42,7 +45,7 @@ Z <- config_factor(rst = list(nu = 1/0.25, lambda = -0.8), rt = list(df = 1/0.25
 eps <- config_error(rt = list(df = 1/0.25))
 cop <- fc_create(Z, eps, beta)
 
-Y <- readRDS("./figures/Y.rds")
+Y <- readRDS("./data/Y.rds")
 #Y <- qnorm(rbind(cop(theta0, brk), cop(theta1, t-brk)))
 U <- apply(Y, 2, factorcopula:::empDist)
 matrix(factorcopula:::moments(U[1:brk, ], k), ncol = 5, byrow = TRUE)
@@ -50,54 +53,39 @@ matrix(factorcopula:::moments(U[(brk+1):t, ], k), ncol = 5, byrow = TRUE)
 
 #saveRDS(Y, "./Y.rds")
 
-# Full Copula recursive estimation ---------------------------------------------
-opt <- cheops_slurmcontrol(nodes = 80, tasks = 5, mem = "4gb", time = "06:00:00")
+results <- data.frame(t = tSeq)
+
+# [x]Full Copula recursive estimation ---------------------------------------------
+opt <- cheops_slurmcontrol(nodes = 80, tasks = 5, mem = "4gb", time = "07:00:00")
 #opt <- cheops_slurmcontrol(nodes = 2, tasks = 2, mem = "1gb", time = "00:10:00", partition = "devel")
 
-job_bloc <- cheops_lapply(tSeq, function(t, Y, Z, eps, beta, lower, upper, k){
-  fc_fit(Y = Y[1:t, ], Z, eps, beta, lower, upper, S = 37500, k = k, 
-         control.first.stage = list(algorithm = "NLOPT_GN_MLSL_LDS", stopval = 0, xtol_rel = 1e-12, maxeval = 3000,
-                                    local_opts = list(algorithm = "NLOPT_LN_SBPLX", xtol_rel = 1e-11, maxeval = 3000)), 
-         control.second.stage = list(algorithm = "NLOPT_LN_SBPLX", xtol_rel = 1e-20, maxeval = 2000))
-}, options = opt, jobname = "bloc-equ", packages = "factorcopula", load.balancing = TRUE,
-args = list(Y = Y, Z = Z, eps = eps, beta = beta, lower = lower, upper = upper, k = k))
-
-cheops_jobs()
-cat(cheops_getlog("bloc-equ"), sep = "\n")
+# job_bloc <- cheops_lapply(tSeq, function(t, Y, Z, eps, beta, lower, upper, k){
+#   fc_fit(Y = Y[1:t, ], Z, eps, beta, lower, upper, S = 37500, k = k, 
+#          control.first.stage = list(algorithm = "NLOPT_GN_MLSL_LDS", stopval = 0, xtol_rel = 1e-14, maxeval = 3000,
+#                                     local_opts = list(algorithm = "NLOPT_LN_SBPLX", xtol_rel = 1e-14, maxeval = 3000)), 
+#          control.second.stage = list(algorithm = "NLOPT_LN_SBPLX", xtol_rel = 1e-20, maxeval = 2000))
+# }, options = opt, jobname = "bloc-equ", packages = "factorcopula", load.balancing = TRUE,
+# args = list(Y = Y, Z = Z, eps = eps, beta = beta, lower = lower, upper = upper, k = k))
+# 
+# cheops_jobs()
+# cat(cheops_getlog("bloc-equ"), sep = "\n")
 #cheops_cancel("bloc-equ")
 
 res <- cheops_readRDS("./bloc-equ/res.rds")
 res <- data.frame(t(vapply(res, function(x) x$theta.first.stage[1:6], numeric(6))))
 names(res) <- names(lower)
-res$t <- tSeq
-res$p <- fc_pstat(res[,1:6], res$t)
+results$allGroups <- fc_pstat(res[,1:6], results$t)
+results$allGroups <- replaceOutlier(results$allGroups, 8)
 
-out <- detectOutlier(res$p, 1)
-res$p[out] <- NA
+# opt <- cheops_slurmcontrol(nodes = 40, tasks = 4, mem = "2gb", time = "00:30:00")
+# job_crit <- cheops_run(fc_critval, options = opt, jobname = "bloc-crt",
+#                        args = list(type = "copula", Y = Y, B = 2000, tSeq = tSeq, k = k,
+#                                    factor = Z, error = eps, beta = beta, theta = res[nrow(res), 1:6]),
+#                        packages = "factorcopula")
+# cheops_jobs()
+# cat(cheops_getlog("bloc-crt"), sep = "\n")
 
-opt <- cheops_slurmcontrol(nodes = 40, tasks = 4, mem = "2gb", time = "00:20:00")
-job_crit <- cheops_run(fc_critval, options = opt, jobname = "bloc-crt",
-                       args = list(type = "copula", Y = Y, B = 2000, tSeq = tSeq, k = k,
-                                   config_factor = Z, config_error = eps, config_beta = beta, theta = res[nrow(res), 1:6]),
-                       packages = "factorcopula")
-cheops_jobs()
-cat(cheops_getlog("cop-crit"), sep = "\n")
-
-pCrit <- cheops_readRDS("./cop-crit/res.rds")
-crit <- quantile(pCrit, 1-0.05)
-estBrk <- res$t[which.max(res$p)]
-res$group <- ifelse(res$p < crit & res$t < estBrk, 1, 
-                    ifelse(res$p < crit & res$t >= estBrk, 3, 2))
-res$group <- as.factor(res$group)
-
-
-ggplot(res, aes(x = t, y = p)) +
-  geom_hline(yintercept = quantile(pCrit, 1-0.05), color = "black", linetype = 2) +
-  geom_label_repel(stat = "unique", aes(x = max(t)), y = quantile(pCrit, 1-0.05), label = "0.05-CV", point.padding = 1, nudge_y = 20) +
-  geom_label_repel(stat = "unique", x = brk, y = 10, label = "breakpoint", point.padding = 1, nudge_x = - 2) +
-  geom_line(col = "indianred3") + 
-  geom_vline(xintercept = brk, color = "black", linetype = 2) +
-  theme_hc()
+allGroupsCrit <- quantile(cheops_readRDS("./bloc-crt/res.rds"), 1-0.05)
 
 
 # [x] Only second and third group copula recursive estimation ---------------------------------------------
@@ -124,8 +112,7 @@ cat(cheops_getlog("group-23"), sep = "\n")
 
 res <- cheops_readRDS("./group-23/res.rds")
 res <- data.frame(t(vapply(res, function(x) x$theta.second.stage[1:4], numeric(4))))
-res$t <- tSeq
-res$p <- fc_pstat(res[,1:4], res$t)
+results$secondThirdGroup <- fc_pstat(res[,1:4], results$t)
 
 # opt <- cheops_slurmcontrol(nodes = 30, tasks = 2, mem = "2gb", time = "01:00:00")
 # cheops_run(fc_critval, options = opt, jobname = "gp23-crt",
@@ -135,15 +122,51 @@ res$p <- fc_pstat(res[,1:4], res$t)
 # cheops_jobs()
 # #cheops_cancel("gp23-crt")
 # cat(cheops_getlog("gp23-crt"), sep = "\n")
-crit <- cheops_readRDS("./gp23-crt/res.rds")
+secondThirdGroupCrit <- quantile(cheops_readRDS("./gp23-crt/res.rds"), 1-0.05)
 
-ggplot(res, aes(x = t, y = p)) +  
-  geom_line(col = "indianred3") + 
-  geom_hline(yintercept = quantile(crit, 1-0.05), color = "black", linetype = 2) +
-  geom_label_repel(stat = "unique", aes(x = max(t)), y = quantile(crit, 1-0.05), label = "95%-CV", point.padding = 1, nudge_y = -20) +
-  geom_label_repel(stat = "unique", x = brk, y = 10, label = "breakpoint", point.padding = 1, nudge_x = - 2) +
-  geom_vline(xintercept = brk, color = "black", linetype = 2) +
-  theme_hc()
+# [x] Moments based test ------------------------------------------------------
+
+cl <- makeCluster(4)
+mStats <- fc_mstat(Y, tSeq, k, cl)
+stopCluster(cl)
+
+results$momentStats <- mStats
+
+# opt <- cheops_slurmcontrol(nodes = 50, tasks = 4, mem = "2gb", time = "00:30:00")
+# cheops_run(fc_critval, options = opt, jobname = "mom-crit",
+#                        args = list(type = "moments", Y = Y, B = 2000, tSeq = tSeq, k = k),
+#                        packages = "factorcopula")
+# 
+# cheops_jobs()
+#cheops_cancel("mom-crit")
+cat(cheops_getlog("mom-crit"), sep = "\n")
+mCrit <- quantile(cheops_readRDS("./mom-crit/res.rds"), 1-0.05)
+
+
+
+
+
+# [x]Final plot --------------------------------------------------------------
+results <- results %>%
+  tidyr::gather(key = "statType", value = "stat", allGroups, secondThirdGroup, momentStats)
+
+results$crit <- NA
+results$crit[results$statType == "allGroups"][1] <- allGroupsCrit
+results$crit[results$statType == "secondThirdGroup"][1] <- secondThirdGroupCrit
+results$crit[results$statType == "momentStats"][1] <- mCrit
+
+results$statTypeFact <- factor(results$statType, levels = c("allGroups", "secondThirdGroup", "momentStats"), ordered = TRUE, 
+                           labels = c("Copula based test (all groups)", "Copula based test (second and third group)", "Moments based test"))
+
+ggplot(results, aes(x = t, y = stat)) +
+  geom_vline(xintercept = 1000, color = "black", linetype = 1) +
+  geom_hline(aes(yintercept = crit), na.rm = TRUE, linetype = 1, color = "black") + 
+  geom_line(color = "indianred3") + 
+  labs(y = "recursive test statistic") + 
+  facet_wrap(~ statTypeFact, scales = "free_y", nrow = 3) + 
+  theme_hc() + 
+  theme(panel.spacing.y = unit(2, "lines"), strip.text = element_text(hjust = 0, size = 11))
+  
 
 
 
@@ -169,35 +192,4 @@ stopCluster(cl)
 lapply(models, function(x) round(x$Q, 4))
 lapply(models, function(x) round(x$theta.second.stage, 2))
 lapply(models, function(x) x$message)
-
-# [x] Moments based test ------------------------------------------------------
-
-cl <- makeCluster(4)
-mStats <- fc_mstat(Y, tSeq, k, cl)
-stopCluster(cl)
-
-# opt <- cheops_slurmcontrol(nodes = 40, tasks = 2, mem = "2gb", time = "00:20:00")
-# job_crit <- cheops_run(fc_critval, options = opt, jobname = "mom-crit",
-#                        args = list(type = "moments", Y = Y, B = 1000, tSeq = tSeq, k = k),
-#                        packages = "factorcopula")
-# 
-# cheops_jobs()
-# #cheops_cancel(job_crit$name)
-# cat(cheops_getlog("mom-crit"), sep = "\n")
-mCrit <- cheops_readRDS("./mom-crit/res.rds")
-
-
-result <- data.frame(t = tSeq, M = mStats)
-
-result$labelM[result$t == brk] <- "breakpoint"
-
-ggplot(result, aes(x = t, y = M, label = labelM)) +
-  geom_hline(yintercept = quantile(mCrit, 1-0.05), color = "black", linetype = 2) +
-  geom_label_repel(stat = "unique", aes(x = max(t)), y = quantile(mCrit, 1-0.05), label = "95%-CV", point.padding = 1, nudge_y = 1) +
-  geom_line(color = "indianred3") +
-  geom_label_repel(na.rm = TRUE, box.padding = 0.3, point.padding = 1, alpha = 0.8, nudge_x = 100) +
-  geom_vline(xintercept = brk, color = "black", linetype = 2) +
-  theme_hc()
-
-
 
