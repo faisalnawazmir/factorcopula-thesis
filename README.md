@@ -4,9 +4,17 @@
 A thesis written in RMarkdown using a custom latex template. 
 <!-- The following fonts are used: Bitter, Lato, Fira Mono. -->
 
-### Requirements
+### Source code locations
 
-- you need to install the packages `factorcopula` and `cheopsr`, which are only available on github
-- to create the original facebook dataset you need a simple text file with the name `URI` containing the database logins 
-- to rerun the facebook analysis you need to run the script `facebook_create.R` first. This creates `posts.rds` dataset in the `data` folder
+- factor copula examples: `source/fig1.R`.
+- monte carlo simulation study: `source/fig2.R`.
+- bloc-equidependence simulation study: `source/fig3.R`.
+- creation of the facebook dataset: `source/facebook_create.R`.
+- factor copula analysis of facebook dataset: `source/facebook_analysis.R`.
+
+### Requirements for re-running all analyses
+
+- instalation and set up of the developement versions of the packages [`factorcopula`](https://github.com/bonartm/factorcopula) and [`cheopsr`](https://github.com/bonartm/cheopsr).
+- access to the [CHEOPS cluster](https://rrzk.uni-koeln.de/cheops.html) at the University of Cologne.
+- only for facebook analysis: database login credentials in a file `./data/URI`. See [URI connection string format](https://docs.mongodb.com/manual/reference/connection-string/). 
 
