@@ -296,6 +296,7 @@ The distribution under the null hypothesis can be estimated using the following 
 
 
 # \emph{factorcopula} - an R package for simulation and estimation of factor copulas
+\label{s:factorcopulapackage}
 
 In this chapter we present the implementation of the previous methods, using the programming language \emph{R}. The functions are bundled in an R-package such that the methods can be easily installed and distributed. The validity of the package is tested in a simulation study. 
 
@@ -350,7 +351,7 @@ To illustrate the discussed methods and the validity and performance of the pack
 
 \begin{figure}[h]
 	\includegraphics[width=\textwidth]{./figures/fig2}
-	\caption{Approximated density of $\hat{\theta}$ for an equidependence skew t - t factor copula model with $\beta = 1.5$, $S = 25000$ and standard normal distributed marginals. Each simulation is based on $500$ Monte-Carlo replications.}	
+	\caption{Approximated density of $\hat{\theta}$ for an equidependence skew t - t factor copula model with $\beta = 1.5$, $S = 25000$ and standard normal distributed marginals. Each simulation is based on $1000$ Monte-Carlo replications.}	
 	\label{f:montecarlo}  
 \end{figure}
 
@@ -362,7 +363,7 @@ Figure \ref{f:montecarlo} shows the results for the first study. The DGP was bas
 Y_1, Y_2 \sim N(0, 1), Z &\sim skew-t(4, -0.8), \epsilon \sim t(4).
 \end{aligned}
 \end{equation}
-For all variations of $N$ and $T$, $S = 25000$ was chosen. Each simulation was repeated $500$ times. The bias and mean squared error of $\hat{\beta}$ was approximated by using the empirical average and standard deviation of all $500$ simulations.
+For all variations of $N$ and $T$, $S = 25000$ was chosen. Each simulation was repeated $1000$ times. The bias and standard deviation of $\hat{\beta}$ was approximated by using the empirical average and standard deviation of all $1000$ simulations.
 
 One can clearly see that for larger $T$ the SMM estimator converges to the true parameter. For $t = 10000$ the bias and mean squared error is virtually zero. For larger $N$ one can also note a drop in the mean squared error.
 
@@ -378,9 +379,9 @@ Y_i \sim N(0, 1), Z_0 &\sim skew-t(4, -0.8), Z_j \sim t(4), \epsilon \sim t(4)\\
  \theta &= (\beta_1, \dots, \beta_6)'
 \end{aligned}
 \end{equation}
-The $21$ observable variables were partitioned in $3$ groups of equal size. Therefore the parameters to be estimated reduced from $0.5*N*(N-1) = 210$ to just $2M = 6$. As in the first example the marginal distributed are iid standard normal. We chose $T = 1500$, $S = 25000$ and a breakpoint at $t = 1000$. Before the break, $\theta_0 = (0, 1, 1, 0, 1, 1)$ and after the break $\theta_1 = (1.5, 1, 1, 1.5, 1, 1)$. Thus, only the intra- and interdependence for the first group increases from $0$ to $1.5$.
+The $21$ observable variables were partitioned in $3$ groups of equal size. Therefore the parameters to be estimated reduced from $0.5*N*(N-1) = 210$ to just $2M = 6$. As in the first example the marginal distributed are iid standard normal. We chose $T = 1500$, $S = 25 \times T$ and a breakpoint at $t = 1000$. Before the break, $\theta_0 = (0, 1, 1, 0, 1, 1)$ and after the break $\theta_1 = (1.5, 1, 1, 1.5, 1, 1)$. Thus, only the intra- and interdependence for the first group increases from $0$ to $1.5$.
 
-Figure \ref{f:breaktest} shows the result of the break test for a single recursive run of the simulation for $t = 300, \dots, 1500$. Both the moments and copula based versions are shown together with the estimated critical value based on $1000$ bootstrap replications.
+Figure \ref{f:breaktest} shows the result of the break test for a single recursive run of the simulation for $t = 300, \dots, 1500$. Both the moments and copula based versions are shown together with the estimated critical value based on $2000$ bootstrap replications.
 
 \begin{figure}[H]
 	\includegraphics[width = \textwidth]{./figures/fig3}
@@ -408,7 +409,7 @@ The moments based test detects a breakpoint at $t = 962$ which is close to the t
   $S$ & 37500 & 37500 & 37500 \\
   \bottomrule
 \end{tabular}
-\caption{Estimation results for the bloc-equidependence factor copula model before and after the breakpoint and for the full dataset. Standard errors in paranthesis (estimated with $ B = 1000$ bootstrap samples).}
+\caption{Estimation results for the bloc-equidependence factor copula model before and after the breakpoint and for the full dataset. Standard errors in paranthesis (estimated with $ B = 2000$ bootstrap samples).}
 \end{table}
 
 
@@ -587,13 +588,19 @@ First various factor copula models were fitted to the complete residuals.
 \newpage
 \appendix
 
-\section{Appendix}
+# Appendix
 
-\begin{figure}[h]
-	\includegraphics[width=\textwidth]{./figures/eigenvalues}
-	\caption{Scree-plot of ranked eigenvalues based on the pairwise rank-correlation matrix.}	
-	\label{f:eigenvalues}  
-\end{figure}
+## Notes on data and source code access
+
+An online version of this thesis is publicly available as a git-repository under https://github.com/bonartm/factorcopula-thesis. The repository contains notes on how to install all dependencies. The source code files for the analyses are located online in the `source` folder. 
+
+Due to data restrictions by Facebook it is not possible to publish the original dataset of Facebook posts. However, the residuals of the ARIMA-GARCH models which were applied to the aggregated Facebook data are located online at `data/topics_residuals.rds`. 
+
+The methods for the simulation and estimation of factor copula models and the break test are not part of this repository. Instead, they are available via the R-package `factorcopula`. The package can be installed from Github. Further notes can be found under: https://github.com/bonartm/factorcopula (See also chapter \ref{s:factorcopulapackage}). 
+
+For almost all estimation procedures, the HPC cluster of the Universiy of Cologne was utlizied \parencite{cheops2018}. To simplify the workflow we wrote the R-package `cheopsr` which allows the execution of job scripts from within the local R environment. The package is available online at https://github.com/bonartm/cheopsr. To run the package, a Unix-like system and accesss rights to the HPC cluster are obligatory. 
+
+## Additional figures
 
 \begin{figure}[H]
 	\subfloat[Observed daily relative frequency of posts which match the regular expression.]{\includegraphics[width = \textwidth]{./figures/flucht_observed}} \\
@@ -603,10 +610,20 @@ First various factor copula models were fitted to the complete residuals.
 \end{figure}
 
 \begin{figure}[H]
-	\includegraphics[width=\textwidth]{./figures/pairwise_scatter}
+	\includegraphics[width=0.95\textwidth]{./figures/pairwise_scatter}
 	\caption{Pairwise scatterplot of the estimated residuals.}	
 	\label{f:pairwise_scatter}  
 \end{figure}
+
+\begin{figure}[H]
+	\includegraphics[width=0.95\textwidth]{./figures/eigenvalues}
+	\caption{Scree-plot of ranked eigenvalues based on the pairwise rank-correlation matrix.}	
+	\label{f:eigenvalues}  
+\end{figure}
+
+
+
+
 
 
 

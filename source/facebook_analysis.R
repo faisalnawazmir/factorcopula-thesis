@@ -34,7 +34,7 @@ isStopword <- function(words, stopWords){
 standardize <- function(x){
   require(rugarch)
   arima <- auto.arima(x)
-  cat("p:", arima$arma[1], "q:", arima$arma[2], "\n")
+  cat(arima$arma, "\n")
   spec <- ugarchspec(mean.model = list(armaOrder= c(arima$arma[1], arima$arma[2]), arfima = TRUE), fixed.pars = list(arfima = 1), distribution.model = "norm")
   m <- ugarchfit(spec = spec, x)
   res <- as.vector(residuals(m, standardize = TRUE))
@@ -59,6 +59,10 @@ topicsTrend <- posts %>%
 
 topicsTrendRes <- data.frame(apply(topicsTrend[,-1], 2, standardize))
 names(topicsTrendRes) <- names(topicsTrend)[-1]
+
+# saveRDS(topicsTrendRes, "./data/topics_residuals.rds")
+
+topicsTrendRes <- readRDS("./data/topics_residuals.rds")
 
 T <- nrow(topicsTrendRes)
 N <- ncol(topicsTrendRes)
