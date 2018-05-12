@@ -9,8 +9,9 @@
 \usepackage[ngerman,english]{babel}
 
 %% Literature
-\usepackage[style=authoryear, giveninits=true]{biblatex}
+\usepackage[style=authoryear, giveninits=false, maxbibnames=3, minbibnames = 3]{biblatex}
 \addbibresource{$bibliography$}
+
 
 %%%%% Zeilenabstand
 \usepackage{setspace}
@@ -266,6 +267,8 @@ $endif$
 \listoffigures % fügt ein Abbildungsverzeichnis ein
 \listoftables % fügt ein Tabellenverzeichnis ein
 \listofalgorithms
+\addcontentsline{toc}{section}{List of Algorithms}
+
 
 \section*{List of Abbreviations}
 \addcontentsline{toc}{section}{List of Abbreviations}
@@ -277,6 +280,7 @@ $endif$
 	DGP & Data generating process \\
 	btw17 & Bundestag election 2017 \\
 	API & Application programming interface\\
+	CV & Critical value
 \end{tabular}
 \newpage
 
@@ -290,7 +294,8 @@ $body$
 %% LITERATURE 
 \newpage
 \printbibliography
-
+%\printbibliography[notkeyword=software]
+%\printbibliography[keyword=software,title={References related to software}]
 
 
 
@@ -305,7 +310,7 @@ $body$
 	
 	\section*{Eidesstattliche Versicherung}
 	
-	 Hiermit versichere ich an Eides statt, dass ich die vorliegende Arbeit selbstständig und ohne die Benutzung anderer als der angegebenen Hilfsmittel angefertigt habe. Alle Stellen, die wörtlich oder sinngemäß aus veröffentlichten und nicht veröffentlichten Schriften entnommen wurden, sind als solche kenntlich gemacht. Die Arbeit ist in gleicher oder ähnlicher Form oder auszugsweise im Rahmen einer anderen Prüfung noch nicht vorgelegt worden. Ich versichere, dass die eingereichte elektronische Fassung der eingereichten Druckfassung vollständig entspricht. \\
+	 Hiermit versichere ich an Eides Statt, dass ich die vorliegende Arbeit selbstständig und ohne die Benutzung anderer als der angegebenen Hilfsmittel angefertigt habe. Alle Stellen, die wörtlich oder sinngemäß aus veröffentlichten und nicht veröffentlichten Schriften entnommen wurden, sind als solche kenntlich gemacht. Die Arbeit ist in gleicher oder ähnlicher Form oder auszugsweise im Rahmen einer anderen Prüfung noch nicht vorgelegt worden. Ich versichere, dass die eingereichte elektronische Fassung der eingereichten Druckfassung vollständig entspricht. \\
 	\\
 	K\"oln, den \today
 	\\
