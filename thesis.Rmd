@@ -26,102 +26,135 @@ knitr::opts_chunk$set(echo = TRUE, out.width = "\\textwidth")
 # Introduction
 \label{s:introduction}
 
+Many multivariate statistical models are based on the assumption that the variables follow a multivariate Gaussian distribution. Here, the natural measure of dependece is the covariance or correlation matrix between the variables \parencite[p. 25]{Joe2015}. But using simple correlations as the only dependence measure can be misleading. In many cases real world data does not follow a Gaussian distribution and shows other distributional feautures, such as skeweness or heavy tails. Correlation requires that the variance of the marginal distribution is finite. This requirement can be problematic when dealing with heavy tailed distributions. Further more, correlation is only a measure of linear dependence and it is not invariant under monotonic transformations of the variables \parencite[6-8]{Embrechts2002}. This means, that by applying a strictly increasing function (for example the $\log$ function) to each variable, the correlation matrix changes.
 
-\textcite{Joe2013} and \textcite{Joe2015} also have model named "factor copula" but they use a different appraoch.
+Due to this shortcomings of the ordinary linear correlation coefficient, other and more flexible methods for describing the dependence structure between non Gaussian variables have been developed. In this area of research, models based on so called copula functions became increasingly popular since the 1990th \parencite[p. 1]{Nelsen1999}. Up to the year 1999, only 38 publications which include the topics \emph{copula} and \emph{dependence} have been published in peer-reviewed journals. From 2000 - 2008 the number of copula related publications was 334 and for the years 2009 - 2017 2048 publications are listed.\footnote{The numbers are taken from the \emph{Web of Science Core Collection} for the search term \texttt{TOPIC: (copula) AND TOPIC: (dependence)}.} 
 
+At first, any multivariate distribution function for which its marginal distributions have a uniform distribution on the interval $[0, 1]$ can be called a copula function \parencite[p. 1]{Nelsen1999}. But its popularity is based on the results of a thereom by \textcite{Sklar1959}: It implies that multivariate distributions can be constructed by separately specifying the marginal distributions of the random variables and by defining the dependence structure among the variables. The dependence structure is described with a copula function. Thus, a copula links the multivariate distribution function to its marginal distributions. In case of continous multivariate distributions the copula function is uniquely defined.
 
+Due to this results, copulas are mainly used in two ways: First, to model the dependence structure of multivariate distributions independent of their underlying marginal distributions and second, to construct bivariate or multivariate distributions based on a copula function and marginal distributions \parencite[302-304]{Sempi2011}. 
 
-Statistical models involving copula functions became increasingly popular since the 1990th \parencite[p. 1]{Nelsen1999}. The concept was first introduced in the work by \textcite{Sklar1959}. Copulas are mainly used in two ways: First, to model the dependence structure of multivariate distributions independent of their underlying marginal distributions and second, to construct bivariate or multivariate distributions \parencite[p. 302]{Sempi2011}. This paper focuses on the first application. Up to the year 1999 the there are 38 publication listed for the topics \emph{copula} and \emph{dependence}. From 2000 - 2008 there were 334 publication and from 2009 - 2017 this number increased to 2048 publication.\footnote{Numbers are taken from the \emph{Web of Science Core Collection} for the search term \texttt{TOPIC: (copula) AND TOPIC: (dependence)}.} 
+This allows for a two-stage estimation process in multivariate models in which the marginal distributions and the copula function is estimated separately. By doing so, semiparametric techniques can be utilized. For example, the marginal distribution can be estimated using the empirical distribution function while the copula function is estimated parametrically. \parencite[777]{Patton2009}.
 
-Skalr's theorem can be used to construct multivariate models first, by specifying the marginal distributions of the random variables involved and second, by specifying the dependence structure among the variables via a copula function \cite{Sempi2011}. By doing so, one allows for non-parametrized or semi-parametrized estimation of the marginal distributions together with a parametrized copula. High dimensional problems become traceable since the number of parameters can be drastically reduced \parencite[p. 777]{Patton2009}. 
-
-For time series data copula theory can be used in two ways: First, to describe the cross sectional dependence structure by estimating the conditional copula function of the conditional joint distribution $F(\mathbf{y}|\mathcal{F}_{t-1})$ with $\mathbf{Y}_t = [Y_{1t}, \dots, Y_{nt}]'$ and past information $\mathcal{F}_{t-1}$. To obtain a valid distribution, the information set must be the same for both the copula and the marginal distributions. Second, copulas can be used to describe the dependence between observations of a univariate time series $[Y_t, Y_{t+1}, \dots, Y_{t+n}]'$. This is related to the study of Markov processes. \parencite[p. 771 ff]{Patton2009}. This paper focuses on the first application. 
-
-Applications for copula modeling can be found in various disciplines but they became increasingly popular in the field of finance, actuarial science and hydrology \cite{Sempi2011}. 
-
-Correlation or covariance matrices can be used to model linear dependence especially for multivariate normal or t-distributions. But they lack the ability to model the dependence e.g. in the presence of heavy tails or outliers \parencite{Kumar2011}. 
-
-Rank correlation matrices such as \emph{Spearman's rho} are invariant under monotonic transformations but they are not moment-based. 
-
-
-
-
-Copulas are usefull whenever one wants to draw conclusion about the full joint distribution but other models are more suited if one focuses on predicting the conditional mean \parencite[p. 769]{Patton2009} 
+For time series data copula theory can be used in two ways: First, to describe the cross sectional dependence structure by estimating the conditional copula function of the conditional joint distribution at some timepoint given past information. Second, copulas can be used to describe the dependence between observations of a univariate time series. This is related to the study of Markov processes. \parencite[p. 771 ff]{Patton2009}.
 
 This thesis summarizes and strucutures the current developement in the field of factor copula models. It contributes to the sicentific disucssion in two ways: First, a software library for a consistent specification, simulation and estimation of factor copula models is presented. With the library, the methods and the strucutral break test are made avalaible to a broader scientific audience and can be used by applied reasearchers. Second, we study novel ways of applying the discussed methods to areas outside of the finance community. The strucutral break test is applied to an aggregated dataset of social media posts from german politicians and political parties.
 
-The thesis is structured in four main chapters: The first chapter lays the theoretical foundation by summarizing important aspects of copula theory and by presenting the factor copula approach, its estimation strategy via simulated methods of moments and a suitable test for time varying dependence structures. The second chapter presents implementational details of the software library \emph{factorcopula}, written in the statistical programming language R \parencite{Bonart2018}. To ensure the validity of the package and its performance two simulation studies are performed. In the last chapter, the methods are applied to a large dataset of textual social media posts from german politicians and political parties. The goal is to illustrate and assess novel ways of applying the factor copula approach and the structural break test.
+
 
 
 
 
 # Theoretical foundation
 
-In this chapter we present and summarize the theoretical foundation of this thesis. First, the general idea behind copula functions is introduced. Second, a special class of copula models, the so called \emph{factor copula} model is presented. Third, we discuss copula models in the context of time series data and present a specific framework for modelling dependencies of multivariate time series. Fourth, the \emph{simulated methods of moments} is explained. It is the estimation method which is used throughout this work. Finally we summarize the ideas of a structural break test for the possibly time varying parameters of a factor copula model. 
+In this chapter we present and summarize the theoretical foundation of this thesis. First, the general idea behind copula functions is introduced. Second, a special class of copula models, the so called \emph{factor copula} model is presented. Third, we discuss copula models in the context of time series data and present a specific framework for modelling dependencies of multivariate time series. Fourth, the \emph{simulated methods of moments} is explained. It is the estimation method which is used throughout this work. Finally we summarize the ideas of a structural break test for possibly time varying parameters of a factor copula model. 
 
 ## Copula theory
 \label{s:copulatheory}
 
-The joint cumulative distribution function $F_Y(y_1, \dots, y_N) = P(Y \leq y_1, \dots, Y \leq y_N)$ for some multivariate random variable $Y$ of dimension $N$ and its corresponding marginal distributions $F_{Y_i}(y_i) = P(Y_i \leq y_i) ~\forall~ i = 1, \dots, N$ can be used to describe a joint probability distribution. Estimating $F_Y$ is computationally demanding espacialy if $N$ becomes large. Therefore, a copula function is introduced which can be used to link the marginal and the joint distribution function. 
 
-A function of the type $C: [0, 1]^N \rightarrow [0,1]$, with $N \geq 2$ is called a \emph{copula} if first, it shares the common properties of a multivariate distribution function such that $C_U(u_1, \dots, u_N) = P(U_1 \leq u_1, \dots, U_N \leq u_N)$ and if second, its marginal distributions are $U_i \sim U(0, 1)$, e.g. uniformly distributed \parencite[p. 7]{Joe2015}. A thereom by \textcite{Sklar1959} states, that every d-variate distribution function $F_Y(y_1,\dots, y_n)$ can be eypressed in terms of its marginal distributions and a copula function such that 
+The joint cumulative distribution function (cdf) $F_Y(y_1, \dots, y_N) = P(Y_1 \leq y_1, \dots, Y_N \leq y_N)$ for some multivariate random vector $Y$ of dimension $N$ has the continous marginal distributions $F_{Y_i}(y_i) = P(Y_i \leq y_i) ~\forall~ i = 1, \dots, N$. Estimating $F_Y$ is computationally demanding espacialy if $N$ becomes large. Therefore, a copula function is introduced which can be used to link the marginal and the joint cdf.
+
+A function of the type $C: [0, 1]^N \rightarrow [0,1]$, with $N \geq 2$ is called a \emph{copula} if it is the distribution function of a random vector $U$ such that $C_U(u_1, \dots, u_N) = P(U_1 \leq u_1, \dots, U_N \leq u_N)$ and if its marginal distributions are $U_i \sim Unif(0, 1)$, e.g. uniformly distributed \parencite[p. 7]{Joe2015}. The thereom by \textcite{Sklar1959} states, that every d-variate distribution function $F_Y(y_1,\dots, y_n)$ can be eypressed in terms of its marginal distributions and a copula function such that 
 \begin{equation}
 \label{eq:sklar}
-F(y_1, \dots, y_N) = C(F_1(y_1), \dots, F_N(y_N)).
+F_Y(y_1, \dots, y_N) = C_U(F_1(y_1), \dots, F_N(y_N)).
+\end{equation}
+To see this, consider the so called probability-integral transformation which states that the marginal random variables $U_i = F_{Y_i}(Y_i)$ are uniformly distributed \parencite[4]{Embrechts2002}. This is due to the fact that $F_{U_i}(u_i) = P(U_i \leq u) = P(F_{Y_i}(Y_i) \leq u_i) = P(Y_i \leq F_{Y_i}^{-1}(u_i)) = F_{Y_i}(F_{Y_i}^{-1}(u_i)) = u_i$ is the distribution function of a $Unif(0,1)$ distributed variable. Using this transformation we can write
+\begin{align}
+\label{eq:proofsklar}
+\begin{split}
+F_Y(y_1, \dots, y_N) &= P(Y_1 \leq y_1, \dots, Y_N \leq y_N)\\
+&= P(F_{Y_1}(Y_1) \leq F_{Y_1}(y_1), \dots, F_{Y_N}(Y_N) \leq F_{Y_N}(y_N)) \\
+&= P(U_1 \leq F_{Y_1}(y_1), \dots, U_N \leq F_{Y_N}(y_N)) \\
+&= C_U(F_{Y_1}(y_1), \dots, F_{Y_N}(y_N)).
+\end{split}
+\end{align}
+
+Note that transforming the marginal distributions to a $Unif(0, 1)$ distribution is somehow an arbitrary choice and other possibilities, for instance the Gaussian distribution, are also possible.  \parencite[7]{Mikosch2006}
+
+If $F_Y$ is \emph{continuous} with marginal quantile functions $F^{-1}_{Y_1}, \dots, F^{-1}_{Y_N}$ then the copula function $C_U(\mathbf{u})$ is uniquely determined by $C(\mathbf{u}) = F(F_{Y_1}^{-1}(u_1), \dots, F_{Y_N}^{-1}(u_N))$. If not all marginal distribution are continous the copula still exist but in this case it is not unique anymore \parencite[4-5]{Embrechts2002}.
+
+The simplest form of a copula function is the copula of a vector of independent variables for wich we can write $F_Y(\bm{y}) =  \prod_{i = 1}^N F_{Y_i}(y_i)$. Using the derivation in \eqref{eq:proofsklar}, this results in the independence copula 
+\begin{equation}
+C_{ind}(u_1, \dots, u_N) = \prod_{i = 1}^N u_i.
 \end{equation}
 
-If $F_Y$ is \emph{continuous} with marginal quantile functions $F^{-1}_{Y_1}, \dots, F^{-1}_{Y_N}$ then $C(\mathbf{u})$ is uniquely determined by $C(\mathbf{u}) = F(F_{Y_1}^{-1}(u_1), \dots, F_{Y_N}^{-1}(u_N))$. 
+Many other possible funtional forms for a copula $C_U$ exist. In this paper, we focus on a special class, the so called factor copulas which we present in section \ref{s:factorcopula}. 
 
-Some bivariate measures of dependency share the property of \emph{scale invariance}. Thus, the measures are invariant with respect to the marginal distributions and can therefore expressed as a function of their copula \parencite[p. 210]{Schmid2010}. The widely used linear correlation coefficient is dependend on both the copula and the marginal distributions \parencite[p. 768]{Patton2009}. Two scale invariant measures are Spearman's rank correlation
+Copulas are usefull for the study of dependence between a set of random variables, because the copula function which defines the dependency structure is unaffected by monotonic transformations of the marginal variables. In contrast to the linear correlation coefficient, this property allows the definition of alternative scale-invarant dependence measures \parencite[125]{Nelsen1999}. 
 
+To see the scale-invaraint property of the copula function, consider a random vector $U$ with copula distribution function $C_U(\bm{u})$ and $C_U(F_1(y_1), \dots, F_N(y_N)) = F_Y(y_1, \dots, y_N)$. By applying some increasing function $T_i(Y_i)$ to the random variables and using \eqref{eq:proofsklar} we can write
+\begin{equation}
+\begin{split}
+F_{T(Y)}(\bm{y}) &= P(T_1(Y_1) \leq y_1, \dots, T_N(Y_N) \leq y_N)\\
+&=  P(T_1(F_{y_1}^{-1}(U_1)) \leq y_1, \dots, T_N(F_{y_N}^{-1}(U_N)))\\
+&= C_U(F_{T_1(Y_1)}(y_1), \dots, F_{T_N(Y_N)}(y_N)).
+\end{split}
+\end{equation}
+Thus, allthough $Y$ and $T(Y)$ have different joint distribution functions, they share the same copula function. 
+
+In the following we shortly present three common scale invariant measures of dependency between two variables $Y_i$ and $Y_j$. In contrast to the linear correlation coefficient, these measures can be expressed solely as a function of the underlying bivariate copula.\footnote{For a proof of the copula representations see \textcite[16-18]{Embrechts2002}.} Spearman's and Kendall's rank correlation both measure the degree of monotonic dependence between the two variables $Y_i$ and $Y_j$ with joint distribution function $F_Y(\bm{y})$. As the linear correlation coefficient they are symmetric and normalised in the interval $[0, 1]$ \parencite[15]{Embrechts2002}.
+
+Kendall's rank correlation is based on the definition of concoradance and discordance: Consider two pairs of independent and identically (iid) distributed random vectors $(Y_i^1, Y_j^1)$ and $(Y_i^2, Y_j^2)$. Both pairs share the same joint distribution $F_Y$. The pair is concordant if $(Y_i^1 - Y_i^2)(Y_j^1-Y_j^2) > 0$ and discordant if $(Y_i^1-Y_i^2)(Y_j^1-Y_j^2) < 0$. In words, for the former case large (small) values of one pair occur with large (small) values of the other. For the latter case, large (small) values of one pair occur with small (large) values of the other \parencite[125-126]{Nelsen1999}.
+
+With this definition Kendalls's rank correlation is given as the probability of concordance minus the probability of discordance:
+\begin{align}
+\begin{split}
+\label{eq:kendalls}
+\tau_{i,j} &= P((Y_i^1-Y_i^2)(Y_j^1-Y_j^2) < 0) - P((Y_i^1-Y_i^2)(Y_j^1-Y_j^2) > 0)\\
+&= 4\int\int_{[0,1]^2} C(u_i, u_j)dC(u_i, u_j)-1.
+\end{split}
+\end{align}
+
+Spearman's rank correlation is given as the ordinary correlation coefficient between the probability-integral transforms $F_{Y_i}(Y_i)$ and $F_{Y_j}(Y_j)$:
 \begin{equation}
 \label{eq:spearman}
-\rho_{Y_i,Y_j} = 12\int\int_{[0,1]^2} u_1u_2 dC(u_i, u_j)-3,
+\rho_{i,j}^S = \rho(F_{Y_i}(Y_i), F_{Y_j}(Y_j)) = 12\int\int_{[0,1]^2} u_iu_j dC(u_i, u_j)-3.
 \end{equation}
 
-and Kendal's rank correlation
-\begin{equation}
-\label{eq:kendalls}
-\tau_{Y_i, Y_j} = 4\int\int_{[0,1]^2} C(u_i, u_j)dC(u_i, u_j)-1 = 4E(C(U_i, U_j))-1.
-\end{equation}
-
-Lower and upper tail dependency is defined as 
-
+Finally, to capture dependencies in the joint lower or joint upper parts of the distribution, one defines the coefficients of upper and lower tail dependency: 
 \begin{align}
 \label{eq:taildependency}
 \begin{split}
-\tau^L_{Y_i, Y_j} &= \underset{q \rightarrow 0}{\lim} \frac{P(Y_i \leq F_{Y_i}^{-1}(q), Y_j \leq F_{Y_j}^{-1}(q))}{q}\\
-\tau^U_{Y_i, Y_j} &= \underset{q \rightarrow 1}{\lim} \frac{P(Y_i > F_{Y_i}^{-1}(q), Y_j > F_{Y_j}^{-1}(q))}{q}\\
+\tau^U_{i, j} &= \underset{q \rightarrow 1}{\lim} P(Y_i > F_{Y_i}^{-1}(q) | Y_j > F_{Y_j}^{-1}(q)) 
+= \underset{q \rightarrow 1}{\lim} \frac{1-2q+C(q,q)}{1-q},\\
+\tau^L_{i, j} &= \underset{q \rightarrow 0}{\lim} P(Y_i \leq F_{Y_i}^{-1}(q) | Y_j \leq F_{Y_j}^{-1}(q))
+= \underset{q \rightarrow 0}{\lim} \frac{C(q,q)}{q}.
 \end{split}
 \end{align}
+The coefficients measures the probability that extreme large (small) values occur in one variable, given extreme large (small) values in the other variable. In contrast to other common dependence measures, the coefficients of upper and lower tail dependency are defined on the interval $[0, 1]$. Since the limit only exists theoretically and not for observable data, one usually calculates upper and lower \emph{quantile} dependency for some values of $q$ close to $0$ and $1$ \parencite[62-63]{Joe2015}.
+
 
 ## Factor copulas
 \label{s:factorcopula}
 
-Factor copulas are a family of copula models for which the copula function $C(u_1, \dots, u_N)$ is based on a latent factor structure as defined in \textcite[p. 140 ff]{Patton2017}. 
+Factor copulas are a special class of copula models for which the copula function $C_U(u_1, \dots, u_N)$ is based on a latent factor structure as defined in \textcite{Patton2013, Patton2017}. 
 
-Consider a set of artificial variables $X_i, i = 1, \dots,N$ which linearly depend on some latent factors $Z_k, k = 1, \dots, K$ and some error $e_i$ such that $X_i =  \sum_{k = 1}^{K}\beta_{ik}Z_k+ \epsilon_i$, with the linear coefficients $\beta_{ik}$. The latent variables $Z_k$ and the error term $\epsilon_i$ follow some parametrized distributions, e.g. $\epsilon_i \overset{iid}{\sim} F_\epsilon(\bm{\gamma_\epsilon})$ and $Z_k \sim F_{Z_k}(\bm{\gamma_{Z_k}})$ with $Z_{i} \perp Z_{j} \forall i \neq j$, $Z_k \perp \epsilon_i \forall i,k$ and $\bm{\gamma_\epsilon}$, $\bm{\gamma_{Z_k}}$ some distribution specific parameter vectors. 
+Consider a set of artificial variables $X_i, i = 1, \dots,N$ which linearly depend on some latent factors $Z_k, k = 1, \dots, K$ and some iid distributed error $e_i$ such that $X_i =  \sum_{k = 1}^{K}\beta_{ik}Z_k+ \epsilon_i$. The linear coefficients $\beta_{ik}$ are also called factor loadings. The latent variables $Z_k$ and the error term $\epsilon_i$ follow some parametrized distributions with parameter vectors $\bm{\gamma}_\epsilon$ and $\bm{\gamma}_{Z_k}$ and we write: $\epsilon_i \overset{iid}{\sim} F_\epsilon(\bm{\gamma_\epsilon})$ and $Z_k \sim F_{Z_k}(\bm{\gamma_{Z_k}})$. While the variables $X_i$ usually dependent on each other, the latent factors are independent from each other and from the error term. 
 
-The joint probability function $F_{X}(x_1, \dots, x_N)$ of the artificial variables can then be expressed in terms of its marginal distributions $F_{X_i}(x)$ and a factor copula function $C_U(u_1, \dots, u_N)$ such that $F_{X}(x_1, \dots, x_N) = C_U(F_{X_1}(x_1), \dots, F_{X_N}(x_N); \bm{\theta})$. 
+As shown in the previous section, the joint probability function $F_{X}(x_1, \dots, x_N)$ of the artificial variables can be expressed in terms of its marginal distributions $F_{X_i}(x)$ and a factor copula function $C_U(u_1, \dots, u_N)$ such that $F_{X}(x_1, \dots, x_N) = C_U(F_{X_1}(x_1), \dots, F_{X_N}(x_N); \bm{\theta})$.
 
-The parameters of the factor model are collected in a parameter vector $\bm{\theta} = (\beta_{11}, \dots, \beta_{i1}, \dots \beta_{ik}, \bm{\gamma_{Z_1}}', \dots, \bm{\gamma_{Z_K}}', \bm{\gamma_\epsilon}')'$. It consists of all linear coefficients and the distributional parmaters of the error term and the laten variables. The number of latent variables $K$ and the distribution functions $F_{Z_1}, \dots, F_{Z_k}, F_\epsilon$ are hyper-parameters of the model which have to be chosen prior to the estimation.\footnote{\textcite[p. 143ff]{Patton2017} provide a heuristic of finding the number of latent variables by analyzing so called \emph{scree-plots}: Ordered eigenvalues from the sample rank-correlation matrix of the data.}
+The artifical variables $X_i$ are only used to construct the factor copula function $C_U(u_1, \dots, u_N)$. The parameters of the factor structure are chosen in such a way that the resulting copula function fits the copula of the observable data $\bm{Y}$, such that $F_{Y}(y_1, \dots, y_n) = C_U(F_{Y_1}(y_1),\dots, F_{Y_N}(y_N))$. Once the factor copula function is approximated, the artificial variables and its marginal distributions $F_{X_i}(x)$ are of no interest.
 
-The artifical set of variables $\bm{X}$ is only used to construct the factor copula function $C_U(u_1, \dots, u_N)$. The parameters of the factor strucutre are choosen in such a way that the resulting copula function fits the copula of the observable data $\bm{Y}$. The copula function can then be used to model the joint distribution of the observable variables such that $F_{Y}(y_1, \dots, y_n) = C_U(F_{Y_1}(y_1),\dots, F_{Y_N}(y_N))$. Once the factor copula function is determined, the artificial variables and its marginal distributions $F_{X_i}(x)$ are of no interest. Using matrix notation, the model can be summarized in the following set of equations:
+The parameters of the factor model are collected in a parameter vector $\bm{\theta} = (\beta_{11}, \dots, \beta_{i1}, \dots \beta_{ik}, \bm{\gamma_{Z_1}}', \dots, \bm{\gamma}_{Z_K}', \bm{\gamma}_\epsilon')'$. It consists of all linear coefficients and the distributional parameters of the error term and the latent variables. The number of latent variables $K$ and the distribution functions $F_{Z_1}, \dots, F_{Z_k}, F_\epsilon$ are hyper-parameters of the model which have to be chosen prior to the estimation.\footnote{\textcite[p. 143ff]{Patton2017} provide a heuristic of finding the number of latent variables by analyzing so called \emph{scree-plots}: Ordered eigenvalues from the sample rank-correlation matrix of the data.}
+
+Using matrix notation, the model can be summarized in the following set of equations:
 \begin{align}
 \label{eq:factorcopula}
 \begin{split}
 \bm{Y} &= (Y_1, \dots, Y_N)' \\
 \bm{X} &= (X_1, \dots, X_N)' = \bm{\beta Z} + \bm{\epsilon}\\
-F_{Y} &= C_U(F_{Y_1}(y_1),\dots, F_{Y_N}(y_N); \bm{\theta})\\
-F_{X} &= C_U(F_{X_1}(x_1), \dots, F_{X_N}(x_N); \bm{\theta})
+F_{Y}(\bm{y}) &= C_U(F_{Y_1}(y_1),\dots, F_{Y_N}(y_N); \bm{\theta})\\
+F_{X}(\bm{x}) &= C_U(F_{X_1}(x_1), \dots, F_{X_N}(x_N); \bm{\theta})
 \end{split}
 \end{align}
 
-To model the joint probability $F_Y(\bm{y})$, a two-stage estimation can be applied: First, the marginal distributions $\hat{F}_{Y_i}$ are estimated parametrically or non-parametrically, e.g. by using some parametric model or the empirical distribution function. Second, the factor structure for the copula function is fitted to the data by finding the optimal $\hat{\bm{\theta}}$. Usually a closed form of the factor copula does not exist. Therefore, one has to rely on simulation based estimation methods as described in section \ref{s:SMM}. 
+To model the joint probability $F_Y(\bm{y})$, a two-stage estimation process can be used: First, the marginal distributions $\hat{F}_{Y_i}$ are estimated parametrically or non-parametrically, e.g. by using some parametric model or the empirical distribution function. Second, the factor structure for the copula function is fitted to the data by finding the optimal $\hat{\bm{\theta}}$. Usually, a closed form of the factor copula does not exist. Therefore, one has to rely on simulation based estimation methods as described in section \ref{s:SMM}. 
 
-This aproach allows for a variety of different dependence structures and can be applied to high dimensional data. An upper bound for the number of parameters $P = |\bm{\theta}|$ to be estimated is given by the size of the factor matrix and the number of additional free distributional paramters and it holds that $P \leq (NK + |\bm{\gamma_{Z_1}}| + \dots + |\bm{\gamma_{Z_K}}| + |\bm{\gamma_\epsilon}|)$. To reduce the number of parameters, \textcite{Patton2017} present two restrictions on $\bm{\beta}$: the restrictive \emph{equidependence} and the less restrictive \emph{block-equidependence} model. 
+This aproach allows for a variety of different dependence structures and can be applied to high dimensional data. An upper bound for the number of model parameters $P = |\bm{\theta}|$ to be estimated is given by the size of the factor matrix and the number of additional free distributional paramters such that $P \leq (N \dot K + |\bm{\gamma_{Z_1}}| + \dots + |\bm{\gamma_{Z_K}}| + |\bm{\gamma_\epsilon}|)$. To reduce the number of parameters, \textcite[148, 150]{Patton2017} present two restrictions on the matrix of factor loadings $\bm{\beta}$: the restrictive \emph{equidependence} and the less restrictive \emph{block-equidependence} model. 
 
-For the first model it is assumed that $K = 1$ and $\bm{\beta} = (\beta, \dots, \beta)'$. Thus, the model consists of a single latent factor and a single factor loading $\beta$ which is the same for all variables. This implies equal pairwise dependencies for all observable variables.  
+For the first model, it is assumed that $K = 1$ and $\bm{\beta} = (\beta, \dots, \beta)'$. Thus, the model consists of a single latent factor and a single factor loading $\beta$ which is the same for all variables. This implies equal pairwise dependencies for all observable variables.  
 
 \begin{figure}[H]
 	\includegraphics[width=\textwidth]{./figures/fig1}
@@ -129,9 +162,9 @@ For the first model it is assumed that $K = 1$ and $\bm{\beta} = (\beta, \dots, 
 	\label{f:equidependence}  
 \end{figure}
 
-Figure \ref{f:equidependence} shows four different simulations from a two dimensional one factor equidependence factor copula model. The marginal distributions are standard normal, the linear coefficient is fixed at $\beta = 1.5$ but the distributions of the latent variable and the error term differ. All models produce positive dependence but the symmetry and tail dependency differs through the choice of the distributions. The upper left panel are realizations from a factor copula model with a skew-t distributed latent factor and a t-distributed error term. The degrees of freedom are set to $df = 4$ and the skewness parameter to $\lambda = -0.8$. This produces strong assymetric tail dependencies. The bottom left panel produces symmetric tail dependencies since $\lambda = 0$. This results in an ordinary t-distribution for the latent variable. The bottom right panel shows realizations from a gaussian copula which results in a multivariate gaussian distribution. The last panel shows the combination of an exponential latent variable with a normal error term. 
+Figure \ref{f:equidependence} shows four different simulations from a two dimensional one factor equidependence factor copula model. The marginal distributions are standard normal, the linear coefficient is fixed at $\beta = 1.5$ but the distributions of the latent variable and the error term differ. All models produce positive dependence but the symmetry and tail dependency differs through the choice of the distributions. The upper left panel are realizations from a factor copula model with a skew-t distributed latent factor and a t-distributed error term. The degrees of freedom are set to $df = 4$ and the skewness parameter to $\lambda = -0.8$. This produces strong assymetric tail dependencies. The bottom left panel produces symmetric tail dependencies since $\lambda = 0$. This results in an ordinary t-distribution for the latent variable. The bottom right panel shows realizations from a gaussian copula which results in a multivariate gaussian distribution with no tail dependency. The last panel shows the combination of an exponential latent variable with a normal distributed error term. 
 
-The second model, the block-equidependence model, is less restrictive and is suitable for variables which can be naturally partitioned into different groups.\footnote{E.g. this could be stock market prices grouped into different industry sectors.} The model assumes a common factor for all groups and a group specific factor for each group. Thus, each variable is only affected by two factors. For the matrix of factor loadings, it is further assumed that all variables in the same group have the same factor loading while variables in different groups can have different loadings. This implies equal pairwise intra-group dependencies while the pairwise inter-group dependencies can vary between the groups. 
+The second restriction, the block-equidependence model, is less restrictive that the equidependence model and is suitable for variables which can be naturally partitioned into different groups.\footnote{E.g. this could be stock market prices grouped into different industry sectors.} The model assumes a common factor for all groups and a group specific factor for each group. Thus, each variable is only affected by two factors. For the matrix of factor loadings, it is further assumed that all variables in the same group have the same factor loading while variables in different groups can have different loadings. This implies equal pairwise intra-group dependencies while the pairwise inter-group dependencies can vary between the groups. 
 
 Formally, consider a partition of $\bm{Y} = (Y_1, \dots, Y_N)'$ into $M$ groups. A single variable can then be written as $Y_i^j$, where $i = 1, \dots, N$, $j = 1, \dots, M$. The value $k_j$ is the number of variables in group $j$ and it holds $\sum_{j = 1}^M k_j = N$. Then the factor copula model can be summarized as:
 
@@ -158,6 +191,9 @@ where the matrix $\bm{\beta}$ is of size $N \times (M+1)$ but with only $2M$ act
 
 ## Copula models for multivariate time series
 \label{s:dynamiccopula}
+
+\textcite{Manner2012} gives some  overview over time varying copulas. 
+
 
 Sklar's theorem in \eqref{eq:sklar} which shows the link between a copula function and the multivariate distribution can be easily extended to the multivariate time series case: Consider the random vector $Y_t = (Y_{1t}, \dots, Y_{Nt})$. The goal is to model the conditional multivariate distribution of $\bm{Y}_t|\mathcal{F}_{t-1}$, where the $\sigma$-algebra $\mathcal{F}_{t-1}$ possibly contains past information and information from other exogenous variables $\{\bm{Y}_{t-1}', \bm{Y}_{t-2}', \dots, \bm{X}_{t}', \bm{X}_{t-1}', \dots\}$. 
 
@@ -224,7 +260,7 @@ The convergence can be summarized as:
 \end{align}
 with covariance matrix $\bm{\Omega} = \bm{(G'WG)^{-1}G'W'\Sigma WG(G'WG)^{-1}}$, where $\bm{G} = \frac{\partial \bm{g(\theta)}}{\partial \bm{\theta}_0}$ is the Jacobian matrix of the first order derivitives of the moments function $\bm{g(\theta)}$ and $\bm{\Sigma}$ is the asymptotic variance of the moments estimator $\hat{\bm{m}}$.
 
-The matrix $\bm{W}$ is a positive definite weight matrix and can be choosen to be the identity matrix. If the efficient weight matrix $\bm{W} = \bm{\Sigma}^{-1}$ is used the aymptotic variance simplifies to $\bm{\Omega} = \bm{(G'WG)^{-1}}$. 
+The matrix $\bm{W}$ is a positive definite weight matrix and can be chosen to be the identity matrix. If the efficient weight matrix $\bm{W} = \bm{\Sigma}^{-1}$ is used the aymptotic variance simplifies to $\bm{\Omega} = \bm{(G'WG)^{-1}}$. 
 
 It is crucial to note, that the standard error of the copula parameters $\hat{\bm{\theta}}$ is not affected by the error arriving from estimating $\hat{\bm{\phi}}$, which is the parameter vector for the marginal models for the conditional mean and variance of $\bm{Y}_t$ (see \eqref{eq:model}). The asymptotic results as they are state here are ony valid if the marginal distribution of the residuals is estimated non-parametically by using the empirical distribution function.
 
@@ -257,7 +293,7 @@ where $\bm{e}$ is the $k$th unit vector and $\epsilon_{T, S}$ the step size whic
 
 In the following section a structural break test based on \textcite{Wied2017} for a change of the copula parameters in \eqref{eq:model} is presented. Note that it is assumed that the functional form of the copula is time invariant while the copula's parameters $\theta_t$ for $t = 1, \dots, T$ can vary over time. The model presented in \ref{s:dynamiccopula} allows for a wide variety of parametrization and copula functions. Here, we focus on the factor copula model and the SMM estimation procedure as presented in the previous sections. 
 
-The test is based on recursive estimations of the copula model at each timepoint $t \in \epsilon 1, \dots, T$. $\theta_t$ is the estimated parameter using the data up to point $t$. The strictly positive trimming parameter $\epsilon$ has to be choosen such that the model parameters don't fluctutate too much just because of small sample sizes. The null hyopthesis states that the estimator is time invariant while the alternative indicates at least one significant break point in time. 
+The test is based on recursive estimations of the copula model at each timepoint $t \in \epsilon 1, \dots, T$. $\theta_t$ is the estimated parameter using the data up to point $t$. The strictly positive trimming parameter $\epsilon$ has to be chosen such that the model parameters don't fluctutate too much just because of small sample sizes. The null hyopthesis states that the estimator is time invariant while the alternative indicates at least one significant break point in time. 
 $$
 H_0: \theta_1 = \theta_2 = \dots = \theta_T \hspace{2em} H_1: \theta_t \neq \theta_{t+1} \text{ for some } t = \{1, \dots, T\}
 $$
@@ -454,7 +490,7 @@ The raw data consists of social media posts published by public pages on Faceboo
 
 Due to API and privacy restrictions, only information from public pages can be accessed such that arround 52\% of the social media accounts could be considered for the data collection. In addition to the candiates pages, $113$ official pages from the political parties, both on the federal and regional level, were included. 
 
-The data collection took place on several days between 2017-11-21 and 2018-02-06. The web-scraping software is built on top of the \emph{restfb} Java client library and makes calls to Facebook's official \emph{Graph API} \parencite{Facebook2018, restfb2018}. The posts are stored in a document orientated database on cloud-servers located in Germany. Besides the actual message, they contain a timestamp, the user-id of the author and the number of likes and shares the post has received uppon collecting it from the API.
+The data collection took place on several days between 2017-11-21 and 2018-02-06. The web-scraping software is built on top of the \emph{restfb} Java client library and makes calls to Facebook's official \emph{Graph API} \parencite{restfb2018}. The posts are stored in a document orientated database on cloud-servers located in Germany. Besides the actual message, they contain a timestamp, the user-id of the author and the number of likes and shares the post has received uppon collecting it from the API.
 
 For this analysis, the data is restricted on textual posts only.\footnote{A post can also consist of a foto, an album or an event.}. This results in almost 664 thousand posts tagged with the party membership of their authors.
 
@@ -502,7 +538,7 @@ A pairwise positive dependence between all parties could indicate that refugee r
 
 In the spirit of the copula time series model as discussed in \ref{s:dynamiccopula} we first estimate univariate models for each of the time series. The factor copula dependency analysis is then performed on the residual information. By removing the time dependent conditional mean and standard deviation from the observations, it can then be assumed that the residuals are time invariant. The empirical distribution function is used to model the marginal distributions of the residuals.
 
-We use a standard ARIMA-GARCH model for modelling the time series \parencite{Teraesvirta2009}. For the conditional variance we assume a GARCH(1, 1) process while specific ARIMA models are applied to model the conditional mean. The parts of the mean model are determined by running various models over a grid of different parameters. The model candidate with the lowest bayseian information criterion (BIC) is then choosen. Table \ref{tab:ARIMA} summarizes the final parameter values for the six time series model applied to the relative daily frequencies. 
+We use a standard ARIMA-GARCH model for modelling the time series \parencite{Teraesvirta2009}. For the conditional variance we assume a GARCH(1, 1) process while specific ARIMA models are applied to model the conditional mean. The parts of the mean model are determined by running various models over a grid of different parameters. The model candidate with the lowest bayseian information criterion (BIC) is then chosen. Table \ref{tab:ARIMA} summarizes the final parameter values for the six time series model applied to the relative daily frequencies. 
 
 \begin{table}[H]
 \centering
@@ -564,7 +600,7 @@ AfD-CDU/CSU & 0.07 & 0.14 & 0.17 & 0.13 & 0.10 \\
 
 ## Results
 
-First, various factor copula models are fitted to the complete dataset. Second, the best model is choosen and recurseviley applied to the data while fixing the distributional parameters at the complete sample estimates. A moments and copula based break test is performed. Finally, copula models are estimated for the pre-break and post-break period.
+First, various factor copula models are fitted to the complete dataset. Second, the best model is chosen and recurseviley applied to the data while fixing the distributional parameters at the complete sample estimates. A moments and copula based break test is performed. Finally, copula models are estimated for the pre-break and post-break period.
 
 To dertermine the number of latent factors $K$, we analyze the ordered eigenvalues of the residual rank-correlation matrix, as described in \textcite[p. 148]{Patton2017}. One eigenvalue is above the threshold (see \ref{f:eigenvalues}). Thus, the analysis is restricted to factor copula models with one latent factor. 
 
