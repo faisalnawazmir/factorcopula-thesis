@@ -192,30 +192,41 @@ where the matrix $\bm{\beta}$ is of size $N \times (M+1)$ but with only $2M$ act
 ## Copula models for multivariate time series
 \label{s:dynamiccopula}
 
-\textcite{Manner2012} gives some  overview over time varying copulas. 
+Up to now, it was assumed, that the data generating process (DGP) for the copula model is static and time invariant. But one can also extent the copula model to univariate or multivariate time series processes. For the former case, the copula is used to estimate the joint distribution of a one dimensional time series $(Y_t, Y_{t+1}, \dots, Y_{t+n})'$. For the latter, the interest lies in the conditional joint distribution of the time dependent random vector $\bm{Y_t} = (Y_{1t}, \dots, Y_{Nt})'$. The conditional cdf can be written as $F_{\bm{Y}_t|\mathcal{F}_{t-1}}(\bm{y})$,  where the $\sigma$-algebra $\mathcal{F}_{t-1}$ possibly contains past information and information from other exogenous variables $\{\bm{Y}_{t-1}', \bm{Y}_{t-2}', \dots, \bm{X}_{t}', \bm{X}_{t-1}', \dots\}$ \parencite[4-6]{Patton2012}. 
 
+Sklar's theorem given by \eqref{eq:sklar} shows how the copula function links together the marginal and the joint cdf. It can be extended to the multivariate time series case in which the conditional distribution is split into a conditional copula $C_{U_t|\mathcal{F}_{t-1}}(\bm{u})$ and conditional marginal distributions $F_{Y_{it}|\mathcal{F}_{t-1}}(y)$. 
 
-Sklar's theorem in \eqref{eq:sklar} which shows the link between a copula function and the multivariate distribution can be easily extended to the multivariate time series case: Consider the random vector $Y_t = (Y_{1t}, \dots, Y_{Nt})$. The goal is to model the conditional multivariate distribution of $\bm{Y}_t|\mathcal{F}_{t-1}$, where the $\sigma$-algebra $\mathcal{F}_{t-1}$ possibly contains past information and information from other exogenous variables $\{\bm{Y}_{t-1}', \bm{Y}_{t-2}', \dots, \bm{X}_{t}', \bm{X}_{t-1}', \dots\}$. 
-
-Using the definition of a conditional copula as in \parencite{Patton2006} one can write
-$$
-F_{Y_t|\mathcal{F}_{t-1}}(y_1, \dots, y_N) = C_{Y_t|\mathcal{F}_{t-1}}(F_{Y_1|\mathcal{F}_{t-1}}(y_1), \dots, F_{Y_N|\mathcal{F}_{t-1}}(y_N)).
-$$
+Using the definition of a conditional copula one can write
+\begin{equation}
+\label{eq:conditionalcopula}
+F_{Y_t|\mathcal{F}_{t-1}}(y_1, \dots, y_N) = C_{U_t|\mathcal{F}_{t-1}}(F_{Y_1t|\mathcal{F}_{t-1}}(y_1), \dots, F_{Y_Nt|\mathcal{F}_{t-1}}(y_N)).
+\end{equation}
 To have a valid conditional multivariate distribution, the conditioning set must be the same for the marginal distributions and the copula \parencite[p. 772]{Patton2009}. 
 
-For this work we use a semiparametric copula-based multivariate dynamic model as described in \textcite[p. 129 ff]{Chen2006}. The conditional means and variances of $\bm{Y}_t|\mathcal{F}_{t-1}$ are estimated parametrically. If we denote the parametrized conditional mean of a single variable as $\mu_{it} = E(Y_{it}|\mathcal{F}_{t-1}; \bm{\phi})$ and the parametrized conditional standard deviation as $\sigma_{it} = \sqrt{V(Y_{it}|\mathcal{F}_{t-1}; \bm{\phi})}$ we can write the multivariate time series as:
+For the following sections we built on a semiparametric copula-based multivariate dynamic model as described in \textcite[126-129]{Chen2006}. The vector of conditional means and variances of $\bm{Y}_t|\mathcal{F}_{t-1}$ are estimated parametrically. The joint distribution of the estimated standardized residuals is then modelled using non-parametric estimates of the marginal distributions and a parametric time-invariant copula.
+
+Thus, in this model three estimation stages have to be performed: First, the parameters of the marginal models for the conditional time varying means and variances. Second, the estimation of the marginal distribution of the standardized residuals. This is done using the empirical distribution function. Third, the parameters of the copula function for the standardized residuals. 
+  
+If we denote the parametrized conditional mean of a single variable as $\mu_{it} = E(Y_{it}|\mathcal{F}_{t-1}; \bm{\phi})$ and the parametrized conditional standard deviation as $\sigma_{it} = \sqrt{V(Y_{it}|\mathcal{F}_{t-1}; \bm{\phi})}$ we can write the multivariate time series as:
 \begin{equation}
 \label{eq:model}
-\bm{Y}_t = \bm{\mu}_t + \bm{\sigma}_t\bm{\eta}_t,
+\bm{Y}_t = \bm{\mu}_t + \bm{\sigma}_t\bm{\eta}_t
 \end{equation}
-with $\bm{\sigma}_t = \diag(\sigma_{1t}, \dots, \sigma_{Nt})$. The innovations $\bm{\eta}_t = (\eta_{1t}, \dots, \eta_{Nt})'$ have a standardized conditional distribution which can be modelled with a conditional copula. 
+with $\bm{\sigma}_t = \diag(\sigma_{1t}, \dots, \sigma_{Nt})$. The standardized innovations $\bm{\eta}_t = (\eta_{1t}, \dots, \eta_{Nt})'$ are assumed to be iid distributed and independent of past information. It follows that $F_{\bm{\eta}_{t}} = F_{\bm{\eta}} \forall t = 1, \dots, T$. Hence, for this model, the notion of a conditional copula as given by \eqref{eq:conditionalcopula} is not used. Instead the joint cdf of the residuals can be written as:
+\begin{equation}
+F_{\bm{\eta}}(u_1, \dots, u_t) =  C_U(F_{\eta_1}(u_1), \dots, F_{\eta_N}(u_N); \bm{\theta}),
+\end{equation}
+where the marginal distribution are estimated with the empirical distribution function:
+\begin{equation}
+\hat{F}_{\eta_i}(u) = \frac{1}{T+1}\sum_{t = 1}^{T}\bm{1}(\hat{\eta}_{it} \leq u).
+\end{equation}
 
-For this model, the marginal distributions of the innovations are modelled with the empirical distribution function (EDF) and it is assumend that they are independent of past informtion  and iid distributed such that $F_{\bm{\eta}_{t}} = F_{\bm{\eta}} \forall t = 1, \dots, T$.  
 
-In other words, the observations are first filtered by removing serial dependence or volatility clustering such that the leftover standardized innovations are independent of past information. Finally, the innovations are modeled using a parametric copula and nonparametric rank based estimates of the marginal distributions. The cdf of the innovations can be expressed in terms of a copula and the marginal distributions such that $F_{\eta}(x_1, \dots, x_N) = C(F_{\eta_1}(x_1), \dots, F_{\eta_N}(x_N); \theta_t)$. 
 
 ## Simulated methods of moments estimation for factor copulas
 \label{s:SMM}
+
+
 
 Estimation methods used for copula models depends on the degree of parametrization: For fully parametrized models for the copula and the marginal distributions maximum likelihood or multi-stage maximum likelihood is used. But one can also non parametrically estimate the marginal distributions and combine them with a parametric copula as shown in the previous section. 
 
@@ -290,6 +301,8 @@ where $\bm{e}$ is the $k$th unit vector and $\epsilon_{T, S}$ the step size whic
 
 ## Structural break test for factor copulas
 \label{s:breaktest}
+
+\textcite{Manner2012} gives some  overview over time varying copulas. 
 
 In the following section a structural break test based on \textcite{Wied2017} for a change of the copula parameters in \eqref{eq:model} is presented. Note that it is assumed that the functional form of the copula is time invariant while the copula's parameters $\theta_t$ for $t = 1, \dots, T$ can vary over time. The model presented in \ref{s:dynamiccopula} allows for a wide variety of parametrization and copula functions. Here, we focus on the factor copula model and the SMM estimation procedure as presented in the previous sections. 
 
