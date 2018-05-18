@@ -205,9 +205,9 @@ To have a valid conditional multivariate distribution, the conditioning set must
 
 For the following sections we built on a semiparametric copula-based multivariate dynamic model as described in \textcite[126-129]{Chen2006}. The vector of conditional means and variances of $\bm{Y}_t|\mathcal{F}_{t-1}$ are estimated parametrically. The joint distribution of the estimated standardized residuals is then modelled using non-parametric estimates of the marginal distributions and a parametric time-invariant copula.
 
-Thus, in this model three estimation stages have to be performed: First, the parameters of the marginal models for the conditional time varying means and variances. Second, the estimation of the marginal distribution of the standardized residuals. This is done using the empirical distribution function. Third, the parameters of the copula function for the standardized residuals. 
+Thus, this model describes three levels of estimation: First, the parameters of the marginal models for the conditional time varying means and variances. Second, the estimation of the marginal distribution of the standardized residuals. This is done using the empirical distribution function. Third, the parameters of the copula function for the standardized residuals. 
   
-If we denote the parametrized conditional mean of a single variable as $\mu_{it} = E(Y_{it}|\mathcal{F}_{t-1}; \bm{\phi})$ and the parametrized conditional standard deviation as $\sigma_{it} = \sqrt{V(Y_{it}|\mathcal{F}_{t-1}; \bm{\phi})}$ we can write the multivariate time series as:
+If we denote the parametrized conditional mean of a single variable as $\mu_{it} = E(Y_{it}|\mathcal{F}_{t-1}; \bm{\phi})$ and the parametrized conditional standard deviation as $\sigma_{it} = \sqrt{V(Y_{it}|\mathcal{F}_{t-1}; \bm{\phi})}$ we can write the multivariate time series process as:
 \begin{equation}
 \label{eq:model}
 \bm{Y}_t = \bm{\mu}_t + \bm{\sigma}_t\bm{\eta}_t
@@ -221,16 +221,27 @@ where the marginal distribution are estimated with the empirical distribution fu
 \hat{F}_{\eta_i}(u) = \frac{1}{T+1}\sum_{t = 1}^{T}\bm{1}(\hat{\eta}_{it} \leq u).
 \end{equation}
 
-
-
 ## Simulated methods of moments estimation for factor copulas
 \label{s:SMM}
 
+In the following section, the time series model as presented in the previous section \ref{s:dynamiccopula} and the factor copula model as presented in section \ref{s:factorcopula} are considered and an estimation procedure known as Simulated Method of Moments (SMM) is presented. 
 
+For copulas for which the copula function is known in closed form, standard Maximum Likelihood (ML) estimation can be performed. Given the time series model as described by \eqref{eq:model} multistage maximum likelihood can be applied for estimating the first level conditional means and variances, the marginal distribution of the residuals and the copula. If parametrized models for the marginal distributions are used, it is crucuial that all models are correctly specified, otherwise the estimated copula parameters will be biased parencite[694]{Patton2013}. \textcite[127]{Chen2006} showed that, if the EDF is used for estimating the marginal distribution of the residuals, the first level estimates do not affect the asympotic distribution of the semiparametric ML estimator of the copula parameters.  
 
-Estimation methods used for copula models depends on the degree of parametrization: For fully parametrized models for the copula and the marginal distributions maximum likelihood or multi-stage maximum likelihood is used. But one can also non parametrically estimate the marginal distributions and combine them with a parametric copula as shown in the previous section. 
+Since the factor copula implied by \eqref{eq:factorcopula} is not given in closed form approximating the Likelihood function is difficult and computationally demanding \parencite[694]{Patton2013}. On ther other hand it is easy and computationally cheap to simulate many values from the factor model. Therefore, an alternative approach is used here which is based on the Generalized Methods of Moments (GMM). As shown by \textcite{Chen2006} for the semiparametric ML estimator, the SMM estimator is also not affected by the first level dynamic estimates \parencite[692]{Patton2013} of the time series model in \eqref{eq:model}. 
 
-In this case, pseudo-maximum likelihood estimation can be used. If a closed form functional relation of spearman's rho or kendall's thau to the copula parameters is available, one can also solve the system directly by using a method of moments approach. For the SMM approach, the population based statistics are replaced by their sample counterparts (inversion method). 
+SMM and GMM estimation is based on the method of moments. For many statistical parametric model, theoretical population moment conditions as functions of the model parameters the random variables involved can be derived. For estimation, the moments in these conditions can then be replaced by their respective sample moments \textcite[6-7]{Hall2005}. 
+
+Formally the moment conditions take the form
+\begin{equation}
+m(\theta) = E(f(\bm{Y_t}, \bm{\theta})) = 0,
+\end{equation}
+where $f$ is a vector of functions. For estimation, the moments are replaced by their sample analogs $\hat{m}(\bm{theta}) = \frac{1}{T}\sum_{t = 1}^Tf(\bm{Y_t}, \bm{\theta})$ and then solved for $\hat{\bm{\theta}}$. If more moment conditions than parameters are available no feasable solution exists. Instead, one minimizes the weighted sqared distance to the origin. The GMM estimator is given by:
+\begin{equation}
+\hat{\bm{\theta}} = \arg \min Q(\bm{\theta}) = \hat{m}'W\hat{m},
+\end{equation}
+
+If the DGP is known up to the model parameters one can calculate the moments based on simulated data and compare these moments to the observable sample moments. This method is known as Simultaed method of Moments (SMM) \parencite[342-347]{Hall2005}.
 
 For the factor copula model a closed form one to one mapping of the copula's parameters $\theta$ to measures of dependency as defined in \eqref{eq:kendalls} - \eqref{eq:taildependency} is not available in general. If it were available, methods of moments or generalized methods of moments (if the number of moment conditions is larger than the number of parameters) could be applied \parencite[p. 689f]{Patton2013}. 
 
