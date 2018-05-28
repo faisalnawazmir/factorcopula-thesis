@@ -467,6 +467,7 @@ Figure \ref{f:montecarlo} shows the results for the first study. For each combin
 The density mass centers arround the true value of $\beta = 1.5$. For all simulations the bias is zero or close to it. As the sample size increases, the deviation gets smaller and the SMM estimator converges to the true parameter. But small sample sizes clearly give unreliable results. Note, that more variables improves the quality of the estimator as more information is available to estimate the single parameter. This is due to the fact that the number of latent variables and parameters is constant and does not increase with the number of dimensions. As stated in \eqref{eq:equidependence} for the equidependence model, one averages over all pairwise depence vectors. Therefore the estimation error of the mean decreases if $N$ and hence the number of pairwise combinations increases.
 
 ### Structural break in a bloc-equidependence model
+\label{s:break}
 
 For the second study, a more sophisticated model is presented to illustrate the effectiveness of the approach even for high dimensional problems and complicated dependence structures. Analogous to the empirical examples in \textcite{Wied2017} and \textcite{Patton2017} the DGP is based on a \emph{bloc-equidependence} model as described in section \ref{s:restrictions}. 
 
@@ -638,12 +639,9 @@ AfD-CDU/CSU & 0.07 & 0.14 & 0.17 & 0.13 & 0.10 \\
 
 ## Results
 
-To get a first idea of the characteristics of the data various factor copula models are fitted to the complete sample. To dertermine the number of latent factors $K$, we apply the recommended approach by \textcite[p. 148]{Patton2017} and analyze the ordered eigenvalues of the residual rank-correlation matrix. One eigenvalue is above the threshold. Therefore, the analysis is restricted to one-factor copula models. 
+To get a first idea of the characteristics of the data various factor copula models are fitted to the complete sample. To dertermine the number of latent factors $K$, we use an approach by \textcite[p. 148]{Patton2017} and analyze the ordered eigenvalues of the residual rank-correlation matrix. One eigenvalue is above the threshold. Therefore, the analysis is restricted to one-factor copula models (see also figure \ref{f:eigenvalues}). 
 
-The best model is used to recurseviley estimate the parameters. We fix the distributional parameters at their full sample estimates to avoid numerical instabilities. Finally, we perform the moments and copula based break test and estimate factor copula models for the pre-break and post-break period. 
-
-In figure \ref{f:onefactor} we summarize the results of applying various one-factor copula models to the complete sample of residuals. A restrictive equidependence and an unrestrictive model is performed. 
-
+Table \ref{tab:onefactor} summarizes the results. We separetely fitted equidependence and unrestrictive models for various distributions of the factor and error term. The normal and t-distribution can be seen as special cases of the skew-t distribution. For $\lambda = 0$ the t-distribution and for $df \rightarrow \infty$ the normal distribution is obtained \parencite[709, 710]{Hansen1994}.
 
 \begin{table}[H]
 \centering
@@ -665,27 +663,39 @@ In figure \ref{f:onefactor} we summarize the results of applying various one-fac
   $Q$ & 0.0036 & 0.0034 & 0.0031 & 0.1081 & 0.0979 &  0.0903\\ 
   \bottomrule
 \end{tabular}
-\caption{Estimation results for different one-factor copula specifications.}
-\label{f:onefactor}
+\caption[Estimation results for different one-factor copula specifications]{Estimation results for different one-factor copula specifications applied to the residuals of the btw17 dataset.}
+\label{tab:onefactor}
 \end{table}
 
-Using the one-factor skew-t equidepndence model as 
+For the equidependence models, the single factor loading is stable but relatively small for all three models. The degrees of freedom for both the t and skew-t model are large. This indicates, that no tail dependencies are present. The best fit in terms of the $Q$ value of the objective function is given by the skew-t model. The skeweness parameter is negative but relatively small. 
+
+The unrestricvtive models are all characterized by a large $Q$ value. The factor loadings are relatively stable between the models, ranging from 0.23 for the AfD party to arround 0.65 for the two largest parties SPD and CDU/CSU. The degress of freedom are still large but smaller compared to the equidependence model. The skew-t model is characterized by negative asymmetries. 
+
+For the recursive estimation of the parameters, we proceed with the equipdendence skew-t model which has the lowest $Q$ value of all estimated models. To avoid numerical instabilities, we fix the distributional parameters $df$ and $\lambda$ at their full sample estimates. Therefore, we only test for a break in the single factor loading. Possible breaks in the tail dependency or symmetrie are left out. 
+
+Three break tests are performed. A restrictive and non-restrictive non-parametric test based on the moment functions and a parametric test based on the recursive estimates of the copula's factor loading. Table \ref{tab:breakpoint} summarizes the results. 
 
 \begin{table}[H]
 \centering
 \begin{tabular}{rccc}
   \toprule
   & \multicolumn{2}{c}{Moments based test}& Copula based test \\ 
-  & unrestrictive & restrictive & restrictive \\
+  & unrestrictive & equidepence & equidependence \\
   \cmidrule(r){1-1} \cmidrule(lr){2-3} \cmidrule(l){4-4}
   test statistics & 6.05 &            116.95  &   1.51 \\ 
   95\%-CV  &      1.98 &       61.90 &      1.67 (p-value: 0.0685)  \\ 
   breakpoint      &  2015-09-18    &  2015-09-18  &      2015-03-13 \\ 
   \bottomrule
 \end{tabular}
-\caption{Results of the break point detection tests.}
+\caption[Results of the break point detection tests]{Results of the breakpoint detection tests applied to the residuals of the btw17 dataset.}
+\label{tab:breakpoint}
 \end{table}
 
+The two non-parametric test clearly detect a breakpoint in the dependence structure for 2015-09-18.\footnote{This date is also marked as a dashed vertical line in figure \ref{f:nPosts}.} Arround this date, the fraction of posts which include refugee related topics was the highest for the sample. The test statistics are arround two to three times larger than the critical value. For the critcal value the type I error was set to $\alpha = 0.05$. The test based on the copula parameter estimates cannot reject the null hypothesis $H_0$. The p-value of arround $0.07$ is sightly larger than the choosen alpha value of $0.05$. The highest value of the test statistic occurred at 2015-03-13 a few month before the date detected by the non-parametric tests. 
+
+As seen in the simulation study in section \ref{s:break}, the non-parametric test seems to be less sensitive. The different results can possibly also be explained by the fact, that the copula based test did not considered the distributional parameters and only tested for a break in the factor loading. To further study this assumption we estimated the dependence structure before and after the break using a skew-t equidependence factor copula (see table \ref{tab:models}). For convinience, the full sample estimates as stated in table \ref{tab:onefactor} are replicated here. For all parameters, standard errors were estimated with the bootstrap procedure. 
+
+We excluded the estimation of the degress of freedom since the inclusion of this parameter resulted in very large standard errors and unstable numerical results. For all three models, the skewness parameters $\lambda$ is negative but its standard errors are large. This indicates, that this parameter is not significantly different from 0. The factor loading is significant and seems to be constant.
 
 \begin{table}[H]
 \centering
@@ -701,8 +711,11 @@ Using the one-factor skew-t equidepndence model as
   $S$ & 36525 & 36525 & 36525 \\
   \bottomrule
 \end{tabular}
-\caption[Post and pre-break estimation results for the btw17 dataset]{Estimation results for the btw17 dataset. A bloc-equidependence factor copula model is estimated before and after the breakpoint at $t = 626$. Standard errors in paranthesis (estimated with $ B = 2000$ bootstrap samples). Degrees of freedom were fixed at the full model estimate of $df = 96$. }
+\caption[Post and pre-break estimation results for the btw17 dataset]{Estimation results for the btw17 dataset. A bloc-equidependence factor copula model is estimated before and after the breakpoint at $t = 626$ (2015-09-18). Standard errors in paranthesis (estimated with $ B = 2000$ bootstrap samples). Degrees of freedom were fixed at the full model estimate of $df = 96$. }
+\label{tab:models}
 \end{table}
+
+The pre and post-break copula estimatates are very similar, despite the "breakpoint" detected by the moment based tests. It seems that the dependence structure can be best modelled as a one factor equidependence copula with no tail dependencies and assymetries. This case of one-factor copula models can also be decribed with a Gaussian copula. 
 
 # Discussion
 \label{s:discussion}
