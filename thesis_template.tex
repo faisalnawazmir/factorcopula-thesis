@@ -1,5 +1,5 @@
 %%%%% Dokumentenklasse mit verschiedenen Attributen
-\documentclass[a4paper, bibtotocnumbered,liststotoc,12pt]{scrartcl}
+\documentclass[a4paper, bibtotocnumbered,liststotoc,12pt,abstracton]{scrartcl}
 
 %%%%% Betriebssystemabhängige Eingabedekodierung
 \usepackage[T1]{fontenc}
@@ -123,7 +123,7 @@ pdfauthor={$author$}
 
 \interfootnotelinepenalty=10000
 
-
+\usepackage[super]{nth}
 %% default template
 
 \PassOptionsToPackage{unicode=true}{hyperref} % options for packages loaded elsewhere
@@ -249,12 +249,22 @@ $institue$\\
 \end{titlepage}
 
 
+\begin{abstract}
 
-$if(abstract)$
-  \begin{abstract}
-  $abstract$
-  \end{abstract}
-$endif$
+\footnotesize{
+
+Multivariate statistical models based on copula functions have gained much popularity during the last years. In the field of finance they are used to model complex dependence structures between financial assets. A multivariate distribution, can always be expressed in terms of its marginal distributions and a copula function. In contrast to the linear correlation coefficient, the dependencies described by a copula are invariant to monotone transformations of the marginal distributions. For multivariate time series, copulas allow for a multistage estimation process, in which first the marginal distributions are estimated using standard univariate time series models and second a static copula model is applied to the residuals. 
+
+A new class of copula models, the so called factor copulas, are useful for high dimensional problems. Here, the dependence structure is modeled as a linear factor model for which the dependencies are described by a lower dimensional set of latent variables. Estimating factor copulas is challenging but a simulation based technique based on the Generalized Method of Moments can be adapted to this type of model.
+
+Starting with a short general introduction on copulas, this work summarizes and structures the current state of development in the field of factor copula models including the estimation procedure and a test for structural breaks in its parameters. This thesis contributes to the current research by providing an open-source software package for the programming language \emph{R} making the methods available to a broader audience. This can improve future research on this topic.
+
+The validity and functionality of the theory and its implementation is tested in two simulation studies. Further, we investigate how these methods can be used for the detection of breaks in other research areas. Using real text data from an online social network, the case of the German refugee crisis in late 2015 is analyzed: For each major German party we derive the importance of topics related to refugees in the online political discourse over time. The non-parametric structural break test detects a break during the time of the refugee crisis but a copula model estimated before and after the break yields no significant difference in its parameters.
+
+The package is capable of estimating high dimensional factor copula models. But due to the simulation based estimation technique and the non-regular properties of the objective unction the numerical methods are often unstable, inefficient and computationally demanding. The choice of the underlying optimization algorithm strongly effects the estimation results. Future research should therefore concentrate on improving the stability and efficiency of the estimation techniques and the underlying optimization algorithm. 
+}
+\end{abstract}
+
 
 
 %%% Inhalts-, Abbildungs- und Tabellenverzeichnis
