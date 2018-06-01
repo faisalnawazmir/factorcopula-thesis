@@ -8,7 +8,7 @@ supervisor: "Prof.Dr. Dominik Wied"
 bibliography: "./literature.bib"
 output: 
   pdf_document:
-    highlight: tango
+    highlight: default
     #latex_engine: xelatex
     latex_engine: pdflatex
     template: thesis_template.tex
@@ -37,10 +37,17 @@ This allows for a two-stage estimation process in multivariate models in which t
 
 For time series data copula theory can be used in two ways: First, to describe the cross sectional dependence structure by estimating the conditional copula function of the conditional joint distribution at some time point given past information. Second, copulas can be used to describe the dependence between observations of a univariate time series. This is related to the study of Markov processes. \parencite[p. 771 ff]{Patton2009}.
 
-This thesis summarizes and structures the current development in the field of factor copula models. It contributes to the scientific discussion in two ways: First, a software library for a consistent specification, simulation and estimation of factor copula models is presented. With the library, the methods and the structural break test are made available to a broader scientific audience and can be used by applied researchers. Second, we study novel ways of applying the discussed methods to areas outside of the finance community. The structural break test is applied to an aggregated dataset of social media posts from German politicians and political parties.
+This thesis summarizes and structures the current development in the field of factor copula models. For this type of model, the dependence structure is modeled as a linear factor model for which the dependencies can be described by a lower dimensional set of latent variables. The paper contributes to the scientific discussion in two ways: 
 
+First, a software library, written in the language \emph{R} is presented. It allows the consistent specification, simulation and estimation of general factor copula models. By doing so, the methods and the structural break test are made available to a broader scientific audience and can be easily studied and improved by other researchers. 
 
+Second, we assess novel ways of using the discussed methods in other, non finance related, areas of research. The structural break test is applied to an aggregated dataset of textual social-network posts from German politicians and political parties. Specifically, the case of the German refugee crisis in late 2015 is analyzed: For each major German party we derive a daily statistic, which measures the importance of refugee and asylum related topics in their political online discourse. A 4 years period from 2014 - 2017 is covered. With this set up we can analyze dependencies in the importance of the topic between the parties and test whether this dependencies changed at some point due to the refugee crisis. 
 
+The structure of this thesis is the following: The first chapter deals with the theoretical basics of copula theory, introduces the factor copula model and presents the time series model which is used in a dynamic multivariate context. The dynamic model is based on the assumption of a time-invariant copula given that each marginal time series is filtered by its time dependent conditional means and variances. Further, the estimation method known as Simulated Method of Moment (SMM) is presented. It is based on the comparisson of a vector of dependencies measures calculated independently with simulations from the factor model and with the observed residual data. The last theoretical section deals with a structural break test for the possibly time varying parameters of the factor copula model.
+
+The second chapter gives an overview over a software package written for the programming language \emph{R}. It allows the specification, simulation and estimation of factor copula models. The validity and functionality of the theory and its implementation is tested in two simulation studies for which the results are presented. 
+
+The third chapter introduces the social-network dataset, describes the derivation of the variables and summarizes the results of applying various factor copula models and structural break tests to the data. The last chapter discusses the results and gives a critical assessement of the methods. 
 
 
 
@@ -166,7 +173,7 @@ For the first model, it is assumed that $K = 1$ and $\bm{\beta} = (\beta, \dots,
 
 \begin{figure}[H]
 	\includegraphics[width=\textwidth]{./figures/fig1}
-	\caption[Illustration of different factor copula models.]{Illustration of different equidependence factor copula models with $N = 2$, $\beta = 1.5$, $Y_i \sim N(0, 1)$ and different distributions for the latent variable and the error term.}	
+	\caption[Simulations from different equidependence factor copula models]{Simulations from different equidependence factor copula models with $N = 2$, $\beta = 1.5$, $Y_i \sim N(0, 1)$ and different distributions for the latent variable and the error term.}	
 	\label{f:equidependence}  
 \end{figure}
 
@@ -323,7 +330,7 @@ $\hat{\bm{m}}_T^{(b)} \gets$ compute sample moments from bootstrap sample $\{\ha
     $\hat{\bm{\Sigma}}_{T,B} \gets \frac{T}{B}\sum_{b = 1}^B((\hat{\bm{m}}_T^{(b)} - \hat{\bm{m}}_T)(\hat{\bm{m}}_T^{(b)} - \hat{\bm{m}}_T)')$\;
     \BlankLine
     \KwRet $\hat{\bm{\Sigma}}_{T,B}$\;
-  \caption{Bootstrap procedure for the estimation of $\hat{\bm{\Sigma}}_{T,B}$.}
+  \caption{Bootstrap procedure for estimating the asymptotic variance $\hat{\bm{\Sigma}}_{T,B}$}
 \label{alg:sigma}
 \end{algorithm}
 
@@ -394,7 +401,7 @@ The distribution of the test statistics under the null hypothesis can be estimat
   }
   calculate the $1-\alpha$ sample quantile $K$ from all $K^{(b)}$\;
   \KwRet K;
-  \caption{Bootstrap procedure for the estimation of the critical value for the structural break test.}
+  \caption{Bootstrap procedure for estimating the critical value in the structural break test}
   \label{alg:breaktest}
 \end{algorithm}
 Given the empirical standardized residuals and some significance level $\alpha$ the procedures mainly calculates $B$ bootstrap versions of the maximum scaled squared distance between the recursive moments $\hat{\bm{m}}_t$ and the full sample estimate $\hat{\bm{m}}_T$. For the copula based test $(\bm{G'WG})^{-1}\bm{G'W}$ is estimated only once using the full sample estimates and the estimation procedures as described in section \ref{s:smmfactorcopulas} and in algorithm \eqref{alg:sigma}.
@@ -457,7 +464,7 @@ We repeat the simulation and estimation of $\beta$ over a grid of different valu
 
 \begin{figure}[h]
 	\includegraphics[width=\textwidth]{./figures/fig2}
-	\caption[Monte-Carlo density estimators for $\hat{\beta}$]{Approximated Monte-Carlo density estimators for $\hat{\beta}$ of an equidependence skew t - t factor copula model with $\beta = 1.5$, $S = 25000$, standard normal distributed marginals and different values for $N$ and $T$. Each simulation is based on $1000$ Monte-Carlo replications.}	
+	\caption[Monte-Carlo density estimators for the parameter of an equidependence factor copula model]{Approximated Monte-Carlo density estimators for $\hat{\beta}$ of an equidependence skew t - t factor copula model with $\beta = 1.5$, $S = 25000$, standard normal distributed marginals and different values for $N$ and $T$. Each simulation is based on $1000$ Monte-Carlo replications.}	
 	\label{f:montecarlo}  
 \end{figure}
 
@@ -482,7 +489,7 @@ Figure \ref{f:breaktest} shows the test statistics of the three different break 
 
 \begin{figure}[H]
 	\includegraphics[width = \textwidth]{./figures/fig3}
-	\caption[Illustration of a structural break test for a bloc-equidependence model]{Illustration of a structural break test for a bloc-equidependence model with $N = 21$ and $3$ groups of equal size. The theoretical breakpoint is at $t = 1000$ and is modeled as a change of the intra- and interdependence of the first group from $0$ to $1.5$. The first panel shows the copula based test based on all groups. The second panel the copula based test for only the second, and third group which are not affected by the structural break. The lower panel shows the moment based test.}	
+	\caption[Parametric and non-parametric structural break test for a bloc-equidependence model]{Parametric and non-parametric structural break test for a bloc-equidependence model with $N = 21$ and $M = 3$ groups of equal size. The theoretical breakpoint is at $t = 1000$ and is modeled as a change of the intra- and interdependence of the first group from $0$ to $1.5$. The first panel shows the copula based test based on all groups. The second panel the copula based test for only the second, and third group which are not affected by the structural break. The lower panel shows the moment based test.}	
 	\label{f:breaktest}  
 \end{figure}
 
@@ -510,7 +517,7 @@ Finally, table \ref{tab:simulation} shows the results for a copula model estimat
   $S$ & 37500 & 37500 & 37500 \\
   \bottomrule
 \end{tabular}
-\caption[Estimation results for the simulated model before and after the break and for the full sample.]{Estimation results for the bloc-equidependence factor copula model before and after the breakpoint and for the full sample. Standard errors in parenthesis (estimated with $ B = 2000$ bootstrap samples).}
+\caption[Estimation results for the bloc-equidependence simulation]{Estimation results for the bloc-equidependence factor copula model before and after the breakpoint and for the full sample. Standard errors in parenthesis (estimated with $ B = 2000$ bootstrap samples).}
 \label{tab:simulation}
 \end{table}
 
@@ -542,7 +549,7 @@ The bottom panel of figure \ref{f:nPosts} shows the absolute number of monthly p
 
 \begin{figure}[h]
 	\includegraphics[width=\textwidth]{./figures/nPosts}
-	\caption[Number of active accounts and posts per party and month]{Number of active accounts and posts per party and month. The bottom panel shows the number of posts matching the regular expression \texttt{flucht|fluecht}. The vertical line indicates the breakpoint detected by the moments based test.}	
+	\caption[Number of active accounts and posts per party and month]{Number of active accounts and posts per party and month. The bottom panel shows the number of posts matching the regular expression \texttt{flucht|fluecht}. The vertical solid and dashed lines indicate the breakpoint detected by the non-parametric moments and the parametric copula based test.}	
 	\label{f:nPosts}  
 \end{figure}
 
@@ -565,7 +572,7 @@ AfD & 74724 & 162 & 18.36 & 7.59 & 6.96 \\
   All parties & \numprint{663638} & 1217 & 69.57 & 17.27 & 4.28\\
   \bottomrule
 \end{tabular}
-\caption[Overall number of posts, active accounts, likes and shares over the observation period]{Overall number of posts, active accounts, likes and shares over the observation period from "2014-01-01" - "2017-12-31". The last two columns show the fraction of posts matching the regular expression \texttt{flucht|fluecht}.}
+\caption[Overall number of posts, active accounts, likes and shares for the btw17 dataset]{Overall number of posts, active accounts, likes and shares over the observation period from "2014-01-01" - "2017-12-31". The last two columns show the fraction of posts matching the regular expression \texttt{flucht|fluecht}.}
 \label{t:facebook}
 \end{table}
 
@@ -590,7 +597,7 @@ Standard ARIMA-GARCH models are used for modelling the univariate time series \p
   MA & 1 & 2 & 1 & 3 & 2 & 1\\
   \bottomrule
 \end{tabular}
-\caption{ARIMA Model parameters for the ARIMA-GARCH(1,1) model used to estimate the standardized residuals.}
+\caption[Parameters for the ARIMA-GARCH(1,1) model]{Parameters for the ARIMA-GARCH(1,1) model used to model the marginal distributions of the btw17 dataset.}
 \label{tab:ARIMA}
 \end{table}
 
@@ -599,7 +606,7 @@ Figure \ref{f:residuals} shows the time series of relative frequencies and the r
 \begin{figure}[H]
 	\subfloat[Relative daily within-party frequency of refugee related posts.]{\includegraphics[width = \textwidth]{./figures/flucht_observed}} \\
 	\subfloat[Residuals of ARIMA-GARCH models applied to the time series.]{\includegraphics[width= \textwidth]{./figures/flucht_residuals}}
-	\caption[Time series and residuals]{Univariate time series and residuals of the daily within-party frequency of refugee related topics. The residuals are estimated by applying ARIMA-GARCH models to the time series.}	
+	\caption[Univariate time series and estimated residuals for the btw17 dataset]{Univariate time series and estimated residuals for the btw17 dataset. The upper panel shows the daily within-party frequency of refugee related topics. The residuals are estimated by applying ARIMA-GARCH models to the time series.}	
 	\label{f:residuals}  
 \end{figure}
 
@@ -632,7 +639,7 @@ AfD-CDU/CSU & 0.07 & 0.14 & 0.17 & 0.13 & 0.10 \\
   Average & 0.11 & 0.12 & 0.18 & 0.16 & 0.11 \\ 
    \bottomrule
 \end{tabular}
-\caption[Pairwise sample dependencies for the six parties.]{Pairwise sample dependencies for the six parties applied to the standardized residuals.}
+\caption[Pairwise sample dependencies for the six parties]{Pairwise sample dependencies for the six parties applied to the standardized residuals.}
 \label{t:correlations}
 \end{table}
 
@@ -686,15 +693,17 @@ Three break tests are performed. A restrictive and non-restrictive non-parametri
   breakpoint      &  2015-09-18    &  2015-09-18  & 2015-03-13 & 2015-03-11\\ 
   \bottomrule
 \end{tabular}
-\caption[Results of the break point detection tests]{Results of the breakpoint detection tests applied to the residuals of the btw17 dataset. P-value in parenthesis.}
+\caption[Results for the parametric and non-parametric break point detection tests]{Results for the parametric and non-parametric break point detection tests applied to the residuals of the btw17 dataset (p-value in parenthesis).}
 \label{tab:breakpoint}
 \end{table}
 
-The two non-parametric test clearly detect a breakpoint in the dependence structure for 2015-09-18.\footnote{This date is also marked as a dashed vertical line in figure \ref{f:nPosts}.} Around this date, the fraction of posts which include refugee related topics was the highest for the sample. The test statistics are around two to three times larger than the critical value. For the critical value the type I error was set to $\alpha = 0.05$. The test based on the copula parameter estimates cannot reject the null hypothesis $H_0$. The p-value of around $0.07$ is sightly larger than the chosen alpha value of $0.05$. The highest value of the test statistic occurred at 2015-03-13 a few month before the date detected by the non-parametric tests.
+The two non-parametric test clearly detect a breakpoint in the dependence structure for 2015-09-18.\footnote{The dates of the breakpoints are also marked as vertical lines in figure \ref{f:nPosts}.} Around this date, the fraction of posts which include refugee related topics was the highest for the sample. The test statistics are around two to three times larger than the critical value. For the critical value the type I error was set to $\alpha = 0.05$. The test based on the copula parameter estimates cannot reject the null hypothesis $H_0$. The p-value of around $0.07$ is sightly larger than the chosen alpha value of $0.05$. The highest value of the test statistic occurred at 2015-03-13 a few month before the date detected by the non-parametric tests.
 
-As seen in the simulation study in section \ref{s:break}, the non-parametric test seems to be less sensitive. The different results can possibly also be explained by the fact, that the copula based test did not considered the distributional parameters and only tested for a break in the factor loading. We also performed a break test based on a one factor equidependence norm-norm factor copula. This yielded a p-value of $0.028$ for a breakpoint at 2015-03-11. To further study this assumption we estimated the dependence structure before and after the break using a skew-t equidependence factor copula (see table \ref{tab:models}). For convenience, the full sample estimates as stated in table \ref{tab:onefactor} are replicated here. For all parameters, standard errors were estimated with the bootstrap procedure. 
+As seen in the simulation study in section \ref{s:break}, the non-parametric test seems to be less sensitive. The different results can possibly also be explained by the fact, that the copula based test did not considered the distributional parameters and only tested for a break in the single factor loading. We also performed a break test based on a one factor equidependence norm-norm factor copula. This yielded a p-value of $0.028$ for a breakpoint at 2015-03-11. 
 
-We excluded the estimation of the degrees of freedom since the inclusion of this parameter resulted in very large standard errors and unstable numerical results. For all three models, the skewness parameters $\lambda$ is negative but its standard errors are large. This indicates, that this parameter is not significantly different from 0. The factor loading is significant and seems to be constant.
+To better assess the results, we further estimated the dependence structure before and after the break using a skew-t equidependence factor copula (see table \ref{tab:models}). We choose the breakpoint detected by the moment based tests since this has the lowest p-value. For convenience, the full sample estimates as stated in table \ref{tab:onefactor} are replicated here. For all parameters, standard errors were estimated with the bootstrap procedure. 
+
+We excluded the estimation of the degrees of freedom and used the full sample estimates. Estimating this distributional parameter often resulted in very large standard errors and unstable numerical results. In this setting, the parameter estimates also changed if the \emph{inverse} degress of freedom over the range of $[0, 0.5)$ instead of the regular degrees of freedom over the range $(2, \infty]$ were estimated. 
 
 \begin{table}[H]
 \centering
@@ -714,10 +723,21 @@ We excluded the estimation of the degrees of freedom since the inclusion of this
 \label{tab:models}
 \end{table}
 
-The pre and post-break copula estimates are very similar, despite the "breakpoint" detected by the moment based tests. It seems that the dependence structure can be best modeled as a one factor equidependence copula with no tail dependencies and asymmetries. This case of one-factor copula models can also be described with a Gaussian copula. 
+For all three models, the skewness parameters $\lambda$ is negative but its standard errors are large such that this parameter is not significantly different from 0. The estimates for the factor loading is significant and does not fluctuate between the pre and post-break period. Despite the "breakpoint" detected by the moment based tests, the pre and post-break copula models are very similar.  
+
+Given the large degrees of freedom and the insignificant skewness parameter, it seems that the dependence structure can be modeled as a one factor equidependence copula for which the latent variable is normal distributed. This special case of a one-factor copula model can also be described with a Gaussian copula. Estimating the pre- and post-break Gaussian one-factor model for the earlier breakpoint detected by the parametric break test at 2015-03-11 yields an increase in the factor loading from $\hat{\beta}_{pre} = 0.35$ to $\hat{\beta}_{post} = 0.54$. This indicates an increase in dependencies for the time of the refugee crisis and afterwards. 
 
 # Discussion
 \label{s:discussion}
+
+The purpose of this thesis was first, to summarize the current development in the field of factor copulas, second, to enable other researcher to assess and enhance the discussed methods by providing a software library for the well known programming language \emph{R} and third to apply the methods to an aggregated dataset based on textual posts from a social network. 
+
+The simulation studies were performed to verify the validity and performance of the theoretical methods and its implementations. The first study showed the convergence properties of the parameters of a factorc copula model. The second study simulated a structural break in the copula. Both the non-parametric test, based on recursive calculations of the dependency vector for the observed data and the parametric test, based on the recursive estimates of a copula model, were able to detect the breakpoint with high accuracy. 
+
+In contrast to the simulation study which gave clear and precise results for both the non-parametric and the 
+
+
+
 
 
 To get better results much care has to be put into the optimization algorithm and the numerical procedures. 
@@ -735,60 +755,76 @@ To get better results much care has to be put into the optimization algorithm an
 # Appendix
 
 
-## Code example
-\label{s:code}
-
-
-In the following example, a factor copula with three latent variables is defined. The first factor is skewed-t distributed, the second and third are standard normal distributed. The error term is t distributed with 4 degrees of freedom. The distributional parameters `df` and `lambda` of the skewed-t distribution are free parameters of the model.  
-```{r}
-library(factorcopula)
-Z <- config_factor(rst = list(nu = df, lambda = lambda), 
-                   rnorm = list(),
-                   rnorm = list(),
-                   par = c("df", "lambda"))
-eps <- config_error(rt = list(df = 4))
-```
-
-Continuing the example, a bloc-equidependence model with $K=3$, $N = 6$, $k_1 = k_2 = 3$ and $M = 2$ is constructed. Together with the specification of the latent variables this results in a bloc-equidependence model with a skewed-t distribution for the common factor and a standard normal distribution for each of the two group specific factors. 
-```{r}
-k <- c(1, 1, 1, 2, 2, 2)
-beta <- config_beta(k, 3)
-```
-
-In the example, $S = 10$ random values from the copula model are simulated. The loadings for the common factor are $\beta_1 = \beta_2 = 1$ and the group specific loadings $\beta_3$ and $\beta_4$ are set to zero. 
-
-```{r, eval = FALSE}
-copfun <- fc_create(Z, eps, beta)
-theta <- c(beta1 = 1, beta2 = 1, beta3 = 0, beta4 = 0, 
-           df = 10, lambda = -0.8)
-U <- copfun(theta, S = 10)
-```
-
-
-
-
 ## Notes on data and source code access
 \label{s:access}
 
-An online version of this thesis is publicly available as a git-repository under https://github.com/bonartm/factorcopula-thesis. The repository contains notes on how to install all dependencies. The source code files for the analyses are located online in the `source` folder. 
+An online version of this thesis is publicly available as a git-repository under https://github.com/bonartm/factorcopula-thesis. The repository contains notes on how to install all dependencies. The source code files for the simulation studies and analyses are located online in the `source` folder. 
 
 Due to data restrictions by Facebook it is not possible to publish the original dataset of Facebook posts. However, the residuals of the ARIMA-GARCH models which were applied to the aggregated Facebook data are located online at `data/topics_residuals.rds`. 
 
-The methods for the simulation and estimation of factor copula models and the break test are not part of this repository. Instead, they are available via the R-package `factorcopula`. The package can be installed from Github. Further notes can be found under: https://github.com/bonartm/factorcopula (See also chapter \ref{s:factorcopulapackage}). 
+Almost all estimation procedures (for instance the bootstrap algorithms and the recursive model estimation)  are embarrassingly parallel. Therefore, the HPC cluster of the University of Cologne was utilized to massively speed up the estimation process \parencite{cheops2018}. 
 
-For almost all estimation procedures, the HPC cluster of the University of Cologne was utilized \parencite{cheops2018}. To simplify the workflow we wrote the R-package `cheopsr` which allows the execution of job scripts from within the local R environment. The package is available online at https://github.com/bonartm/cheopsr. To run the package, a Unix-like system and access rights to the HPC cluster are obligatory. 
+To simplify the workflow and the communication with the cluster, we wrote the R-package `cheopsr`. It allows the execution of parallel jobs and the collection of results from within the local R environment. The package is available online at https://github.com/bonartm/cheopsr. To run the package, a Unix-like system and access rights to the HPC cluster are obligatory. 
+
+The methods for the simulation and estimation of factor copula models and the break test are available via a separate R-package `factorcopula`. The package can be easily downloaded and installed from Github. Further notes can be found under: https://github.com/bonartm/factorcopula. 
+
+## Code example
+\label{s:code}
+
+In the following explained example, the \emph{R} package \emph{factorcopula} is used to define a bloc-equidependence factor copula with three latent variables. Data from the model is simulated for some specific vector $\theta$. Finally, the parameter vector is estimated with the SMM.  
+
+The first factor is skewed-t distributed, the second and third are standard normal distributed. The error term is t distributed with 4 degrees of freedom. The distributional parameters `dfInv` and `lambda` of the skewed-t distribution are free parameters of the model. 
+```{r}
+library(factorcopula)
+Z <- config_factor(rst = list(nu = 1/dfInv, lambda = lambda), 
+                   rnorm = list(),
+                   rnorm = list(),
+                   par = c("dfInv", "lambda"))
+eps <- config_error(rt = list(df = 4))
+```
+
+A model with $K=3$, $N = 6$, $k_1 = k_2 = 3$ and $M = 2$ is constructed. Together with the specification of the latent variables this results in a bloc-equidependence model with a skewed-t distribution for the common factor and a standard normal distribution for each of the two group specific factors. 
+```{r}
+k <- c(1, 1, 1, 2, 2, 2)
+beta <- config_beta(k, 3)
+beta
+```
+
+Next, $S = 1000$ random values from the copula model are simulated and the marginal distributions are transformed to standard normal ones. The factor loadings for the common factor are $\beta_1 = \beta_2 = 1$ and the group specific loadings $\beta_3 = \beta_4 = 1.5$. The distributional parameters of the common latent factor are set to $dfInv = 0.25$ and $\lambda = -0.8$. This produces assymetric tail dependencies.
+```{r, eval = FALSE}
+copfun <- fc_create(Z, eps, beta)
+theta <- c(beta1 = 1, beta2 = 1, beta3 = 1.5, beta4 = 1.5, 
+           dfInv = 0.25, lambda = -0.5)
+Y <- qnorm(copfun(theta, S = 1000))
+```
+
+Finally, we define some lower and upper bounds for the numerical estimates and approximate the parameters of the model via SMM. Standard errors are estimated with 1000 bootstrap samples. To get more precise parameter estimates, the stopping criteria for the first or second stage optimization algorithms can be increased. 
+```{r, eval = FALSE}
+lower <- c(beta1 = 0, beta2 = 0, beta3 = 0, beta4 = 0, 
+           dfInv = 0.01, lambda = -0.9)
+upper <- c(beta1 = 5, beta2 = 5, beta3 = 5, beta4 = 5, 
+           dfInv = 0.49, lambda = 0.9)
+model <- fc_fit(Y, Z, eps, beta, lower, upper, k = k,
+                S = 25000, se = TRUE, B = 1000)
+round(model$theta.second.stage, 2)
+# beta1  beta2  beta3  beta4  dfInv lambda 
+#  1.26   0.96   1.40   1.64   0.30  -0.55 
+round(model$se, 2)
+# beta1  beta2  beta3  beta4  dfInv lambda 
+#  0.52  0.44   0.44   0.44   0.23   0.86 
+```
 
 ## Additional figures
 
 \begin{figure}[H]
-	\includegraphics[width=0.95\textwidth]{./figures/pairwise_scatter}
-	\caption{Pairwise scatter-plot of the estimated residuals.}	
+	\includegraphics[width=0.9\textwidth]{./figures/pairwise_scatter}
+	\caption{Pairwise scatter-plot of the estimated residuals for the btw17 dataset}	
 	\label{f:pairwise_scatter}  
 \end{figure}
 
 \begin{figure}[H]
-	\includegraphics[width=0.95\textwidth]{./figures/eigenvalues}
-	\caption{Scree-plot of ranked eigenvalues based on the pairwise rank-correlation matrix.}	
+	\includegraphics[width=0.9\textwidth]{./figures/eigenvalues}
+	\caption{Scree-plot of ranked eigenvalues based on the pairwise rank-correlation matrix}	
 	\label{f:eigenvalues}  
 \end{figure}
 

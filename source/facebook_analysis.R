@@ -84,7 +84,8 @@ posts %>%
   scale_x_date(date_breaks = "1 year", date_minor_breaks = "3 month", date_labels = "%Y", expand = c(0.0, 365/4)) + 
   scale_fill_manual(values = PARTIES) + 
   scale_y_continuous(labels = scales::comma) + 
-  geom_vline(xintercept = as.Date("2015-09-18"), color = "black", linetype = 2) +
+  geom_vline(xintercept = as.Date("2015-09-18"), color = "black", linetype = 1) +
+  geom_vline(xintercept = as.Date("2015-03-11"), color = "black", linetype = 2) +
   labs(x = "Date", y = "N") + 
   theme_hc() + 
   theme(legend.title = element_blank(), 
@@ -194,7 +195,7 @@ mCrit #
 
 # [x]Fit various Factor Copula to all Residuals ----------------------------------------
 
-opt <- cheops_slurmcontrol(nodes = 2, tasks = 4, mem = "4gb", time = "00:30:00", partition = "devel")
+opt <- cheops_slurmcontrol(nodes = 2, tasks = 4, mem = "4gb", time = "00:60:00", partition = "devel")
 
 cheops_lapply(paste0("fac-cop", 1:6), function(name, topicsTrendRes){
   N <- ncol(topicsTrendRes)
@@ -206,27 +207,27 @@ cheops_lapply(paste0("fac-cop", 1:6), function(name, topicsTrendRes){
     beta <- config_beta(k, 1)
     
     lower <- c(beta1 = 0, beta2 = 0, beta3 = 0, beta4 = 0, beta5 = 0, beta6 = 0)
-    upper <- c(rep(5, 6))
+    upper <- c(rep(2, 6))
     names(upper) <- names(lower)
   }
   if (name == "fac-cop2"){
     k <- 1:N
-    eps <- config_error(rt = list(df = df), par = "df")
-    Z <- config_factor(rt = list(df = df), par = c("df"))
+    eps <- config_error(rt = list(df = 1/df), par = "df")
+    Z <- config_factor(rt = list(df = 1/df), par = c("df"))
     beta <- config_beta(k, 1)
     
-    lower <- c(beta1 = 0, beta2 = 0, beta3 = 0, beta4 = 0, beta5 = 0, beta6 = 0, df = 2.01)
-    upper <- c(rep(5, 6), 100)
+    lower <- c(beta1 = 0, beta2 = 0, beta3 = 0, beta4 = 0, beta5 = 0, beta6 = 0, df = 0.01)
+    upper <- c(rep(2, 6), 0.4)
     names(upper) <- names(lower)
   }
   if (name == "fac-cop3"){
     k <- 1:N 
-    eps <- config_error(rt = list(df = df), par = "df")
-    Z <- config_factor(rst = list(nu = df, lambda = lambda), par = c("df", "lambda"))
+    eps <- config_error(rt = list(df = 1/df), par = "df")
+    Z <- config_factor(rst = list(nu = 1/df, lambda = lambda), par = c("df", "lambda"))
     beta <- config_beta(k, 1)
     
-    lower <- c(beta1 = 0, beta2 = 0, beta3 = 0, beta4 = 0, beta5 = 0, beta6 = 0, df = 2.01, lambda = -0.99)
-    upper <- c(rep(5, 6), 100, 0.99)
+    lower <- c(beta1 = 0, beta2 = 0, beta3 = 0, beta4 = 0, beta5 = 0, beta6 = 0, df = 0.01, lambda = -0.8)
+    upper <- c(rep(2, 6), 0.4, 0.8)
     names(upper) <- names(lower)
   }
   # restrictive
@@ -237,34 +238,34 @@ cheops_lapply(paste0("fac-cop", 1:6), function(name, topicsTrendRes){
     beta <- config_beta(k, 1)
     
     lower <- c(beta1 = 0)
-    upper <- c(5)
+    upper <- c(2)
     names(upper) <- names(lower)
   }
   if (name == "fac-cop5"){
     k <- rep(1, N)
-    eps <- config_error(rt = list(df = df), par = "df")
-    Z <- config_factor(rt = list(df = df), par = c("df"))
+    eps <- config_error(rt = list(df = 1/df), par = "df")
+    Z <- config_factor(rt = list(df = 1/df), par = c("df"))
     beta <- config_beta(k, 1)
     
-    lower <- c(beta1 = 0, df = 2.01)
-    upper <- c(rep(5, 1), 100)
+    lower <- c(beta1 = 0, df = 0.01)
+    upper <- c(rep(2, 1), 0.4)
     names(upper) <- names(lower)
   }
   if (name == "fac-cop6"){
     k <- rep(1, N)
-    eps <- config_error(rt = list(df = df), par = "df")
-    Z <- config_factor(rst = list(nu = df, lambda = lambda), par = c("df", "lambda"))
+    eps <- config_error(rt = list(df = 1/df), par = "df")
+    Z <- config_factor(rst = list(nu = 1/df, lambda = lambda), par = c("df", "lambda"))
     beta <- config_beta(k, 1)
     
-    lower <- c(beta1 = 0, df = 2.01, lambda = -0.99)
-    upper <- c(rep(5, 1), 100, 0.99)
+    lower <- c(beta1 = 0, df = 0.01, lambda = -0.8)
+    upper <- c(rep(2, 1), 0.4, 0.8)
     names(upper) <- names(lower)
   }
   
-  fc_fit(Y = topicsTrendRes, Z, eps, beta, lower, upper, S = 36525, k = k, se = FALSE,
-         control.first.stage = list(algorithm = "NLOPT_GN_MLSL_LDS", stopval = 0, xtol_rel = 1e-13, maxeval = 3000,
-                                    local_opts = list(algorithm = "NLOPT_LN_SBPLX", xtol_rel = 1e-13, maxeval = 3000)), 
-         control.second.stage = list(algorithm = "NLOPT_LN_SBPLX", xtol_rel = 1e-19, maxeval = 3000))
+  fc_fit(Y = topicsTrendRes, Z, eps, beta, lower, upper, S = 36525, k = k, se = TRUE, B = 2000,
+         control.first.stage = list(algorithm = "NLOPT_GN_MLSL_LDS", stopval = 0, xtol_rel = 1e-16, maxeval = 3000,
+                                    local_opts = list(algorithm = "NLOPT_LN_SBPLX", xtol_rel = 1e-16, maxeval = 3000)), 
+         control.second.stage = list(algorithm = "NLOPT_LN_SBPLX", xtol_rel = 1e-20, maxeval = 3000))
 }, options = opt, jobname = "emp-cop", packages = "factorcopula", args = list(topicsTrendRes = topicsTrendRes))
 
 
@@ -276,6 +277,8 @@ models <- cheops_readRDS("./emp-cop/res.rds")
 
 lapply(models, function(x) round(x$Q, 4))
 lapply(models, function(x) round(x$theta.second.stage, 2))
+lapply(models, function(x) round(x$se, 2))
+
 
 models[[6]]
 
@@ -329,13 +332,26 @@ quantile(crit, 1-0.05)
 
 #  [x] Before and after breakpoint copula estimation --------------------------
 k <- rep(1, N) 
-eps <- config_error(rt = list(df = 96))
-Z <- config_factor(rst = list(nu = 96, lambda = lambda), par = c("lambda"))
+eps <- config_error(rnrom = list())
+Z <- config_factor(rnorm = list())
 beta <- config_beta(k, 1)
 
-lower <- c(beta1 = 0, lambda = -0.8)
-upper <- c(5, 0.8)
+lower <- c(beta1 = 0)
+upper <- c(5)
 names(upper) <- names(lower)
+
+cl <- makeCluster(3)
+clusterExport(cl, ls()[!grepl("posts", ls())])
+cluster_library(cl, "factorcopula")
+models <- parLapply(cl, x = list(full = 1:nrow(topicsTrendRes), before = 1:435, after = 436:nrow(topicsTrendRes)), function(tSeq){
+  fc_fit(Y = topicsTrendRes[tSeq, ], Z, eps, beta, lower, upper, se = TRUE, S = 36525, B = 2000, k = k,
+         control.first.stage = list(algorithm = "NLOPT_GN_MLSL_LDS", xtol_rel = 1e-16, maxeval = 4000,
+                                    local_opts = list(algorithm = "NLOPT_LN_SBPLX", xtol_rel = 1e-16, maxeval = 2000)), 
+         control.second.stage =  list(algorithm = "NLOPT_LN_SBPLX", xtol_rel = 1e-20, maxeval = 3000))
+})
+
+
+
 
 
 cl <- makeCluster(3)
@@ -352,4 +368,4 @@ stopCluster(cl)
 
 lapply(models, function(x) round(x$Q, 4))
 lapply(models, function(x) round(x$theta.second.stage, 2))
-lapply(models, function(x) x$message)
+lapply(models, function(x) round(x$se,2))
