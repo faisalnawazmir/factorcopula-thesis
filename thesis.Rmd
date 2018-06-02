@@ -4,7 +4,7 @@ author: Malte Bonart
 type: Master thesis
 logo: "UoC-Logo.eps"
 institue: "Submitted for the Master Examination in Economics at the Faculty of Management, Economics and Social Sciences of the University of Cologne in June 2018."
-supervisor: "Prof.Dr. Dominik Wied"
+supervisor: "Prof.Dr. Dominik Wied, Florian Stark"
 bibliography: "./literature.bib"
 output: 
   pdf_document:
@@ -730,11 +730,26 @@ Given the large degrees of freedom and the insignificant skewness parameter, it 
 # Discussion
 \label{s:discussion}
 
+The results in this thesis are all based on a special class of statistical models for analyzing the dependence structure of multivariate time series. This models allow for a multi-stage estimation process: First the time varying conditional mean and variance of the marginal distributions is estimated using some parametric model for unvariate time series. Second, the standardized residuals are obtained and their multivariate distribution is modelled using the EDF for the marginal distributions and a copula function for the dependence structure.
+
+Here, the focus was on the factor copula function. This type of copula function is based on a linear factor structure for which the dependencies are described by a lower dimensional set of latent variable. The parameters of this model involve the matrix of factor loadings and the distributional parameters of the latent factors and the error term. 
+
+Since the parameter vector can grow very large, two restrictions were discussed: The equidependence model which assume equal pairwise dependencies for all variables and the bloc-equidependence model which can be applied if a natural partition for the variables exist. For the latter, it is assumed that the pairwise intra-group and intergroup dependencies are equal.
+
+Due to the complex dependence structure of the factor copula function and the empirical distribution functions involved there exist no analytical mapping from the model parameters to measures of dependency. In addition, obtaining the likelihood function is often difficult and computationally expensive. However, drawing random values from the factor model is easy and therefore the factor copula model can be estimated with a simulation based approach. This method is rooted in GMM estimation but the population moment function is replaced by a sample equivalent calculated with simulations from the model. While the standard GMM is based on functions involving moments of the variables, the SMM for factor copulas involves EDFs. Nevertheless, an asymptotic distribution for the parameters can still be formulated. 
+
+For many applications it is of interest whether the dependence structure is time invariant. A structural break test for a change in the parameters of the factor copula model was presented. It requires the recursive estimation of the factor copula parameters and compares them to the full sample estimates. If the distance is singificantly large, a structural break is detected. The parametric test allows for the detection of breaks in subsets of the parameter vector but it is computationally costly due to its recursive model estimates. As an alternative, the test can also be formulated non-parametrically. Here, only the pairwise dependency vectors calculated with the observed data are used.   
+
 The purpose of this thesis was first, to summarize the current development in the field of factor copulas, second, to enable other researcher to assess and enhance the discussed methods by providing a software library for the well known programming language \emph{R} and third to apply the methods to an aggregated dataset based on textual posts from a social network. 
 
 The simulation studies were performed to verify the validity and performance of the theoretical methods and its implementations. The first study showed the convergence properties of the parameters of a factorc copula model. The second study simulated a structural break in the copula. Both the non-parametric test, based on recursive calculations of the dependency vector for the observed data and the parametric test, based on the recursive estimates of a copula model, were able to detect the breakpoint with high accuracy. 
 
 In contrast to the simulation study which gave clear and precise results for both the non-parametric and the 
+
+
+
+Optimizing the objective function of the SMM estimator is challenging since it is non continous and non differentiable. 
+
 
 
 
