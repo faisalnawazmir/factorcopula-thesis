@@ -43,11 +43,11 @@ First, a software library, written in the language \emph{R} is presented. It all
 
 Second, we assess novel ways of using the discussed methods in other, non finance related, areas of research. The structural break test is applied to an aggregated dataset of textual social-network posts from German politicians and political parties. Specifically, the case of the German refugee crisis in late 2015 is analyzed: For each major German party we derive a daily statistic, which measures the importance of refugee and asylum related topics in their political online discourse. A 4 years period from 2014 - 2017 is covered. With this set up we can analyze dependencies in the importance of the topic between the parties and test whether this dependencies changed at some point due to the refugee crisis. 
 
-The structure of this thesis is the following: The first chapter deals with the theoretical basics of copula theory, introduces the factor copula model and presents the time series model which is used in a dynamic multivariate context. The dynamic model is based on the assumption of a time-invariant copula given that each marginal time series is filtered by its time dependent conditional means and variances. Further, the estimation method known as Simulated Method of Moment (SMM) is presented. It is based on the comparisson of a vector of dependencies measures calculated independently with simulations from the factor model and with the observed residual data. The last theoretical section deals with a structural break test for the possibly time varying parameters of the factor copula model.
+The structure of this thesis is the following: The first chapter deals with the theoretical basics of copula theory, introduces the factor copula model and presents the time series model which is used in a dynamic multivariate context. The dynamic model is based on the assumption of a time-invariant copula given that each marginal time series is filtered by its time dependent conditional means and variances. Further, the estimation method known as Simulated Method of Moment (SMM) is presented. It is based on the comparison of a vector of dependencies measures calculated independently with simulations from the factor model and with the observed residual data. The last theoretical section deals with a structural break test for the possibly time varying parameters of the factor copula model.
 
 The second chapter gives an overview over a software package written for the programming language \emph{R}. It allows the specification, simulation and estimation of factor copula models. The validity and functionality of the theory and its implementation is tested in two simulation studies for which the results are presented. 
 
-The third chapter introduces the social-network dataset, describes the derivation of the variables and summarizes the results of applying various factor copula models and structural break tests to the data. The last chapter discusses the results and gives a critical assessement of the methods. 
+The third chapter introduces the social-network dataset, describes the derivation of the variables and summarizes the results of applying various factor copula models and structural break tests to the data. The last chapter discusses the results and gives a critical assessment of the methods. 
 
 
 
@@ -677,7 +677,7 @@ For the equidependence models, the single factor loading is stable but relativel
 
 The nonrestrictive models are all characterized by a large $Q$ value. The factor loadings are relatively stable between the models, ranging from 0.23 for the AfD party to around 0.65 for the two largest parties SPD and CDU/CSU. The degrees of freedom are still large but smaller compared to the equidependence model. The skew-t model is characterized by negative asymmetries. 
 
-For the recursive estimation of the parameters, we proceed with the equipdendence skew-t model which has the lowest $Q$ value of all estimated models. To avoid numerical instabilities, we fix the distributional parameters $df$ and $\lambda$ at their full sample estimates. Therefore, we only test for a break in the single factor loading. Possible breaks in the tail dependency or symmetry are left out. 
+For the recursive estimation of the parameters, we proceed with the equidependence skew-t model which has the lowest $Q$ value of all estimated models. To avoid numerical instabilities, we fix the distributional parameters $df$ and $\lambda$ at their full sample estimates. Therefore, we only test for a break in the single factor loading. Possible breaks in the tail dependency or symmetry are left out. 
 
 Three break tests are performed. A restrictive and non-restrictive non-parametric test based on the moment functions and a parametric test based on the recursive estimates of the copula's factor loading. Table \ref{tab:breakpoint} summarizes the results. 
 
@@ -685,7 +685,7 @@ Three break tests are performed. A restrictive and non-restrictive non-parametri
 \centering
 \begin{tabular}{rcccc}
   \toprule
-  & \multicolumn{2}{c}{Moments based test} & \multicolumn{2}{c}{Equi-dep copula based test} \\ 
+  & \multicolumn{2}{c}{Moments based test} & \multicolumn{2}{c}{Equidep. copula based test} \\ 
   & unrestricted & restricted & skewt-t & norm-norm \\
   \cmidrule(r){1-1} \cmidrule(lr){2-3} \cmidrule(l){4-5}
   test statistic & 6.05 &            116.95  &   1.51 & 1.85 \\ 
@@ -703,7 +703,7 @@ As seen in the simulation study in section \ref{s:break}, the non-parametric tes
 
 To better assess the results, we further estimated the dependence structure before and after the break using a skew-t equidependence factor copula (see table \ref{tab:models}). We choose the breakpoint detected by the moment based tests since this has the lowest p-value. For convenience, the full sample estimates as stated in table \ref{tab:onefactor} are replicated here. For all parameters, standard errors were estimated with the bootstrap procedure. 
 
-We excluded the estimation of the degrees of freedom and used the full sample estimates. Estimating this distributional parameter often resulted in very large standard errors and unstable numerical results. In this setting, the parameter estimates also changed if the \emph{inverse} degress of freedom over the range of $[0, 0.5)$ instead of the regular degrees of freedom over the range $(2, \infty]$ were estimated. 
+We excluded the estimation of the degrees of freedom and used the full sample estimates. Estimating this distributional parameter often resulted in very large standard errors and unstable numerical results. In this setting, the parameter estimates also changed if the \emph{inverse} degrees of freedom over the range of $[0, 0.5)$ instead of the regular degrees of freedom over the range $(2, \infty]$ were estimated. 
 
 \begin{table}[H]
 \centering
@@ -727,42 +727,32 @@ For all three models, the skewness parameters $\lambda$ is negative but its stan
 
 Given the large degrees of freedom and the insignificant skewness parameter, it seems that the dependence structure can be modeled as a one factor equidependence copula for which the latent variable is normal distributed. This special case of a one-factor copula model can also be described with a Gaussian copula. Estimating the pre- and post-break Gaussian one-factor model for the earlier breakpoint detected by the parametric break test at 2015-03-11 yields an increase in the factor loading from $\hat{\beta}_{pre} = 0.35$ to $\hat{\beta}_{post} = 0.54$. This indicates an increase in dependencies for the time of the refugee crisis and afterwards. 
 
-# Discussion
+# Discussion and summary
 \label{s:discussion}
 
-The results in this thesis are all based on a special class of statistical models for analyzing the dependence structure of multivariate time series. This models allow for a multi-stage estimation process: First the time varying conditional mean and variance of the marginal distributions is estimated using some parametric model for unvariate time series. Second, the standardized residuals are obtained and their multivariate distribution is modelled using the EDF for the marginal distributions and a copula function for the dependence structure.
+The results in this thesis are all based on a special class of statistical models for analyzing the dependence structure of multivariate time series. This models allow for a multistage estimation process: First the time varying conditional mean and variance of the marginal distributions is estimated using some parametric model for univariate time series. Second, the standardized residuals are obtained and their multivariate distribution is modeled using the EDF for the marginal distributions and a copula function for the dependence structure.
 
 Here, the focus was on the factor copula function. This type of copula function is based on a linear factor structure for which the dependencies are described by a lower dimensional set of latent variable. The parameters of this model involve the matrix of factor loadings and the distributional parameters of the latent factors and the error term. 
 
-Since the parameter vector can grow very large, two restrictions were discussed: The equidependence model which assume equal pairwise dependencies for all variables and the bloc-equidependence model which can be applied if a natural partition for the variables exist. For the latter, it is assumed that the pairwise intra-group and intergroup dependencies are equal.
+Since the parameter vector can grow very large, two restrictions were discussed: The equidependence model which assume equal pairwise dependencies for all variables and the bloc-equidependence model which can be applied if a natural partition for the variables exist. For the latter, it is assumed that the pairwise intra-group and inter-group dependencies are equal.
 
-Due to the complex dependence structure of the factor copula function and the empirical distribution functions involved there exist no analytical mapping from the model parameters to measures of dependency. In addition, obtaining the likelihood function is often difficult and computationally expensive. However, drawing random values from the factor model is easy and therefore the factor copula model can be estimated with a simulation based approach. This method is rooted in GMM estimation but the population moment function is replaced by a sample equivalent calculated with simulations from the model. While the standard GMM is based on functions involving moments of the variables, the SMM for factor copulas involves EDFs. Nevertheless, an asymptotic distribution for the parameters can still be formulated. 
+Due to the complex dependence structure of the factor copula function and the empirical distribution functions involved there exist no explicit mapping from the model parameters to measures of dependency. In addition, obtaining the likelihood function is often difficult and computationally expensive. However, drawing random values from the factor model is easy and therefore the factor copula model can be estimated with a simulation based approach. This method is rooted in GMM estimation but the population moment function is replaced by a sample equivalent calculated with simulations from the model. While the standard GMM is based on functions involving moments of the variables, the SMM for factor copulas involves EDFs. Nevertheless, an asymptotic distribution for the parameters can still be formulated. 
 
-For many applications it is of interest whether the dependence structure is time invariant. A structural break test for a change in the parameters of the factor copula model was presented. It requires the recursive estimation of the factor copula parameters and compares them to the full sample estimates. If the distance is singificantly large, a structural break is detected. The parametric test allows for the detection of breaks in subsets of the parameter vector but it is computationally costly due to its recursive model estimates. As an alternative, the test can also be formulated non-parametrically. Here, only the pairwise dependency vectors calculated with the observed data are used.   
+For many applications it is of interest whether the dependence structure is time invariant. Therefore, a structural break test for a change in the parameters of the factor copula model was presented. It requires the recursive estimation of the factor copula parameters and compares them to the full sample estimates. If the distance is significantly large, a structural break is detected. The parametric test allows for the detection of breaks in subsets of the parameter vector but it is computationally costly due to its recursive model estimates. As an alternative, the test can also be formulated non-parametrically. Here, only the pairwise dependency vectors calculated with the observed data are used.   
 
-The purpose of this thesis was first, to summarize the current development in the field of factor copulas, second, to enable other researcher to assess and enhance the discussed methods by providing a software library for the well known programming language \emph{R} and third to apply the methods to an aggregated dataset based on textual posts from a social network. 
+To enable other researcher to assess and enhance the discussed methods a software library for the programming language \emph{R} is provided. To confirm the validity of the methods and their implementations, two simulation studies were performed. The first study demonstrated the convergence properties of the copula parameters for an equidependence model. Increasing the sample size or the number of observations reduced the variance of the estimator. The second study simulated a structural break in the copula for a bloc-equidependence model with 21 variables in 3 different groups. Both the non-parametric and the parametric test are able to detect the breakpoint with high accuracy. 
 
-The simulation studies were performed to verify the validity and performance of the theoretical methods and its implementations. The first study showed the convergence properties of the parameters of a factorc copula model. The second study simulated a structural break in the copula. Both the non-parametric test, based on recursive calculations of the dependency vector for the observed data and the parametric test, based on the recursive estimates of a copula model, were able to detect the breakpoint with high accuracy. 
+The simulation studies show that the factor copula model is theoretically suitable for modelling high dimensional dependence structures. To test the methods on real world data, a case study with textual data from a social network is performed. The goal is to analyze the importance of topics related to refugees and asylum during the refugee crisis in late 2015. The data consists of public posts of German politicians and political parties from 2014 to 2017. For each party and day, the relative frequency of posts related to refugee issues is calculated. 
 
-In contrast to the simulation study which gave clear and precise results for both the non-parametric and the 
+The marginal distributions of the time series is modeled with univariate ARIMA-GARCH model. Afterwards, various factor copula models are fitted to the residuals. Both the non-parametric and the parametric break test based on a norm-norm one factor equidependence copula detected a breakpoint in the parameters of the factor copula for March and September 2015. For each break date a factor copula is estimated before and after the break. For the later breakpoint, detected by the non-parametric test, no change in the copula parameters could be found. This finding somehow contradicts the result of the test. However for the early parametric breakpoint, an increase in the single factor loading by around 48% could be observed. 
 
+This finding indicates that in 2014 and early 2015, before the refugee crisis, the dependencies were weaker compared to the time of the crisis and afterwards. Before the crisis the within-party importance of the refugee issue was more independent from the political discourse of the other parties. The external shock then led to a stronger convergence of the issue salience. 
 
+The real-data application has several drawbacks: Interpreting the size of the factor loadings is difficult. That hinders the possibility of drawing conclusions from the change of the effect size due to the break. In addition, optimizing the objective function of the SMM estimator is often challenging due to its lack of continuity and differentiability. 
+ 
+This undesirable properties of the objective function requires the usage of global and local derivative free optimization algorithms. It turned out that numerical problems occurred especially for non-fixed distributional parameters such as the skewness or the degrees of freedom. The estimates can become very inaccurate and the recursive statistics of the break test can have several large outliers. 
 
-Optimizing the objective function of the SMM estimator is challenging since it is non continous and non differentiable. 
-
-
-
-
-
-
-To get better results much care has to be put into the optimization algorithm and the numerical procedures. 
-\textcite{Frazier2017} proposes ways to use derivative based optimization procedures in cases of SMM where the objective is discontinuity. 
-
-\textcite{Embrechts2009} and \textcite{Mikosch2006} criticizes the "hype" around copulas. 
-
-
-
-
+Up to now, much care has to be taken in the optimization process. Future research should concentrate on improving the stability of the recursive estimates. A first approach is given by \textcite{Frazier2017}. They proposes ways to use derivative based optimization procedures in cases of SMM where the objective is discontinuity. 
 
 \newpage
 \appendix
@@ -805,7 +795,7 @@ beta <- config_beta(k, 3)
 beta
 ```
 
-Next, $S = 1000$ random values from the copula model are simulated and the marginal distributions are transformed to standard normal ones. The factor loadings for the common factor are $\beta_1 = \beta_2 = 1$ and the group specific loadings $\beta_3 = \beta_4 = 1.5$. The distributional parameters of the common latent factor are set to $dfInv = 0.25$ and $\lambda = -0.8$. This produces assymetric tail dependencies.
+Next, $S = 1000$ random values from the copula model are simulated and the marginal distributions are transformed to standard normal ones. The factor loadings for the common factor are $\beta_1 = \beta_2 = 1$ and the group specific loadings $\beta_3 = \beta_4 = 1.5$. The distributional parameters of the common latent factor are set to $dfInv = 0.25$ and $\lambda = -0.8$. This produces asymmetric tail dependencies.
 ```{r, eval = FALSE}
 copfun <- fc_create(Z, eps, beta)
 theta <- c(beta1 = 1, beta2 = 1, beta3 = 1.5, beta4 = 1.5, 
