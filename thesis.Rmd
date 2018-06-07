@@ -25,35 +25,37 @@ knitr::opts_chunk$set(echo = TRUE, out.width = "\\textwidth")
 # Introduction
 \label{s:introduction}
 
-Many multivariate statistical models are based on the assumption that the variables follow a multivariate Gaussian distribution. Here, the natural measure of dependence is the covariance or correlation matrix between the variables \parencite[p. 25]{Joe2015}. But using simple correlations as the only dependence measure can be misleading. In many cases real world data does not follow a Gaussian distribution and shows other distributional features, such as skewness or heavy tails. Correlation requires that the variance of the marginal distribution is finite. This requirement can be problematic when dealing with heavy tailed distributions. Further more, correlation is only a measure of linear dependence and it is not invariant under monotonic transformations of the variables \parencite[6-8]{Embrechts2002}. This means, that by applying a strictly increasing function (for example the $\log$ function) to each variable, the correlation matrix changes.
+Many multivariate statistical models are based on the assumption that the variables follow a multivariate Gaussian distribution. Here, the natural measure of dependence is the covariance or correlation matrix between the variables \parencite[p. 25]{Joe2015}. But using simple correlations as the only dependence measure can be misleading. In many cases real world data does not follow a Gaussian distribution and shows other distributional features, such as skewness or heavy tails. Correlation requires that the variance of the marginal distribution is finite. This requirement can be problematic when dealing with heavy tailed distributions. Further more, correlation is only a measure of linear dependence and is not invariant under monotonic transformations of the variables \parencite[6-8]{Embrechts2002}. For instance applying the strictly increasing logarithmic function to the variables usually results in a different correlation matrix.
 
-Due to this shortcomings of the ordinary linear correlation coefficient, other and more flexible methods for describing the dependence structure between non Gaussian variables have been developed. In this area of research, models based on so called copula functions became increasingly popular since the \nth{1990} \parencite[p. 1]{Nelsen1999}. Up to the year 1999, only 38 publications which include the topics \emph{copula} and \emph{dependence} have been published in peer-reviewed journals. From 2000 - 2008 the number of copula related publications was 334 and for the years 2009 - 2017 2048 publications are listed.\footnote{The numbers are taken from the \emph{Web of Science Core Collection} for the search term \texttt{TOPIC: (copula) AND TOPIC: (dependence)}.} 
+Due to this shortcomings of the ordinary linear correlation coefficient, other and more flexible methods for describing the dependence structure between non Gaussian variables have been developed. In this area of research, models based on so called copula functions became increasingly popular since the \nth{1990} \parencite[p. 1]{Nelsen1999}. Espacially in the last decade, an exponentially increasing boom in the research activity can be observed: Up to the year 1999, only 38 publications whith the topics \emph{copula} and \emph{dependence} have been published in peer-reviewed journals. From 2000 - 2008 334 copula related publications are listed and for the years 2009 - 2017 the number of publications increased to 2048.\footnote{The numbers are taken from the \emph{Web of Science Core Collection} for the search term "\texttt{TOPIC: (copula) AND TOPIC: (dependence)}".} 
 
-At first, any multivariate distribution function for which its marginal distributions have a uniform distribution on the interval $[0, 1]$ can be called a copula function \parencite[p. 1]{Nelsen1999}. But its popularity is based on the results of a theorem by \textcite{Sklar1959}: It implies that multivariate distributions can be constructed by separately specifying the marginal distributions of the random variables and by defining the dependence structure among the variables. The dependence structure is described with a copula function. Thus, a copula links the multivariate distribution function to its marginal distributions. In case of continuous multivariate distributions the copula function is uniquely defined.
+Applications of copula based models can be found in many applied disciplines. On of its first usage was in the field of surival anaylsis in biostatistics \parencite{Fermanian2017}. But it recent popularity is mainly driven by applications in finance and insurance science, espacially in quantitative risk management, e.g. for estimating the Value at Risk measure of a portfolio \parencite[644]{Embrechts2009}.
 
-Due to this results, copulas are mainly used in two ways: First, to model the dependence structure of multivariate distributions independent of their underlying marginal distributions and second, to construct bivariate or multivariate distributions based on a copula function and marginal distributions \parencite[302-304]{Sempi2011}. 
+At first, any valid multivariate distribution function for which its marginal distributions have a uniform distribution on the interval $[0, 1]$ can be called a copula function \parencite[p. 1]{Nelsen1999}. Its popularity is based on the results of a theorem by \textcite{Sklar1959}: It implies that multivariate distributions can be constructed by separately specifying the marginal distributions of the random variables and by defining the dependence structure among the variables. The dependence structure is described with a copula function. It links the multivariate distribution function to its marginal distributions. In case of continuous multivariate distributions the copula function is uniquely defined. In contrast to the linear correlation coefficient, scale-invariant dependency measures can be expressed in terms of an underlying copula function. 
 
-This allows for a two-stage estimation process in multivariate models in which the marginal distributions and the copula function is estimated separately. By doing so, semi-parametric techniques can be utilized. For example, the marginal distribution can be estimated using the empirical distribution function (EDF) while the copula function is estimated parametrically. \parencite[777]{Patton2009}.
+The theorem can be applied in both directions: First, to model the dependence structure of multivariate distributions independent of their underlying marginal distributions and second, to construct bivariate or multivariate distributions based on a copula function and marginal distributions \parencite[302-304]{Sempi2011}. 
 
-For time series data copula theory can be used in two ways: First, to describe the cross sectional dependence structure by estimating the conditional copula function of the conditional joint distribution at some time point given past information. Second, copulas can be used to describe the dependence between observations of a univariate time series. This is related to the study of Markov processes. \parencite[p. 771 ff]{Patton2009}.
+The splitting of a multivariate distribution into its marginals and a copula allows for a two-stage estimation process in multivariate models: The marginal distributions and the copula function can be estimated separately. By doing so, semi-parametric techniques can be utilized. For instance, the approach described in the following chapters uses the non-parametric empirical distribution function (EDF) for the marginals while the copula function is estimated parametrically. \parencite[777]{Patton2009}.
 
-This thesis summarizes and structures the current development in the field of factor copula models. For this type of model, the dependence structure is modeled as a linear factor model for which the dependencies can be described by a lower dimensional set of latent variables. The paper contributes to the scientific discussion in two ways: 
+Originally, copulas were formulated for static data, where the observations are independent from each other. But recently, copula theroy has been adapted to time series: There, it can be used in two ways: First, to describe the cross sectional dependence structure by estimating the conditional copula function of the conditional joint distribution at some time point given past information. Strucutral break tests or time series models for the parameters of the copula function can applied here to analyze temporal changes in the dependence strucutre. Second, copulas are used to describe the dependence between observations of a univariate time series. This is related to the study of Markov processes. \parencite[p. 771 ff]{Patton2009}.
+
+This thesis focuses on the task of dependence modelling for the multivariate time series case. Especially, we try to summarize and structure the current development in the field of factor copula models, which are a specific class of copulas used for high dimensional applications. For this type of model, the dependence structure is modeled as a linear factor model for which the dependencies can be described by a lower dimensional set of latent variables. Furthermore, this paper contributes to the scientific discussion in two ways: 
 
 First, a software library, written in the language \emph{R} is presented. It allows the consistent specification, simulation and estimation of general factor copula models. By doing so, the methods and the structural break test are made available to a broader scientific audience and can be easily studied and improved by other researchers. 
 
-Second, we assess novel ways of using the discussed methods in other, non finance related, areas of research. The structural break test is applied to an aggregated dataset of textual social-network posts from German politicians and political parties. Specifically, the case of the German refugee crisis in late 2015 is analyzed: For each major German party we derive a daily statistic, which measures the importance of refugee and asylum related topics in their political online discourse. A 4 years period from 2014 - 2017 is covered. With this set up we can analyze dependencies in the importance of the topic between the parties and test whether this dependencies changed at some point due to the refugee crisis. 
+Second, we study a novel way of applying the discussed methods to a non finance related area of research. Specifically, the case of the German and European refugee crisis in late 2015 and its perception by political parties on the social media platform Facebook is analyzed: Using an aggregated dataset of textual social-network posts from German politicians and political parties we derive a dynamic party-specific measurement of topic salience.
 
-The structure of this thesis is the following: The first chapter deals with the theoretical basics of copula theory, introduces the factor copula model and presents the time series model which is used in a dynamic multivariate context. The dynamic model is based on the assumption of a time-invariant copula given that each marginal time series is filtered by its time dependent conditional means and variances. Further, the estimation method known as Simulated Method of Moment (SMM) is presented. It is based on the comparison of a vector of dependencies measures calculated independently with simulations from the factor model and with the observed residual data. The last theoretical section deals with a structural break test for the possibly time varying parameters of the factor copula model.
+Topic or issue salience is a fuzzy concept used in the political sciences to describe the importance or prominence which various actors in a political system such as voters, parties or elties, place on certain issues \parencite[557]{Wlezien2005}. For this study, the derived topic salience measures for each party the importance of refugee and asylum related issues in its political online discourse. Using the methods of dependence modelling and a structural break test we ask whether and how the dependencies in topic salience between the parties changed due to the refugee crisis. 
 
-The second chapter gives an overview over a software package written for the programming language \emph{R}. It allows the specification, simulation and estimation of factor copula models. The validity and functionality of the theory and its implementation is tested in two simulation studies for which the results are presented. 
+In the following, we give an overview over the next chapters: The first chapter deals with the theoretical basics of copula theory, introduces the time series framework and the factor copula model. The dynamic model is based on the assumption of a time-invariant copula given that each marginal time series is filtered by its time dependent conditional means and variances. Further, the estimation method known as Simulated Method of Moment (SMM) is presented. It is based on the comparison of a vector of dependencies measures calculated independently with simulations from the factor model and with the observed residual data. The last theoretical section deals with a structural break test for the possibly time varying parameters of the copula.
 
-The third chapter introduces the social-network dataset, describes the derivation of the variables and summarizes the results of applying various factor copula models and structural break tests to the data. The last chapter discusses the results and gives a critical assessment of the methods. 
+The second chapter gives an overview over the software library and discusses the underlying numerical optimizataion routines. The validity and functionality of the theory and its implementation is tested in two simulation studies. 
 
-
+The third chapter focuses on the empirical application. The social-media dataset, its aggregation and the derivation of the topic salience measurements are described. Then the marginal models for the univariate time series are discussed. Finally, the results of applying various factor copula models and structural break tests to the data are presented. The last chapter discusses the results and gives a critical assessment of the thesis and its discussed methods. 
 
 # Theoretical foundation
 
-In this chapter we present and summarize the theoretical foundation of this thesis. First, the general idea behind copula functions is introduced. Second, a special class of copula models, the so called \emph{factor copula} model is presented. Third, we discuss copula models in the context of time series data and present a specific framework for modelling dependencies of multivariate time series. Fourth, the \emph{simulated methods of moments} (SMM) is explained. It is the estimation method which is used throughout this work. Finally we summarize the ideas of a structural break test for possibly time varying parameters of a factor copula model. 
+In this chapter we present and summarize the theoretical foundation of this thesis. First, the general idea behind copula functions is introduced. Second, a special class of copula models, the so called \emph{factor copula} model is presented. Third, we discuss copula models in the context of time series data and present a specific framework for modelling dependencies of multivariate time series. Fourth, the Simulated methods of moments (SMM) and its origin in the Generalized methods of moments (GMM) is presented. The SMM is the estimation method which is used throughout this paper. Finally we summarize the ideas of a structural break test for possibly time varying parameters of a factor copula model. 
 
 ## Copula theory
 \label{s:copulatheory}
@@ -61,14 +63,14 @@ In this chapter we present and summarize the theoretical foundation of this thes
 
 The joint cumulative distribution function (cdf) $F_Y(y_1, \dots, y_N) = P(Y_1 \leq y_1, \dots, Y_N \leq y_N)$ for some multivariate random vector $Y$ of dimension $N$ has the continuous marginal distributions $F_{Y_i}(y_i) = P(Y_i \leq y_i) ~\forall~ i = 1, \dots, N$. Estimating $F_Y$ is computationally demanding especially if $N$ becomes large. Therefore, a copula function is introduced which can be used to link the marginal and the joint cdf.
 
-### Definition
+### Definitions
 
-A function of the type $C: [0, 1]^N \rightarrow [0,1]$, with $N \geq 2$ is called a \emph{copula} if it is the distribution function of a random vector $U$ such that $C_U(u_1, \dots, u_N) = P(U_1 \leq u_1, \dots, U_N \leq u_N)$ and if its marginal distributions are $U_i \sim Unif(0, 1)$, e.g. uniformly distributed \parencite[p. 7]{Joe2015}. The theorem by \textcite{Sklar1959} states, that every d-variate distribution function $F_Y(y_1,\dots, y_n)$ can be expressed in terms of its marginal distributions and a copula function such that 
+A function of the type $C: [0, 1]^N \rightarrow [0,1]$, with $N \geq 2$ is called a \emph{copula} if it is the distribution function of a random vector $U$ such that $C_U(u_1, \dots, u_N) = P(U_1 \leq u_1, \dots, U_N \leq u_N)$ and if its marginal distributions are $U_i \sim Unif(0, 1)$, e.g. uniformly distributed \parencite[p. 7]{Joe2015}.\footnote{We usually use the letter $F$ to denote a cdf but the letter $C$ is reserved for a cdf with uniformly distributed marginals.} The theorem by \textcite{Sklar1959} states, that every d-variate distribution function $F_Y(y_1,\dots, y_n)$ can be expressed in terms of its marginal distributions and a copula function such that 
 \begin{equation}
 \label{eq:sklar}
 F_Y(y_1, \dots, y_N) = C_U(F_1(y_1), \dots, F_N(y_N)).
 \end{equation}
-To see this, consider the so called probability-integral transformation which states that the marginal random variables $U_i = F_{Y_i}(Y_i)$ are uniformly distributed \parencite[4]{Embrechts2002}. This is due to the fact that $F_{U_i}(u_i) = P(U_i \leq u) = P(F_{Y_i}(Y_i) \leq u_i) = P(Y_i \leq F_{Y_i}^{-1}(u_i)) = F_{Y_i}(F_{Y_i}^{-1}(u_i)) = u_i$ is the distribution function of a $Unif(0,1)$ distributed variable. Using this transformation we can write
+To see this, first consider the so called probability-integral transformation which states that the random variables $U_i = F_{Y_i}(Y_i)$ are uniformly distributed \parencite[4]{Embrechts2002}. This is due to the fact that $F_{U_i}(u_i) = P(U_i \leq u_i) = P(F_{Y_i}(Y_i) \leq u_i) = P(Y_i \leq F_{Y_i}^{-1}(u_i)) = F_{Y_i}(F_{Y_i}^{-1}(u_i)) = u_i$.  $F_{U_i}(u_i) = u_i$ is exactly the definition of the distribution function of a $Unif(0,1)$ distributed variable. Using this transformation we can write
 \begin{align}
 \label{eq:proofsklar}
 \begin{split}
@@ -78,50 +80,53 @@ F_Y(y_1, \dots, y_N) &= P(Y_1 \leq y_1, \dots, Y_N \leq y_N)\\
 &= C_U(F_{Y_1}(y_1), \dots, F_{Y_N}(y_N)).
 \end{split}
 \end{align}
+Note that the transformation of the marginal distributions to a $Unif(0, 1)$ distribution is somehow an arbitrary choice and other possibilities, e.g. a transformation to a Gaussian distribution, are also used in other areas of research \parencite[7]{Mikosch2006}.
 
-Note that transforming the marginal distributions to a $Unif(0, 1)$ distribution is somehow an arbitrary choice and other possibilities, for instance the Gaussian distribution, are also possible.  \parencite[7]{Mikosch2006}
+If $F_Y$ is a continuous function with marginal quantile functions $F^{-1}_{Y_1}, \dots, F^{-1}_{Y_N}$ then the copula function $C_U(\mathbf{u})$ is uniquely determined by $C(\mathbf{u}) = F(F_{Y_1}^{-1}(u_1), \dots, F_{Y_N}^{-1}(u_N))$. For other non-continous functions this must not be the case and several valid copula functions can exist \parencite[4-5]{Embrechts2002}.
 
-If $F_Y$ is \emph{continuous} with marginal quantile functions $F^{-1}_{Y_1}, \dots, F^{-1}_{Y_N}$ then the copula function $C_U(\mathbf{u})$ is uniquely determined by $C(\mathbf{u}) = F(F_{Y_1}^{-1}(u_1), \dots, F_{Y_N}^{-1}(u_N))$. If not all marginal distribution are continuous the copula still exist but in this case it is not unique anymore \parencite[4-5]{Embrechts2002}.
-
-The simplest form of a copula function is the copula of a vector of independent variables for which we can write $F_Y(\bm{y}) =  \prod_{i = 1}^N F_{Y_i}(y_i)$. Using the derivation in \eqref{eq:proofsklar}, this results in the independence copula 
+The simplest form of a copula is the copula of a vector of independent variables for which we can write $F_Y(\bm{y}) =  \prod_{i = 1}^N F_{Y_i}(y_i)$. Using the derivation in \eqref{eq:proofsklar}, this results in the independence copula 
 \begin{equation}
-C_{ind}(u_1, \dots, u_N) = \prod_{i = 1}^N u_i.
+C_U^{ind}(u_1, \dots, u_N) = \prod_{i = 1}^N u_i.
 \end{equation}
 
-Many other possible functional forms for a copula $C_U$ exist. In this paper, we focus on a special class, the so called factor copulas which we present in section \ref{s:factorcopula}. 
+Many other possible functional forms for a copula $C_U$ exist in the literatur. In this paper, we focus on a special class, the so called factor copulas which we present in section \ref{s:factorcopula}. 
 
 ### Copulas and dependency
 
-Copulas are useful for the study of dependence between a set of random variables, because the copula function which defines the dependency structure is unaffected by monotonic transformations of the marginal variables. In contrast to the linear correlation coefficient, this property allows the definition of alternative scale-invariant dependence measures \parencite[125]{Nelsen1999}. 
+Copulas are useful for the study of dependence between a set of random variables because the copula function is unaffected by monotonic transformations of the marginal variables. In contrast to the linear correlation coefficient, this property allows the definition of alternative scale-invariant dependence measures which only dependent on the copula function \parencite[125]{Nelsen1999}. 
 
-To see the scale-invariant property of the copula function, consider a random vector $U$ with copula distribution function $C_U(\bm{u})$ and $C_U(F_1(y_1), \dots, F_N(y_N)) = F_Y(y_1, \dots, y_N)$. By applying some increasing function $T_i(Y_i)$ to the random variables and using \eqref{eq:proofsklar} we can write
+To see the scale-invariant property of the copula function, consider a random vector $U$ with distribution function $C_U(\bm{u})$ and $C_U(F_1(y_1), \dots, F_N(y_N)) = F_Y(y_1, \dots, y_N)$. By applying some increasing functions $T_i(Y_i)$ to the random variables and using \eqref{eq:proofsklar} we can write
 \begin{equation}
 \begin{split}
 F_{T(Y)}(\bm{y}) &= P(T_1(Y_1) \leq y_1, \dots, T_N(Y_N) \leq y_N)\\
-&=  P(T_1(F_{y_1}^{-1}(U_1)) \leq y_1, \dots, T_N(F_{y_N}^{-1}(U_N)))\\
+&=  P(T_1(F_{Y_1}^{-1}(U_1)) \leq y_1, \dots, T_N(F_{Y_N}^{-1}(U_N)))\\
 &= C_U(F_{T_1(Y_1)}(y_1), \dots, F_{T_N(Y_N)}(y_N)).
 \end{split}
 \end{equation}
-Thus, although $Y$ and $T(Y)$ have different joint distribution functions, they share the same copula function. 
+Thus, although $Y$ and $T(Y)$ have different joint distribution functions, they share the same copula function \parencite[6]{Embrechts2002}. 
 
 In the following we shortly present three common scale invariant measures of dependency between two variables $Y_i$ and $Y_j$. In contrast to the linear correlation coefficient, these measures can be expressed solely as a function of the underlying bivariate copula.\footnote{For a proof of the copula representations see \textcite[16-18]{Embrechts2002}.} Spearman's and Kendall's rank correlation both measure the degree of monotonic dependence between the two variables $Y_i$ and $Y_j$ with joint distribution function $F_Y(\bm{y})$. As the linear correlation coefficient they are symmetric and normalized in the interval $[0, 1]$ \parencite[15]{Embrechts2002}.
 
-Kendall's rank correlation is based on the definition of concordance and discordance: Consider two pairs of independent and identically distributed (iid) random vectors $(Y_i^1, Y_j^1)$ and $(Y_i^2, Y_j^2)$. Both pairs share the same joint distribution $F_Y$. The pair is concordant if $(Y_i^1 - Y_i^2)(Y_j^1-Y_j^2) > 0$ and discordant if $(Y_i^1-Y_i^2)(Y_j^1-Y_j^2) < 0$. In words, for the former case large (small) values of one pair occur with large (small) values of the other. For the latter case, large (small) values of one pair occur with small (large) values of the other \parencite[125-126]{Nelsen1999}.
+Kendall's rank correlation is based on the definition of concordance and discordance: Consider two pairs of independent and identically distributed (iid) random vectors $(Y_i^1, Y_j^1)$ and $(Y_i^2, Y_j^2)$. Both pairs share the same joint distribution $F_Y$. The pair is concordant if $(Y_i^1 - Y_i^2)(Y_j^1-Y_j^2) > 0$ and discordant if $(Y_i^1-Y_i^2)(Y_j^1-Y_j^2) < 0$. For the former case large (small) values of one pair occur with large (small) values of the other. For the latter case, large (small) values of one pair occur with small (large) values of the other \parencite[125-126]{Nelsen1999}.
 
 With this definition Kendall's rank correlation is given as the probability of concordance minus the probability of discordance:
 \begin{align}
 \begin{split}
 \label{eq:kendalls}
 \tau_{i,j} &= P((Y_i^1-Y_i^2)(Y_j^1-Y_j^2) < 0) - P((Y_i^1-Y_i^2)(Y_j^1-Y_j^2) > 0)\\
+&= 2*P((Y_i^1-Y_i^2)(Y_j^1-Y_j^2) > 0) -1 \\
 &= 4\int\int_{[0,1]^2} C(u_i, u_j)dC(u_i, u_j)-1.
 \end{split}
 \end{align}
 
 Spearman's rank correlation is given as the ordinary correlation coefficient between the probability-integral transforms $F_{Y_i}(Y_i)$ and $F_{Y_j}(Y_j)$:
-\begin{equation}
+\begin{align}
+\begin{split}
 \label{eq:spearman}
-\rho_{i,j}^S = \rho(F_{Y_i}(Y_i), F_{Y_j}(Y_j)) = 12\int\int_{[0,1]^2} u_iu_j dC(u_i, u_j)-3.
-\end{equation}
+\rho_{i,j}^S &= \rho(F_{Y_i}(Y_i), F_{Y_j}(Y_j)) = 12E(F_{Y_i}(Y_i), F_{Y_j}(Y_j))-3\\
+&= 12\int\int_{[0,1]^2} u_iu_j dC(u_i, u_j)-3.
+\end{split}
+\end{align}
 
 Finally, to capture dependencies in the joint lower or joint upper parts of the distribution, one defines the coefficients of upper and lower tail dependency: 
 \begin{align}
@@ -133,43 +138,46 @@ Finally, to capture dependencies in the joint lower or joint upper parts of the 
 = \underset{q \rightarrow 0}{\lim} \frac{C(q,q)}{q}.
 \end{split}
 \end{align}
-The coefficients measures the probability that extreme large (small) values occur in one variable, given extreme large (small) values in the other variable. In contrast to other common dependence measures, the coefficients of upper and lower tail dependency are defined on the interval $[0, 1]$. Since the limit only exists theoretically and not for observable data, one usually calculates upper and lower \emph{quantile} dependency for some values of $q$ close to $0$ and $1$ \parencite[62-63]{Joe2015}.
-
+The coefficients measures the probability that extreme large (small) values occur in one variable, given extreme large (small) values in the other variable. In contrast to other common dependence measures, the coefficients of upper and lower tail dependency are defined on the interval $[0, 1]$. Since the limit only exists theoretically and not for observable data, one usually calculates upper and lower \emph{quantile} dependency for some values of $q$ close to $0$ for lower and close to $1$ for upper quantile dependence \parencite[62-63]{Joe2015}. The sample versions of this measures can be obtained by replacing the marginal distributions with the EDF and using the definition of the empirical copula \parencite[176]{Nelsen1999}:
+\begin{equation}
+\hat{C}_{i,j}(u, v) = \frac{1}{T+1}\sum_{t=1}^{T}\bm{1}(\hat{F}_i(x_{it}) \leq u, \hat{F}_j(x_{jt})\leq v).
+\end{equation}
+It counts the relative number of pairs in a sample $\{(x_{it}, x_{jt})\}_{t=1}^{T}$ whose rank is less than $u \cdot T$ and $v \cdot T$ respectively. 
 
 ## Factor copulas
 \label{s:factorcopula}
 
-Factor copulas are a special class of copula models for which the copula function $C_U(u_1, \dots, u_N)$ is based on a latent factor structure as defined in \textcite{Patton2013, Patton2017}. 
+Factor copulas are a special class of copula models for which the copula function $C_U(u_1, \dots, u_N)$ is based on a latent factor structure as defined in \textcite{Patton2013, Patton2017}. \footnote{Note, that \textcite[p. 128]{Joe2015} developed another type of copula model under the same term \emph{factor copula}. It is based on the assumption that the dependence structure can be defined through conditional distibutions for which the conditioning set is based on some latent variables.}
 
 ### General set up
 
-Consider a set of artificial variables $X_i, i = 1, \dots,N$ which linearly depend on some latent factors $Z_k, k = 1, \dots, K$ and some iid error $e_i$ such that $X_i =  \sum_{k = 1}^{K}\beta_{ik}Z_k+ \epsilon_i$. The linear coefficients $\beta_{ik}$ are also called factor loadings. The latent variables $Z_k$ and the error term $\epsilon_i$ follow some parametric distributions with parameter vectors $\bm{\gamma}_\epsilon$ and $\bm{\gamma}_{Z_k}$ and we write: $\epsilon_i \overset{iid}{\sim} F_\epsilon(\bm{\gamma_\epsilon})$ and $Z_k \sim F_{Z_k}(\bm{\gamma_{Z_k}})$. While the variables $X_i$ usually dependent on each other, the latent factors are independent from each other and from the error term. 
+Consider a set of artificial variables $X_i, i = 1, \dots,N$ which linearly depend on some latent factors $Z_k, k = 1, \dots, K, K < N$ and some iid error $e_i$ such that $X_i =  \sum_{k = 1}^{K}\beta_{ik}Z_k+ \epsilon_i$. The linear coefficients $\beta_{ik}$ are also called factor loadings. The latent variables $Z_k$ and the error term $\epsilon_i$ follow some parametric distributions with parameter vectors $\bm{\gamma}_\epsilon$ and $\bm{\gamma}_{Z_k}$ and one can write: $\epsilon_i \overset{iid}{\sim} F_\epsilon(\bm{\gamma_\epsilon})$ and $Z_k \sim F_{Z_k}(\bm{\gamma_{Z_k}})$. While the variables $X_i$ usually dependent on each other, the latent factors are independent from each other and from the error term. 
 
-As shown in the previous section, the joint probability function $F_{X}(x_1, \dots, x_N)$ of the artificial variables can be expressed in terms of its marginal distributions $F_{X_i}(x)$ and a factor copula function $C_U(u_1, \dots, u_N)$ such that $F_{X}(x_1, \dots, x_N) = C_U(F_{X_1}(x_1), \dots, F_{X_N}(x_N); \bm{\theta})$.
+As shown in the previous section, the joint probability function $F_{X}(x_1, \dots, x_N)$ of the artificial variables can be expressed in terms of its marginal distributions $F_{X_i}(x)$ and a factor copula function $C_U(u_1, \dots, u_N; \btheta)$ such that $F_{X}(x_1, \dots, x_N) = C_U(F_{X_1}(x_1), \dots, F_{X_N}(x_N); \btheta)$.
 
-The artificial variables $X_i$ are only used to construct the factor copula function $C_U(u_1, \dots, u_N; \bm{\theta})$. The parameters of the factor structure are chosen in such a way that the resulting copula function fits the copula of the observable data $\bm{Y}$, such that $F_{Y}(y_1, \dots, y_n) = C_U(F_{Y_1}(y_1),\dots, F_{Y_N}(y_N); \bm{\theta})$. Once the factor copula function is determined, the artificial variables and its marginal distributions $F_{X_i}(x)$ are of no interest.
+The artificial variables $X_i$ are only used to construct the factor copula function $C_U(u_1, \dots, u_N; \btheta)$. The parameters of the factor structure are chosen in such a way that the resulting copula function fits the copula of the random vector $Y$, such that $F_{Y}(y_1, \dots, y_n) = C_U(F_{Y_1}(y_1),\dots, F_{Y_N}(y_N); \btheta)$. Once the factor copula function is determined, the artificial variables and its marginal distributions $F_{X_i}(x)$ are of no interest.
 
-The parameters of the factor model are collected in a parameter vector $\bm{\theta} = (\beta_{11}, \dots, \beta_{i1}, \dots \beta_{ik}, \bm{\gamma_{Z_1}}', \dots, \bm{\gamma}_{Z_K}', \bm{\gamma}_\epsilon')'$. It consists of all linear coefficients and the distributional parameters of the error term and the latent variables. The number of latent variables $K$ and the distribution functions $F_{Z_1}, \dots, F_{Z_k}, F_\epsilon$ are hyper-parameters of the model which have to be chosen prior to the estimation.\footnote{\textcite[p. 143ff]{Patton2017} provide a heuristic of finding the number of latent variables by analyzing so called \emph{scree-plots}: Ordered eigenvalues from the sample rank-correlation matrix of the data.}
+The parameters of the factor model are collected in a parameter vector $\btheta = (\beta_{11}, \dots, \beta_{i1}, \dots \beta_{ik}, \bm{\gamma_{Z_1}}', \dots, \bm{\gamma}_{Z_K}', \bm{\gamma}_\epsilon')'$. It consists of all linear coefficients and the distributional parameters of the error term and the latent variables. The number of latent variables $K$ and the distribution functions $F_{Z_1}, \dots, F_{Z_k}, F_\epsilon$ are hyper-parameters of the model which have to be chosen prior to the estimation.\footnote{\textcite[143]{Patton2017} provide a heuristic of finding the number of latent variables by analyzing so called \emph{scree-plots}: Ordered eigenvalues from the sample rank-correlation matrix of the data.}
 
 Using matrix notation, the model can be summarized in the following set of equations:
 \begin{align}
 \label{eq:factorcopula}
 \begin{split}
-\bm{Y} &= (Y_1, \dots, Y_N)' \\
-\bm{X} &= (X_1, \dots, X_N)' = \bm{\beta Z} + \bm{\epsilon}\\
-F_{Y}(\bm{y}) &= C_U(F_{Y_1}(y_1),\dots, F_{Y_N}(y_N); \bm{\theta})\\
-F_{X}(\bm{x}) &= C_U(F_{X_1}(x_1), \dots, F_{X_N}(x_N); \bm{\theta})
+Y &= (Y_1, \dots, Y_N)' \\
+X &= (X_1, \dots, X_N)' = \bm{\beta} \cdot Z + \bm{\epsilon}\\
+F_{Y}(\bm{y}) &= C_U(F_{Y_1}(y_1),\dots, F_{Y_N}(y_N); \btheta)\\
+F_{X}(\bm{x}) &= C_U(F_{X_1}(x_1), \dots, F_{X_N}(x_N); \btheta)
 \end{split}
 \end{align}
 
-To model the joint probability $F_Y(\bm{y})$, a two-stage estimation process can be used: First, the marginal distributions $\hat{F}_{Y_i}$ are estimated parametrically or non-parametrically, e.g. by using some parametric model or the EDF. Second, the factor structure for the copula function is fitted to the data by finding the optimal $\hat{\bm{\theta}}$. In most cases, a closed form of the factor copula does not exist and approximating the likelihood function is computationally demanding. Therefore, one has to rely on simulation based estimation methods as described in section \ref{s:SMM}. 
+To model the joint cdf $F_Y(\bm{y})$, a two-stage estimation process can be used: First, the marginal distributions $\hat{F}_{Y_i}$ are estimated parametrically or non-parametrically, e.g. by using some parametric model or the EDF. Second, the factor structure for the copula function is fitted to the data by finding the optimal $\hat{\btheta}$. In most cases, a closed form of the factor copula does not exist such that one cannot directly relate the copula parameters to the dependency measures as given by \eqref{eq:kendalls} - \eqref{eq:taildependency}. Therefore, one can adapt simulation based estimation methods as described in section \ref{s:SMM}. 
 
-### Two model restrictions
+### Model restrictions
 \label{s:restrictions}
 
-The two-stage estimation approach allows for a variety of different dependence structures and can be applied to high dimensional data. An upper bound for the number of model parameters $P = |\bm{\theta}|$ to be estimated is given by the size of the factor matrix and the number of additional free distributional parameters such that $P \leq (N \cdot K + |\bm{\gamma_{Z_1}}| + \dots + |\bm{\gamma_{Z_K}}| + |\bm{\gamma_\epsilon}|)$. To reduce the number of parameters, \textcite[148, 150]{Patton2017} present two restrictions on the matrix of factor loadings $\bm{\beta}$: the restrictive \emph{equidependence} and the less restrictive \emph{block-equidependence} model. 
+An upper bound for the number of model parameters $P = |\btheta|$ to be estimated is given by the size of the factor matrix and the number of additional free distributional parameters such that $P \leq (N \cdot K + |\bm{\gamma_{Z_1}}| + \dots + |\bm{\gamma_{Z_K}}| + |\bm{\gamma_\epsilon}|)$. To reduce the number of parameters, \textcite[148, 150]{Patton2017} present two restrictions on the matrix of factor loadings $\bm{\beta}$: the restrictive \emph{equidependence} and the less restrictive \emph{block-equidependence} model. 
 
-For the first model, it is assumed that $K = 1$ and $\bm{\beta} = (\beta, \dots, \beta)'$. Thus, the model consists of a single latent factor and a single factor loading $\beta$ which is the same for all variables. This implies equal pairwise dependencies for all observable variables.  
+For the first model, it is assumed that $K = 1$ and $\bm{\beta} = (\beta, \dots, \beta)'$. Thus, the model consists of a single latent factor and a single factor loading $\beta$ which is the same for all variables. This set up implies equal pairwise dependencies for all observable variables.  
 
 \begin{figure}[H]
 	\includegraphics[width=\textwidth]{./figures/fig1}
@@ -177,11 +185,15 @@ For the first model, it is assumed that $K = 1$ and $\bm{\beta} = (\beta, \dots,
 	\label{f:equidependence}  
 \end{figure}
 
-Figure \ref{f:equidependence} shows four different simulations from a two dimensional one factor equidependence factor copula model. The marginal distributions are standard normal, the linear coefficient is fixed at $\beta = 1.5$ but the distributions of the latent variable and the error term differ. All models produce positive dependence but the symmetry and tail dependency differs through the choice of the distributions and their parameters. The upper left panel are realizations from a factor copula model with a skew-t distributed latent factor and a t-distributed error term. The degrees of freedom are set to $df = 4$ and the skewness parameter to $\lambda = -0.8$. This produces strong asymmetric tail dependencies. The factor copula in the bottom left panel has similar distributions. But here symmetric tail dependencies are produced since $\lambda = 0$. This results in an ordinary t-distribution for the latent variable. The bottom right panel shows realizations from a Gaussian copula which results in a multivariate Gaussian distribution with no tail dependency or asymmetry. The last panel shows the combination of an exponential latent variable with a normal distributed error term. This produces strong upper tail dependencies. 
+Figure \ref{f:equidependence} shows four different simulations from a two dimensional one factor equidependence factor copula model. The marginal distributions are standard normal, the linear coefficient is fixed at $\beta = 1.5$ but the distributions of the latent variable and the error term differ. All models produce positive dependence but the symmetry and tail dependency differs through the choice of the distributions and their parameters. The upper left panel shows realizations from a factor copula model with a skew-t distributed latent factor and a t-distributed error term. 
 
-The second restriction, the block-equidependence model, is less restrictive that the equidependence model. It is suitable for higher dimensional problems and for variables which can be naturally partitioned into different groups.\footnote{E.g. this could be stock market prices grouped into different industry sectors.} The model assumes a common factor for all groups and a group specific factor for each group. Thus, each variable is only affected by two factors. For the matrix of factor loadings, it is further assumed that all variables in the same group have the same factor loading while variables in different groups can have different loadings. This structure implies equal pairwise intra-group dependencies while the pairwise inter-group dependencies can vary between the groups. 
+The skew-t distribution is a generalization of the t-distribution and allows the specification of asymmetry via a parameter $\lambda \in (-1, 1)$. The normal and t-distribution can be seen as special cases of the skew-t distribution. For $\lambda = 0$ the t-distribution and for $df \rightarrow \infty$ the normal distribution is obtained \parencite[709, 710]{Hansen1994}.
 
-Formally, consider a partition of $\bm{Y} = (Y_1, \dots, Y_N)'$ into $M$ groups. A single variable can then be written as $Y_i^j$, where $i = 1, \dots, N$, $j = 1, \dots, M$. The value $k_j$ is the number of variables in group $j$ and it holds $\sum_{j = 1}^M k_j = N$. Then the factor copula model can be summarized as:
+In this example, the degrees of freedom are set to $df = 4$ and the skewness parameter to $\lambda = -0.8$. This produces strong asymmetric tail dependencies. The factor copula in the bottom left panel has similar distributions. But here symmetric tail dependencies are produced since $\lambda = 0$. This results in an ordinary t-distribution for the latent variable. The bottom right panel shows realizations from a factor model for which both the error term and the latent variable are normal distributed. This yields a multivariate normal distribution for the artifical variables $X$ and the corresponding copula is the Gaussian copula with no tail dependency or asymmetry. The last panel shows the combination of an exponential latent variable with a normal distributed error term. This produces strong upper tail dependencies. 
+
+The block-equidependence model, is less restrictive than the equidependence model. It is suitable for higher dimensional problems and for variables which can be naturally partitioned into different groups.\footnote{E.g. this could be stock market prices grouped into different industry sectors.} The model assumes a common latent factor for all groups and a group specific factor for each group. Thus, each artifical variable $X_i$ is only affected by two factors. For the matrix of factor loadings, it is further assumed that all variables in the same group have the same factor loading while variables in different groups can have different loadings. This structure implies equal pairwise intra-group dependencies while the pairwise inter-group dependencies can vary between the groups. 
+
+Formally, consider a partition of $\bm{Y} = (Y_1, \dots, Y_N)'$ into $M$ groups. A single variable can then be written as $Y_i^j$, where $i = 1, \dots, N$, $j = 1, \dots, M$. The value $k_j$ is the number of variables in group $j$ and it holds that $\sum_{j = 1}^M k_j = N$. Then the factor copula model can be summarized as:
 
 \begin{align}
 \label{eq:block-equidependence}
@@ -199,144 +211,141 @@ X_i^j &= \beta_j Z_0 + \beta_{M+j} Z_j + \epsilon_i\\
 \beta^M & 0			  & 0			&\cdots & \beta^{M+M}\\
 \vdots 	& \vdots 	  & \vdots		&\ddots & \vdots \\
 \beta^M & 0			  & 0			&\cdots & \beta^{M+M}\\
-\end{pmatrix},
+\end{pmatrix}.
 \end{split}
 \end{align}
-where the matrix $\bm{\beta}$ is of size $N \times (M+1)$ but with only $2M$ actual factor loadings. 
+The matrix $\bm{\beta}$ is of size $N \times (M+1)$ but with only $2M$ actual factor loadings. 
 
 ## Copula models for multivariate time series
 \label{s:dynamiccopula}
 
-Up to now, it was assumed, that the data generating process (DGP) for the copula model is static and time invariant. But one can also extent the copula model to univariate or multivariate time series processes. For the former case, the copula is used to estimate the joint distribution of a one dimensional time series $(Y_t, Y_{t+1}, \dots, Y_{t+n})'$. For the latter, the interest lies in the conditional joint distribution of the time dependent random vector $\bm{Y_t} = (Y_{1t}, \dots, Y_{Nt})'$. The conditional cdf can be written as $F_{\bm{Y}_t|\mathcal{F}_{t-1}}(\bm{y})$,  where the $\sigma$-algebra $\mathcal{F}_{t-1}$ possibly contains past information and information from other exogenous variables $\{\bm{Y}_{t-1}', \bm{Y}_{t-2}', \dots, \bm{X}_{t}', \bm{X}_{t-1}', \dots\}$ \parencite[4-6]{Patton2012}. 
+Up to now, it was tacitly assumed, that observations sampled from the random variables $Y$ are independent from each other, impliying a static copula. But one can extent the copula model to univariate or multivariate time series processes for which each observation depends on past realizations. For the former case, the copula is used to estimate the joint distribution of a one dimensional time series $(Y_t, Y_{t+1}, \dots, Y_{t+n})'$. For the latter, the interest lies in the conditional joint distribution of the time dependent random vector $Y_t = (Y_{1t}, \dots, Y_{Nt})'$. The conditional cdf can be written as $F_{Y_t|\mathcal{F}_{t-1}}(\bm{y})$,  where the $\sigma$-algebra $\mathcal{F}_{t-1}$ contains information from past realizations of $Y$ and other exogenous variables \parencite[4-6]{Patton2012}. 
 
-Sklar's theorem given by \eqref{eq:sklar} shows how the copula function links together the marginal and the joint cdf. It can be extended to the multivariate time series case in which the conditional distribution is split into a conditional copula $C_{U_t|\mathcal{F}_{t-1}}(\bm{u})$ and conditional marginal distributions $F_{Y_{it}|\mathcal{F}_{t-1}}(y)$. 
-
-Using the definition of a conditional copula one can write
+Sklar's theorem given by \eqref{eq:sklar} shows the connection between a copula function, a multivariate distributions and its marginal cdfs. It can be extended to the multivariate time series case in which the conditional distribution is split into a conditional copula $C_{U_t|\mathcal{F}_{t-1}}(\bm{u})$ and conditional marginal distributions $F_{Y_{it}|\mathcal{F}_{t-1}}(y)$:
 \begin{equation}
 \label{eq:conditionalcopula}
-F_{Y_t|\mathcal{F}_{t-1}}(y_1, \dots, y_N) = C_{U_t|\mathcal{F}_{t-1}}(F_{Y_1t|\mathcal{F}_{t-1}}(y_1), \dots, F_{Y_Nt|\mathcal{F}_{t-1}}(y_N)).
+F_{Y_t|\mathcal{F}_{t-1}}(y_1, \dots, y_N) = C_{U_t|\mathcal{F}_{t-1}}(F_{Y_{1t}|\mathcal{F}_{t-1}}(y_1), \dots, F_{Y_{Nt}|\mathcal{F}_{t-1}}(y_N)).
 \end{equation}
 To have a valid conditional multivariate distribution, the conditioning set must be the same for the marginal distributions and the copula \parencite[p. 772]{Patton2009}. 
 
-For the following sections, another approach is chosen. We built on a semi-parametric copula-based multivariate dynamic model as described in \textcite[126-129]{Chen2006}. First, the vector of conditional means and variances of $\bm{Y}_t|\mathcal{F}_{t-1}$ are estimated parametrically. Second, the empirical residuals are calculated by filtering out the conditional means and variances. Third, the joint distribution of the estimated standardized residuals is then modeled using non-parametric estimates of the marginal distributions and a parametric time-invariant copula.
+For the following sections, another approach is chosen. We built on a semi-parametric copula-based multivariate dynamic model as described in \textcite[126-129]{Chen2006}. First, the vectors with the conditional means and variances of $Y_t|\mathcal{F}_{t-1}$ are estimated parametrically and used to control for possible time dependencies. Second, the standardized residuals are calculated and their joint distribution is then modeled using non-parametric estimates of the marginal distributions and a parametric copula.
 
-Thus, this model describes three levels of estimation: First, the parameters of the marginal models for the conditional time varying means and variances. Second, the estimation of the marginal distribution of the standardized residuals. This is done using the EDF. Third, the parameters of the copula function for the standardized residuals. 
+Hence, this model describes three levels of estimation: First, the dynamic parameters of the marginal models for the conditional time varying means and variances. Second, the estimation of the marginal distribution of the standardized residuals. Here, this is done non-parametrically with the EDF. Third, the parameters of the copula function for the standardized residuals. 
   
-If we denote the parametric conditional mean of a single variable as $\mu_{it} = E(Y_{it}|\mathcal{F}_{t-1}; \bm{\phi})$ and the parametric conditional standard deviation as $\sigma_{it} = \sqrt{V(Y_{it}|\mathcal{F}_{t-1}; \bm{\phi})}$ we can write the multivariate time series process as:
+If we denote the parametric conditional mean of a single variable as $\mu_{it} = E(Y_{it}|\mathcal{F}_{t-1}; \bm{\phi})$ and the parametric conditional standard deviation as $\sigma_{it} = \sqrt{V(Y_{it}|\mathcal{F}_{t-1}; \bm{\phi})}$ we can write the multivariate time series process as
 \begin{equation}
 \label{eq:model}
-\bm{Y}_t = \bm{\mu}_t + \bm{\sigma}_t\bm{\eta}_t
+Y_t = \bm{\mu}_t + \bm{\sigma}_t\eta_t,
 \end{equation}
-with $\bm{\sigma}_t = \diag(\sigma_{1t}, \dots, \sigma_{Nt})$. The standardized innovations $\bm{\eta}_t = (\eta_{1t}, \dots, \eta_{Nt})'$ are assumed to be iid and independent of past information. It follows that $F_{\bm{\eta}_{t}} = F_{\bm{\eta}} \forall t = 1, \dots, T$. Hence, for this model, the notion of a conditional copula as given by \eqref{eq:conditionalcopula} is not used. Instead, using the copula approach, the joint cdf of the residuals can be written as:
-\begin{equation}
-F_{\bm{\eta}}(u_1, \dots, u_t) =  C_U(F_{\eta_1}(u_1), \dots, F_{\eta_N}(u_N); \bm{\theta}).
-\end{equation}
-The first level parameters $\bm{\phi}$ of the conditional means and variances are estimated using parametric models for univariate time series, such as models from the GARCH family \parencite[17]{Teraesvirta2009}. The marginal distributions of the standardized residuals $\hat{\bm{\eta}}_t = \bm{\sigma}_t^{-1}(\bm{Y}_t - \bm{\mu}_t)$ are estimated with the EDF:
-\begin{equation}
-\hat{F}_{\eta_i}(u) = \frac{1}{T+1}\sum_{t = 1}^{T}\bm{1}(\hat{\eta}_{it} \leq u).
-\end{equation}
-The parametric copula for the innovations is estimated using a factor copula model and the SMM estimation technique which is presented in the following chapter. 
+with $\bm{\sigma}_t = \diag(\sigma_{1t}, \dots, \sigma_{Nt})$ and $\bm{\phi}$ the parameter vectors of the univariate time series models. 
 
+The standardized random vector of residuals $\eta_t = (\eta_{1t}, \dots, \eta_{Nt})' = \bm{\sigma}_t^{-1}(Y_t - \bm{\mu}_t)$ is independent of past realizatons since it is assumed that all dynamics are captured by the conditional mean and standard deviation. Using a parametric copula, the joint cdf of the residuals can be written as:
+\begin{equation}
+F_{\eta}(u_1, \dots, u_t) =  C_U(F_{\eta_1}(u_1), \dots, F_{\eta_N}(u_N); \btheta).
+\end{equation}
 
+The first level parameters $\bm{\phi}$ of the conditional means and variances are estimated with standard parametric models for univariate time series, such as models from the GARCH family \parencite[17]{Teraesvirta2009}. Given a sample of observed residuals $\{\bm{\eta}_t\}_{t = 1}^T$, its marginal distributions are estimated with the EDF:
+\begin{equation}
+\hat{F}_{\eta_i}(u) = \frac{1}{T+1}\sum_{t = 1}^{T}\bm{1}(\eta_{it} \leq u).
+\end{equation}
+It is assumed that the parametric copula for the residuals is estimated with a factor copula model and the SMM estimation technique which is presented in the following chapter. 
 
 ## Simulated method of moments estimation for factor copulas
 \label{s:SMM}
 
-In the following section, based on the time series model as shown in the previous section \ref{s:dynamiccopula} and the factor copula model as defined in section \ref{s:factorcopula}, an estimation procedure known as Simulated Method of Moments (SMM) is presented. 
+Based on the time series model as shown in the previous section \ref{s:dynamiccopula} and the factor copula model as defined in section \ref{s:factorcopula}, an estimation procedure known as Simulated Method of Moments (SMM) is presented. 
 
-In models for which the copula function is known in closed form, standard Maximum Likelihood (ML) estimation can be performed. Given the time series model as described by \eqref{eq:model} multistage ML can be applied for estimating the first level conditional means and variances, the marginal distribution of the residuals and the copula. If parametric models for the marginal distributions are used, it is crucial that all models are correctly specified, otherwise the estimated copula parameters will be biased \parencite[694]{Patton2013}. \textcite[127]{Chen2006} showed that, if the EDF is used for the estimation of the marginal distribution of the residuals, the first level estimates do not affect the asymptotic distribution of the semi-parametric ML estimator of the copula parameters. 
+In contrast to the factor copula model, in models for which the copula function is known in closed form, standard Maximum Likelihood (ML) estimation can be performed. Given the time series model as described by \eqref{eq:model} multistage ML can be applied for estimating the first level conditional means and variances, the marginal distribution of the residuals and the copula. \textcite[127]{Chen2006} showed that, if the EDF is used for the estimation of the marginal distribution of the residuals, the first level estimates do not affect the asymptotic distribution of the semi-parametric ML estimator of the copula parameters. 
 
-Since the factor copula implied by \eqref{eq:factorcopula} is not given in closed form approximating the Likelihood function is difficult and computationally demanding \parencite[694]{Patton2013}. On the other hand, it is easy and computationally cheap to simulate many values from the factor model. Therefore, an alternative approach is used. It is based on the Generalized Methods of Moments (GMM), for which simulated values are used in the moment conditions. As shown by \textcite{Chen2006} for the semi-parametric ML estimator, the SMM estimator is also not affected by the first level dynamic estimates of the time series model in \eqref{eq:model} \parencite[692]{Patton2013}. 
+Since the factor copula implied by \eqref{eq:factorcopula} is not given in closed form approximating the Likelihood function is difficult and computationally demanding \parencite[694]{Patton2013}. On the other hand, it is easy and computationally cheap to simulate many values from the factor model. Therefore, an alternative approach is used. It is based on the Generalized Methods of Moments (GMM), for which its moment conditions are calculated with simulated values. As shown by \textcite{Chen2006} for the semi-parametric ML estimator, the conditional distribution of the SMM estimator is also not affected by the first level dynamic estimates of the time series model in \eqref{eq:model} \parencite[692]{Patton2013}. This result means, that even under misspecified first level models, a valid copula can still be estimated. 
 
-### General estimation procedure
+### SMM and the Generalized method of moments
 
-SMM and GMM estimation is based on the method of moments. For many statistical parametric models, theoretical population moment conditions as functions of the model parameters and the random variables can be derived. For estimation, the expectation in these conditions can then be replaced by the respective sample average \parencite[6-7]{Hall2005}. 
+SMM and GMM estimation is rooted in the Method of Moments. For many statistical parametric models, theoretical population moment conditions as functions of the model parameters and the random variables can be derived. For estimation, the expectation in these conditions can then be replaced by the respective sample average \parencite[6-7]{Hall2005}. 
 
-Formally, for SMM to work the population moment conditions take the form $E(f(\bm{\eta}_t, \bm{\theta})) = E(\hat{m}(\bm{\eta}_t)) - m_0(\bm{\theta})$ with $E(f(\bm{\eta}_t, \bm{\theta}_0)) = 0$. We define $\bm{\hat{m}}(\bm{\eta}_t)$ to be a vector of moment functions applied to the observable residual data, $\bm{\theta}_0$ the vector of true parameters and $m_0(\bm{\theta})$ the true moments as functions of the model parameters. 
+Formally, for SMM the population moment conditions take the form $g(\btheta) = E({m}(\eta_t)) - m_0(\btheta)$ with $g(\btheta_0) = 0$. We define $m(\eta_t)$ to be a vector of moment functions applied to the random vector of residuals, $\btheta_0$ the vector of true parameters and $m_0(\btheta)$ the theoretical moments as functions of the model parameters. Thus, given the true vector of parameters the moments match their theoretical counterparts. E.g. given a normal variable $X \sim N(\mu, \sigma)$ the condition can simply be written as $E(X) - \mu = 0$. 
 
-To estimate the parameters the expectation is replaced by the sample average. If exactly as many moment conditions as model parameters exist, the system can be solved exactly. If more moment conditions than parameter exist no unique solution exist and one minimizes the weighted distance to $0$ and the estimator is given by
-\begin{equation}
-\hat{\bm{\theta}}_{GMM} = \underset{\bm{\theta}}{\arg \min} (\frac{1}{T}\sum_{t = 1}^{T}f(\bm{\eta}_t, \bm{\theta}))'\hat{W}(\frac{1}{T}\sum_{t = 1}^{T}f(\bm{\eta}_t, \bm{\theta})).
-\end{equation}
-
-Under suitable assumptions and by applying a law of large numbers and the central limit theorem it can be shown that the estimator convergence in probability to the true parameters and that it is normal distributed. The weighting matrix is a positive semi-definite symmetric matrix which must converge in probability to a positive definite matrix of constants. It should be chosen in such a way, that it minimizes the asymptotic variance of the GMM estimator \parencite[14, 43]{Hall2005}.
-
-For the GMM, stating the vector of true moments $m_0$ is often straightforward. In cases, where there exist no explicit mapping from the model parameters to the true moments but the DGP is known one can use the SMM \parencite[342-347]{Hall2005}. For this, $m_0$ is replaced by applying the moments function to simulated data. The simulated moments which we write as $\tilde{m}(\bm{\eta}_s; \bm{\theta})$ are then compared to the observable sample moments. Here, one minimizes the weighted distance between the observed and simulated moments. The SMM estimator is given by:
-
+The moment conditions can be estimated by replacing the expectation with the sample average. If exactly as many moment conditions as model parameters exist, the system can be solved exactly. If more moment conditions than parameter are avalaible no unique solution exist and one tries to minimizes the distance of the sample estimator $g_T(\btheta)$ to 0. Given a sample of observed residuals $\{\bm{\theta}_t\}_{t = 1}^T$ the distance is measured by the weighted quadratic form:
 \begin{align}
-\label{eq:SMM}
 \begin{split}
-\hat{\bm{\theta}}_{SMM} &= \underset{\bm{\theta}}{ \arg \min ~} Q(\bm{\theta}) = \hat{g}'\hat{W}\hat{g}, \\
-&\text{with } \hat{g} = \frac{1}{T}\sum_{t = 1}^{T}(\hat{m}(\bm{\eta}_t)) - \frac{1}{S}\sum_{s = 1}^{S}(\tilde{m}(\bm{\eta}_s; \bm{\theta})).
+\label{eq:GMM}
+\hat{\btheta}_{GMM} &= \underset{\btheta}{ \arg \min ~} Q(\btheta) = g_T(\btheta)'W_Tg_T(\btheta)\\
+&=  \underset{\btheta}{ \arg \min ~} (\frac{1}{T}\sum_{t = 1}^{T} m(\bm{\eta}_t) - m_0(\btheta))'\hat{W}(\frac{1}{T}\sum_{t = 1}^{T}m(\bm{\eta}_t) - m_0(\btheta)).
 \end{split}
 \end{align}
 
-The SMM estimator can be formulated as a special case of the GMM estimator. Therefore, in most cases the SMMM estimator is also consistent and asymptotically normal distributed. However, since the estimation error from the simulations cannot be neglected, the variance of the SMM is usually larger. The inefficiency vanishes if $\frac{T}{S} \rightarrow \infty$ \parencite[344-345]{Hall2005}. 
+Under suitable assumptions and by applying a law of large numbers and the central limit theorem it can be shown that the estimator convergence in probability to the true parameters and that it is assymptoically normal distributed. 
 
+The weighting matrix is a positive semi-definite symmetric matrix which must converge in probability to a positive definite matrix of constants. By doing so it is ensured, that a positive weight is applied to all moment conditions. The variance of the GMM estimator depends on the choice of the weighting matrix. Therefore, $W_T$ should be chosen in such a way, that it minimizes the asymptotic variance of the GMM estimator \parencite[14, 43]{Hall2005}.
+
+For the GMM, stating the vector of true moments $m_0(\btheta)$ is often straightforward. In cases, where there exist no explicit mapping from the model parameters to the true moments but the DGP is known and simulations are easy to obtain one can use the SMM \parencite[342-347]{Hall2005}. For this, the theoretical moments $m_0(\btheta)$ are replaced by moments calculated with simulated data $\{\bm{X}\}_{s=1}^S$ from the model. The simulated moments are then compared to the observable sample moments. The SMM estimator is therefore similar to the GMM version but the moment condition changes to
+\begin{equation}
+\label{eq:SMM}
+g_T = \frac{1}{T}\sum_{t = 1}^{T}(m(\bm{\eta}_t)) - \frac{1}{S}\sum_{s = 1}^{S}(m(\bm{X}_s;\btheta)).
+\end{equation}
+
+For most cases the SMM estimator is consistent and asymptotically normal distributed. However, since the estimation error from the simulations cannot be neglected, the variance of the SMM is usually larger. The inefficiency vanishes if $\frac{T}{S} \rightarrow \infty$ \parencite[344-345]{Hall2005}. 
 
 ### SMM for factor copulas
 \label{s:smmfactorcopulas}
 
-The presented estimation method and its asymptotic results are only valid for well defined moment conditions based on the moments of the variables, e.g. the mean or the variance. For factor copulas, these moments cannot be formulated. The scale-invariant measures of dependency as defined in \eqref{eq:kendalls} - \eqref{eq:taildependency} are functions of the copula. Here, they are used to replace the moment conditions of the ordinary GMM approach. Therefore, the assumptions and the asymptotic results of the GMM estimator are not valid and a law of large numbers doesn't apply. However, as \textcite{Patton2013} showed, asymptotic results for the distribution of $\hat{\bm{\theta}}$ can still be derived. 
+The presented estimation method and its asymptotic results are valid for well defined conditions based on the moments of the variables, e.g. the mean or the variance. For factor copulas, these moments cannot be formulated. The scale-invariant measures of dependency as defined in \eqref{eq:kendalls} - \eqref{eq:taildependency} are functions of the copula. For the estimation approach presented by \textcite{Patton2013}, they are used to replace the moment conditions of the ordinary GMM approach. Therefore, the assumptions and the asymptotic results of the GMM estimator are not valid and a law of large numbers doesn't apply. However, as the authors proved, asymptotic results for the distribution of the copula parameters $\hat{\btheta}$ can still be derived. 
 
-For factor copulas we adapt the SMM estimator in \eqref{eq:SMM} and replace the empirical moment functions by 
+For factor copulas, the "moment" conditions for the SMM estimation consist of vector functions of pairwise dependency measures separetely calculated with the observed matrix of residuals $\bm{\theta}$ and $S$ simulations $\bm{X}$ from the copula model as given by \eqref{eq:factorcopula}. The moment condition $g_t$ in the GMM objective function given by \eqref{eq:GMM} and the SMM adaption \eqref{eq:SMM} is replaced by
 \begin{equation}
-\hat{g} = \hat{m}_T(\bm{\eta}) - \tilde{m}_S(\bm{X}(\bm{\theta})),
+g_T(\btheta) = m_T(\bm{\eta}) - m_S(\bm{X}; \btheta),
 \end{equation}
-where $\bm{X}(\bm{\theta})$ are simulations from the factor model in \eqref{eq:factorcopula}. The function $m(\cdot)$ generates a vector of pairwise dependency statistics. For each pair of variables we choose the empirical counterparts of Spearman's Rho as given in \ref{eq:spearman} and lower and upper quantile dependency as given in \ref{eq:taildependency} for $q \in (0.05, 0.1, 0.9, 0.95)$. Other invariant measures such as Kendall's Tau could also be included. 
+where the vector function $m(\cdot)$ generates a vector of pairwise dependency statistics. As measure of dependency, the empirical counterparts of Spearman's Rho as given in \ref{eq:spearman} and lower and upper quantile dependency as given in \ref{eq:taildependency} for $q \in (0.05, 0.1, 0.9, 0.95)$ are choosen. Other invariant measures such as Kendall's Tau cann also be included. 
 
-Formally, $m(\bm{Y}) = (\bm{\delta}_{i, j})' \text{ with } i = 1, \dots, N-1, j = i+1, \dots, N$ where $\bm{\delta}_{i, j} = (\hat{\rho}^S_{i, j}, \lambda_{i, j}^L(0.05), \lambda_{i, j}^L(0.1), \lambda_{i, j}^U(0.90), \lambda_{i, j}^U(0.95))'$ is a vector of dependencies of length $5$. 
-
-For an unrestricted factor model there exist $5(0.5 \cdot N \cdot (N-1))$ dependency statistics, five for each unique pair of variables. For the simpler equidependence model, which assumes the same factor loading for all variables, one can average over all vectors such that we can write:
+Formally, we can write $m(\cdot) = \{\bm{\delta}_{i, j}\}_{i = 1, j = i}^{N-1, N}$, with $\bm{\delta}_{i, j} = (\hat{\rho}^S_{i, j}, \hat{\lambda}_{i, j}^{0.05}, \hat{\lambda}_{i, j}^{0.1}, \hat{\lambda}_{i, j}^{0.90}, \hat{\lambda}_{i, j}^{0.95})'$. For an unrestricted factor model there exist $5\cdot(0.5 \cdot N \cdot (N-1))$ dependency statistics - 5 for each unique pair of variables. For the simpler equidependence model, which assumes the same factor loading for all variables, one can average over all pairwise combinations such that we can write:
 
 \begin{equation}
 \label{eq:equidependence}
-m(\cdot) = \frac{2}{N*(N-1)}\sum_{i = 1}^{N-1}\sum_{j = i+1}^{N} \bm{\delta}_{i, j}.
+m(\cdot) = \frac{2}{N\cdot(N-1)}\sum_{i = 1}^{N-1}\sum_{j = i+1}^{N} \bm{\delta}_{i, j}.
 \end{equation}
-
 This results in a single vector of dependencies. 
 
-For the bloc-equidependence model the final number of dependencies is $5M$ since one can average over all intra- and inter-group dependencies. For each group $s = 1, \dots, M$, we can write
+For the bloc-equidependence model the final number of dependencies is $5\cdot M$ because the model structure allowes one to average over all intra- and inter-group dependencies. Using the same notation as in \eqref{eq:block-equidependence}, we can write for each group $m = 1, \dots, M$
 \begin{equation}
-\bar{\bm{\delta}}_s =  \frac{1}{M}(\underbrace{\sum_{r = 1, r \neq s}^{M} \frac{1}{k_sk_r}\sum_{i = 1}^{k_s}\sum_{j = 1}^{k_r}  \bm{\delta}_{is, jr}}_{\text{intergroup dependencies}} + \underbrace{\frac{2}{k_s(k_s-1)}\sum_{i = k_s}^{k_s-1}\sum_{j = i+1}^{k_s} \bm{\delta}_{is, js}}_{\text{intra-group dependencies}}),
+\bar{\bm{\delta}}_m =  \frac{1}{M}(\underbrace{\sum_{r = 1, r \neq m}^{M} \frac{1}{k_mk_r}\sum_{i = 1}^{k_m}\sum_{j = 1}^{k_r}  \bm{\delta}_{im, jr}}_{\text{intergroup dependencies}} + \underbrace{\frac{2}{k_m(k_m-1)}\sum_{i = k_m}^{k_m-1}\sum_{j = i+1}^{k_m} \bm{\delta}_{im, jm}}_{\text{intra-group dependencies}}),
 \end{equation}
-where $\bm{\delta}_{is, jr}$ is the vector of dependencies for the $i$th variable in group $s$ and the $j$th variable in group $r$. Finally for the bloc-equidependence model, the moment condition can be written as: $m(\bm{Y}) = (\bar{\bm{\delta}}_1, \dots, \bar{\bm{\delta}}_S)'$. 
+where $\bm{\delta}_{im, jr}$ is the vector of dependencies for the $i$th variable in group $s$ and the $j$th variable in group $r$. Finally, for the bloc-equidependence model, the moment function can be written as: $m(\cdot) = (\bar{\bm{\delta}}_1, \dots, \bar{\bm{\delta}}_M)'$. 
 
-\textcite[p. 691ff]{Patton2013} showed that under some regularity assumptions the SMM estimator is weakly consistent and asymptotically normal distributed. The assumptions ensure that for both the iid and the time series case the sample dependency measures converge in probability to their theoretical population values. It is important to note, that the population version of the moment conditions is assumed to be differentiable at the true parameter $\bm{\theta}_0$ while this is not true for the finite sample version. 
+\textcite[p. 691ff]{Patton2013} showed that under some regularity assumptions the SMM estimator is weakly consistent and asymptotically normal distributed. The assumptions ensure that for both the iid and the time series case, the sample dependency measures converge in probability to their theoretical population values. Notably, it is assumed that the population version of the moment condition $g(\btheta)$ is differentiable at the true parameter $\btheta_0$ while this is not true for the sample version $g_T(\btheta)$.  
 
 The convergence of the estimator can be summarized as:
 \begin{align}
 \label{eq:asymptotic}
 \begin{split}
-\hat{\bm{\theta}} \sim N(\bm{\theta_0}, (\frac{1}{T}+\frac{1}{S})\bm{\Omega}) \text{ ~for~ }T, S \rightarrow \infty,
+\hat{\btheta}_{SMM} \sim N(\btheta_0, (\frac{1}{T}+\frac{1}{S})\bm{\Omega}) \text{ ~for~ }T, S \rightarrow \infty,
 \end{split}
 \end{align}
-with covariance matrix $\bm{\Omega} = \bm{(G'WG)^{-1}G'W'\Sigma WG(G'WG)^{-1}}$, where $\bm{G} = \frac{\partial \bm{g(\theta)}}{\partial \bm{\theta}_0}$ is the Jacobian matrix of the first order derivatives of the moments function $\bm{g(\theta)}$ and $\bm{\Sigma}$ is the asymptotic variance of the sample moments $\hat{\bm{m}}$.
+with covariance matrix $\bm{\Omega} = (G'WG)^{-1}G'W'\Sigma WG(G'WG)^{-1}$, where $G = \frac{\partial g(\btheta)}{\partial \btheta_0}$ is the Jacobian matrix of the first order derivatives of the moment condition $g(\btheta)$ and $\Sigma$ is the asymptotic variance of the vector of dependencies $m_T(\bm{\eta})$ calculated with the observed sample of residuals.
 
-The weight matrix $\bm{W}$ can be chosen to be the identity matrix which results in some efficiency losses. If the efficient weight matrix $\bm{W} = \bm{\Sigma}^{-1}$ is used the asymptotic variance simplifies to $\bm{\Omega} = \bm{(G'WG)^{-1}}$. 
+The weight matrix $W$ can be chosen to be the identity matrix which results in some efficiency losses. On the other hand,the efficient weight matrix which minimzes the variance of the estimator is given by $W = \Sigma^{-1}$ and the overall variance reduces to $\Omega = (G'WG)^{-1}$. In contrast to ordinary GMM estimation, the efficient weight matrix does not depend on the parameters of the factor copula model and can be estimated consistently before estimating the parameters $\btheta$. 
 
-The efficient weight matrix does not depend on the parameters of the factor copula model and can therefore be estimated prior to estimating $\bm{\theta}$. The asymptotic variance of the sample moments $\bm{\Sigma}$ can be estimated with an iid bootstrap procedure:
+The asymptotic variance $\Sigma$ of the sample moments can be estimated with an iid bootstrap procedure:
 
 \begin{algorithm}
 \BlankLine
-\KwIn{$\{\hat{\bm{\eta}}_t\}_{t = 1}^T$}
-\KwOut{$\hat{\bm{\Sigma}}_{T,B}$}
-$\hat{\bm{m}}_T \gets$ compute sample moments from residuals $\{\hat{\bm{\eta}}_t\}_{t = 1}^T$ \;
+\KwIn{$\{\bm{\eta}_t\}_{t = 1}^T$}
+\KwOut{$\Sigma_{T,B}$}
+$\hat{m}_T \gets m(\bm{\eta})$\;
   \For{$b\gets1$ \KwTo $B$}{
-    $\{\hat{\bm{\eta}}_t^{(b)}\}_{t = 1}^T \gets$ sample $T$ values with replacement from $\{\hat{\bm{\eta}}_t\}_{t = 1}^T$\;
-$\hat{\bm{m}}_T^{(b)} \gets$ compute sample moments from bootstrap sample $\{\hat{\bm{\eta}}_t^{(b)}\}_{t = 1}^T$\;
+    $\bm{\eta}_t^{(b)} \gets$ sample $T$ values with replacement from $\{\hat{\bm{\eta}}_t\}_{t = 1}^T$\;
+$\hat{m}_T^{(b)} \gets m(\bm{\eta}^{(b)})$\;
     }
     \BlankLine
-    $\hat{\bm{\Sigma}}_{T,B} \gets \frac{T}{B}\sum_{b = 1}^B((\hat{\bm{m}}_T^{(b)} - \hat{\bm{m}}_T)(\hat{\bm{m}}_T^{(b)} - \hat{\bm{m}}_T)')$\;
+    $\Sigma_{T,B} \gets \frac{T}{B}\sum_{b = 1}^B(\hat{m}_T^{(b)} - \hat{m}_T)(\hat{m}_T^{(b)} - \hat{m}_T)'$\;
     \BlankLine
-    \KwRet $\hat{\bm{\Sigma}}_{T,B}$\;
-  \caption{Bootstrap procedure for estimating the asymptotic variance $\hat{\bm{\Sigma}}_{T,B}$}
+    \KwRet $\Sigma_{T,B}$\;
+  \caption{Bootstrap procedure for estimating the asymptotic variance $\Sigma_{T,B}$}
 \label{alg:sigma}
 \end{algorithm}
 
-The derivative $\bm{G}$ can be estimated using a numerical approximation around the parameter estimator $\hat{\bm{\theta}}$. For the $k$th column we can write:
+The derivative $G$ can be estimated using a numerical approximation around the parameter estimator $\hat{\btheta}$. For the $k$th column of $G$ one can write:
 $$
-\hat{\bm{G}}_{T, S, k} = \frac{\bm{g}_{T, S}(\hat{\bm{\theta}}+\bm{e}_k\epsilon_{T, S}) - \bm{g}_{T, S}(\hat{\bm{\theta}}-\bm{e}_k\epsilon_{T, S})}{2\epsilon_{T, S}},
+G_{T, S, k} = \frac{g_{T, S}(\hat{\btheta}+\bm{e}_k\epsilon_{T, S}) - g_{T, S}(\hat{\btheta}-\bm{e}_k\epsilon_{T, S})}{2\epsilon_{T, S}},
 $$
 where $\bm{e}$ is the $k$th unit vector and $\epsilon_{T, S}$ the step size which is usually set to $\epsilon_{T, S} = 0.1$. 
 
@@ -345,22 +354,22 @@ where $\bm{e}$ is the $k$th unit vector and $\epsilon_{T, S}$ the step size whic
 ## A structural break test for factor copulas
 \label{s:breaktest}
 
-Although the factor copula as presented in the last sections is intended to be used in a time series context, the underlying dependence structure of the residuals is assumed to be static. All dynamics are captured by the conditional mean and variance of the marginal distributions. But given the findings of time varying correlations in real datasets the assumption of a static copula seems unrealistic \parencite[p. 655]{Manner2012}. 
+The factor copula as presented in the last sections is used in a time series context. But the underlying dependence structure of the residuals is assumed to be static. All dynamics are captured by the conditional mean and variance of the marginal distributions. But given the findings of time varying correlations in real datasets the assumption of a static copula seems unrealistic \parencite[p. 655]{Manner2012}. 
 
 Different approaches exist to allow for a time varying dependence structure \parencite[658 - 668]{Manner2012}: For instance, the parameters of the copula can be modeled as functions of the lagged variables, auto-regressive terms or as an independent stochastic process. But one can also test for a structural break in the copula parameters at some point in time $t$. While these approaches assume that the functional form of the copula doesn't change other methods explicitly allow multiple alternating copula functions. 
 
 The dynamic model as presented in \ref{s:dynamiccopula} allows for a wide variety of parameterization and copula functions. Here, we focus on the factor copula model and the SMM estimation procedure as presented in the previous sections. In the following section a structural break test based on \textcite{Wied2017} for a change of the parameters of the factor copula as given by \eqref{eq:model} is presented. The underlying factor copula function stays constant, while the copula's parameters are allowed to vary over time. 
 
-The test is based on recursive estimations of the copula model at each time point $t \in \{\epsilon T, \dots, T\}$, with $0 < \epsilon < 1$. We write the recursive parameter as $\bm{\theta}_t$. For the estimation, all information from the first period up to point $t$ is used. The strictly positive trimming parameter $\epsilon$ has to be chosen such that the model parameters don't fluctuate too much due to the larger estimation error of smaller sample sizes. 
+The test is based on recursive estimations of the copula model at each time point $t \in \{\epsilon T, \dots, T\}$, with $0 < \epsilon < 1$. We write the recursive parameter as $\btheta_t$. For the estimation, all information from the first period up to point $t$ is used. The strictly positive trimming parameter $\epsilon$ has to be chosen such that the model parameters don't fluctuate too much due to the larger estimation error of smaller sample sizes. 
 
 The null hypothesis states that the parameters of the factor copula model are stationary while the alternative assumes at least one significant break point in time:
 \begin{equation}
-H_0: \theta_1 = \theta_2 = \dots = \theta_T \hspace{2em} H_1: \theta_t \neq \theta_{t+1} \text{ for some } t = \{1, \dots, T\}.
+H_0: \btheta_1 = \btheta_2 = \dots = \btheta_T \hspace{2em} H_1: \btheta_t \neq \btheta_{t+1} \text{ for some } t = \{1, \dots, T\}.
 \end{equation}
 
-The recursive estimator $\hat{\bm{\theta}}_t$ is compared to the the estimated parameters of the full model $\hat{\bm{\theta}}_T$. If the recursive estimator is significantly far away from the full model estimates, $H_0$ is rejected. Formally, the recursive statistics are calculated as the scaled squared distance between the full model and the recursive estimator. The final test statistic is then given as the maximum distance:
+The recursive estimator $\hat{\btheta}_t$ is compared to the the estimated parameters of the full model $\hat{\btheta}_T$. If the recursive estimator is significantly far away from the full model estimates, $H_0$ is rejected. Formally, the recursive statistics are calculated as the scaled squared distance between the full model and the recursive estimator. The final test statistic is then given as the maximum distance:
 \begin{equation}
-P = \underset{\epsilon T \leq t \leq T}{\max} \frac{t}{T}^2T(\hat{\bm{\theta}}_t- \hat{\bm{\theta}}_T)'(\hat{\bm{\theta}}_t - \hat{\bm{\theta}}_T).
+P = \underset{\epsilon T \leq t \leq T}{\max} \frac{t}{T}^2T(\hat{\btheta}_t- \hat{\btheta}_T)'(\hat{\btheta}_t - \hat{\btheta}_T).
 \end{equation}
 
 \textcite[10]{Wied2017} also propose a non-parametric alternative test statistic which is solely based on the moment functions as described in section \ref{s:smmfactorcopulas} and does not involve the recursive estimation of a copula model:
@@ -378,7 +387,7 @@ P &\overset{d}{\rightarrow} \underset{\epsilon T \leq t \leq T}{\max} (\bm{A}^*(
 M &\overset{d}{\rightarrow} \underset{\epsilon T \leq t \leq T}{\max} (\bm{A}(\frac{t}{T}) - \frac{t}{T}\bm{A}(1))'(\bm{A}(\frac{t}{T}) - \frac{t}{T}\bm{A}(1)),
 \end{split}
 \end{align}
-with $\bm{A}^*(\frac{t}{T}) = (\bm{G'WG)^{-1}G'W}(A(\frac{t}{T}) - \frac{t}{T}\sqrt{(\frac{T}{S})}A(1))$ and $T, S \rightarrow \infty$. As for the SMM estimator, $\bm{G}$ is the matrix of first order derivatives of the population moment function $\bm{g(\theta)} = \hat{m_t}-\tilde{m_S; \bm{\theta}}$, $W$ is the weighting matrix of the SMM estimator and $A(\cdot)$ is a Gaussian process.\footnote{The necessary regulatory assumptions to derive this result are similar in spirit to the assumptions used to derive the asymptotic distribution of the parameters of the factor copula model in section \ref{s:smmfactorcopulas}.}  
+with $\bm{A}^*(\frac{t}{T}) = (\bm{G'WG)^{-1}G'W}(A(\frac{t}{T}) - \frac{t}{T}\sqrt{(\frac{T}{S})}A(1))$ and $T, S \rightarrow \infty$. As for the SMM estimator, $\bm{G}$ is the matrix of first order derivatives of the population moment function $\bm{g(\theta)} = \hat{m_t}-\tilde{m_S; \btheta}$, $W$ is the weighting matrix of the SMM estimator and $A(\cdot)$ is a Gaussian process.\footnote{The necessary regulatory assumptions to derive this result are similar in spirit to the assumptions used to derive the asymptotic distribution of the parameters of the factor copula model in section \ref{s:smmfactorcopulas}.}  
 
 The distribution of the test statistics under the null hypothesis can be estimated using the following bootstrap procedure:
 \begin{algorithm}
@@ -411,7 +420,7 @@ Given the empirical standardized residuals and some significance level $\alpha$ 
 
 In this chapter we focus on the implementation of the previous methods and procedures. Using  the programming language \emph{R} an open-source package was built, such that the methods can be easily tested, installed and distributed \parencite{R2017}.\footnote{See also the appendix notes on data access in section \ref{s:access}.} First, the functions for the configuration and simulation of factor copulas are shortly presented. Second, an overview of the numerical optimization strategy is given in section \ref{s:optimization}). Explained code examples of the main functions can be found in the appendix section \ref{s:code}. Finally, the validity of the package and the discussed procedures is tested in two simulation studies (section \ref{s:simulation}).
 
-The package consists of a set of high level functions which can be used to construct, simulate and fit various factor copula models. The specification of the factor copula model is handled by the functions `config_factor`, `config_error` and `config_beta`. The two functions `fc_create` and `fc_fit` can be used to either simulate values from a factor copula or to fit a model to a dataset. For conducting the break test as described in section \ref{s:breaktest}, the library offers the functions `fc_critval`, `fc_mstat` and `fc_pstat`. The former simulates critical values for either the moments or copula based test. The latter two calculate the recursive test statistics. A matrix of recursive $\hat{\bm{\theta}}_t$ must be provided for the calculation of the copula based test statistic. It can be obtained by recursively applying `fc_fit` to the data. Obtaining the recursive estimates is computationally costly. To speed up the estimation, the HPC cluster of the University of Cologne was utilized \parencite{cheops2018}.
+The package consists of a set of high level functions which can be used to construct, simulate and fit various factor copula models. The specification of the factor copula model is handled by the functions `config_factor`, `config_error` and `config_beta`. The two functions `fc_create` and `fc_fit` can be used to either simulate values from a factor copula or to fit a model to a dataset. For conducting the break test as described in section \ref{s:breaktest}, the library offers the functions `fc_critval`, `fc_mstat` and `fc_pstat`. The former simulates critical values for either the moments or copula based test. The latter two calculate the recursive test statistics. A matrix of recursive $\hat{\btheta}_t$ must be provided for the calculation of the copula based test statistic. It can be obtained by recursively applying `fc_fit` to the data. Obtaining the recursive estimates is computationally costly. To speed up the estimation, the HPC cluster of the University of Cologne was utilized \parencite{cheops2018}.
 
 ## Copula specification and simulation
 
@@ -431,7 +440,7 @@ The simulation of new values is a time consuming part. To avoid unnecessary call
 ## Optimization strategy 
 \label{s:optimization}
 
-While the function `fc_create` can be used to simulate values from a factor copula model given a vector of parameters, the function `fc_fit` estimates $\bm{\theta}$ via SMM as described in section \ref{s:SMM}. Given a copula specification and the observed residuals, it finds the optimal $\hat{\bm{\theta}}$ which minimizes the weighted squared distance between the dependency vectors calculated with simulated data from the factor model and with observable data as presented in equation \eqref{eq:SMM}. 
+While the function `fc_create` can be used to simulate values from a factor copula model given a vector of parameters, the function `fc_fit` estimates $\btheta$ via SMM as described in section \ref{s:SMM}. Given a copula specification and the observed residuals, it finds the optimal $\hat{\btheta}$ which minimizes the weighted squared distance between the dependency vectors calculated with simulated data from the factor model and with observable data as presented in equation \eqref{eq:SMM}. 
 
 Optionally, the function also estimates standard errors using the bootstrap algorithm given by \eqref{alg:sigma}. For simplicity, the weight matrix $W$ is set to the identity matrix. Previous studies showed no significant improvement when the theoretically efficient weight matrix $W  = \hat{\bm{\Sigma}}_{T,B}^{-1}$ is used \parencite[694]{Patton2013}. 
 
@@ -477,11 +486,11 @@ The density mass centers around the true value of $\beta = 1.5$. For all simulat
 
 For the second study, a more sophisticated model is presented to illustrate the effectiveness of the approach even for high dimensional problems and complicated dependence structures. Analogous to the empirical examples in \textcite{Wied2017} and \textcite{Patton2017} the DGP is based on a \emph{bloc-equidependence} model as described in section \ref{s:restrictions}. 
 
-The model consists of $N = 21$ standard normal distributed variables which are partitioned in $M = 3$ groups of equal size. Each variable is affected by a common and a group specific factor.  The common latent factor is skew-t distributed with strong asymmetric tail-dependency. The three group specific latent factors and the error term are t-distributed. Due to the bloc-equidependence structure, the number of factor loadings reduces from $0.5*N*(N-1) = 210$ to just $2M = 6$. All distributional parameters are kept fixed and only the factor loadings are estimated such that the recursive estimator can be written as $\bm{\theta}_t = (\beta_{1,t}, \dots, \beta_{6,t})'$. 
+The model consists of $N = 21$ standard normal distributed variables which are partitioned in $M = 3$ groups of equal size. Each variable is affected by a common and a group specific factor.  The common latent factor is skew-t distributed with strong asymmetric tail-dependency. The three group specific latent factors and the error term are t-distributed. Due to the bloc-equidependence structure, the number of factor loadings reduces from $0.5*N*(N-1) = 210$ to just $2M = 6$. All distributional parameters are kept fixed and only the factor loadings are estimated such that the recursive estimator can be written as $\btheta_t = (\beta_{1,t}, \dots, \beta_{6,t})'$. 
 
-We chose $T = 1500$, $S = 25 \times T$ and a breakpoint in the parameters of the copula at $t = 1000$. Before the break, $\bm{\theta}_{pre} = (0, 1, 1, 0, 1, 1)'$ and after the break $\bm{\theta}_{post} = (1.5, 1, 1, 1.5, 1, 1)'$. Thus, only the intra- and interdependence for the first group increases from $0$ to $1.5$ while the remaining factor loadings stay constant.
+We chose $T = 1500$, $S = 25 \times T$ and a breakpoint in the parameters of the copula at $t = 1000$. Before the break, $\btheta_{pre} = (0, 1, 1, 0, 1, 1)'$ and after the break $\btheta_{post} = (1.5, 1, 1, 1.5, 1, 1)'$. Thus, only the intra- and interdependence for the first group increases from $0$ to $1.5$ while the remaining factor loadings stay constant.
 
-The test statistics and critical values are based on three different recursive calculations over a range from $t = 300$ to $T = 1500$: First, all parameters are estimated via recursive SMM. Second, only a subset of $\bm{\theta}_t$ is estimated recursively while fixing the common and group specific factor for the first group at their full sample estimates. Hence, for this calculation $\bm{\theta}_t = (\hat{\beta}_{1, T}, \beta_{2, t}, \beta_{3, t}, \hat{\beta}_{4, T}, \beta_{5, t}, \beta_{6, t})$. Finally, the non-parametric test statistics based on the moment functions are calculated.
+The test statistics and critical values are based on three different recursive calculations over a range from $t = 300$ to $T = 1500$: First, all parameters are estimated via recursive SMM. Second, only a subset of $\btheta_t$ is estimated recursively while fixing the common and group specific factor for the first group at their full sample estimates. Hence, for this calculation $\btheta_t = (\hat{\beta}_{1, T}, \beta_{2, t}, \beta_{3, t}, \hat{\beta}_{4, T}, \beta_{5, t}, \beta_{6, t})$. Finally, the non-parametric test statistics based on the moment functions are calculated.
 
 We expect, that a breakpoint is detected around $t = 1000$ only for the first and third recursive calculations. For the second calculation no breakpoint should be detected since the factor loadings of the second and third group are not affected by the simulated structural break.   
 
@@ -524,7 +533,7 @@ Finally, table \ref{tab:simulation} shows the results for a copula model estimat
 Comparing the estimates and the value of the objective function at the optimal value, one can notice that the model after the breakpoint and for the full sample are less precise. For the former case, this can be due to the small sample size. For the latter case, this can be due to the misspecified copula, which assumes no change in parameters. The estimates for the pre- and post-break sample are close to their true values. The standard errors for the post-break period are larger due to the smaller sample size. However the coefficients are still significant. 
 
 
-# Modelling topic dependencies over time with factor copulas
+# Modelling dependencies in topic salience over time
 
 In this chapter, we apply the previously discussed methods to a real aggregated dataset collected from the social media platform Facebook. Typically, copula models are applied to model the dependency structures of financial data. For example, the structural break test was used to detect changing dependencies during the financial crisis \parencite[18]{Wied2017}. With this analysis, we want to explore other ways of applying the discussed methods in areas outside from applications in finance. 
 
@@ -639,7 +648,7 @@ AfD-CDU/CSU & 0.07 & 0.14 & 0.17 & 0.13 & 0.10 \\
   Average & 0.11 & 0.12 & 0.18 & 0.16 & 0.11 \\ 
    \bottomrule
 \end{tabular}
-\caption[Pairwise sample dependencies for the six parties]{Pairwise sample dependencies for the six parties applied to the standardized residuals.}
+\caption[Pairwise sample dependencies for the daily topic salience of each party]{Pairwise sample dependencies for the daily topic salience of each party applied to the standardized residuals.}
 \label{t:correlations}
 \end{table}
 
@@ -647,7 +656,7 @@ AfD-CDU/CSU & 0.07 & 0.14 & 0.17 & 0.13 & 0.10 \\
 
 To get a first idea of the characteristics of the data various factor copula models are fitted to the complete sample. To determine the number of latent factors $K$, we use an approach by \textcite[p. 148]{Patton2017} and analyze the ordered eigenvalues of the residual rank-correlation matrix. One eigenvalue is above the threshold. Therefore, the analysis is restricted to one-factor copula models (see also figure \ref{f:eigenvalues}). 
 
-Table \ref{tab:onefactor} summarizes the results. We separately fitted equidependence and unrestricted models for various distributions of the factor and error term. The normal and t-distribution can be seen as special cases of the skew-t distribution. For $\lambda = 0$ the t-distribution and for $df \rightarrow \infty$ the normal distribution is obtained \parencite[709, 710]{Hansen1994}.
+Table \ref{tab:onefactor} summarizes the results. We separately fitted equidependence and unrestricted models for various distributions of the factor and error term. 
 
 \begin{table}[H]
 \centering
@@ -773,10 +782,10 @@ To simplify the workflow and the communication with the cluster, we wrote the R-
 
 The methods for the simulation and estimation of factor copula models and the break test are available via a separate R-package `factorcopula`. The package can be easily downloaded and installed from Github. Further notes can be found under: https://github.com/bonartm/factorcopula. 
 
-## Code example
+## Code examples
 \label{s:code}
 
-In the following explained example, the \emph{R} package \emph{factorcopula} is used to define a bloc-equidependence factor copula with three latent variables. Data from the model is simulated for some specific vector $\theta$. Finally, the parameter vector is estimated with the SMM.  
+In the following explained example, the \emph{R} package \emph{factorcopula} is used to define a bloc-equidependence factor copula with three latent variables. Data from the model is simulated for some specific vector $\btheta$. Finally, the parameter vector is estimated with the SMM.  
 
 The first factor is skewed-t distributed, the second and third are standard normal distributed. The error term is t distributed with 4 degrees of freedom. The distributional parameters `dfInv` and `lambda` of the skewed-t distribution are free parameters of the model. 
 ```{r}
