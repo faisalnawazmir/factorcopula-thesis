@@ -354,31 +354,31 @@ where $\bm{e}$ is the $k$th unit vector and $\epsilon_{T, S}$ the step size whic
 ## A structural break test for factor copulas
 \label{s:breaktest}
 
-The factor copula as presented in the last sections is used in a time series context. But the underlying dependence structure of the residuals is assumed to be static. All dynamics are captured by the conditional mean and variance of the marginal distributions. But given the findings of time varying correlations in real datasets the assumption of a static copula seems unrealistic \parencite[p. 655]{Manner2012}. 
+The factor copula as presented in the last sections is used in a dynamic model as given by \eqref{eq:model}. Here, the dependence structure of the residuals is assumed to be static since all dynamics are captured by the conditional mean and variance of the marginal distributions. But given the findings of time varying correlations in real datasets the assumption of a static copula seems unrealistic \parencite[p. 655]{Manner2012}. 
 
 Different approaches exist to allow for a time varying dependence structure \parencite[658 - 668]{Manner2012}: For instance, the parameters of the copula can be modeled as functions of the lagged variables, auto-regressive terms or as an independent stochastic process. But one can also test for a structural break in the copula parameters at some point in time $t$. While these approaches assume that the functional form of the copula doesn't change other methods explicitly allow multiple alternating copula functions. 
 
-The dynamic model as presented in \ref{s:dynamiccopula} allows for a wide variety of parameterization and copula functions. Here, we focus on the factor copula model and the SMM estimation procedure as presented in the previous sections. In the following section a structural break test based on \textcite{Wied2017} for a change of the parameters of the factor copula as given by \eqref{eq:model} is presented. The underlying factor copula function stays constant, while the copula's parameters are allowed to vary over time. 
+The dynamic model as presented in \ref{s:dynamiccopula} allows for a wide variety of parameterization and copula functions. Here, we focus on the factor copula model and the SMM estimation procedure as presented in the previous sections. In the following section a structural break test based on \textcite{Wied2017} for a change of the parameters of the factor copula as given by \eqref{eq:model} is presented. The underlying factor copula function doesn't change, while the copula's parameters are allowed to vary over time. 
 
-The test is based on recursive estimations of the copula model at each time point $t \in \{\epsilon T, \dots, T\}$, with $0 < \epsilon < 1$. We write the recursive parameter as $\btheta_t$. For the estimation, all information from the first period up to point $t$ is used. The strictly positive trimming parameter $\epsilon$ has to be chosen such that the model parameters don't fluctuate too much due to the larger estimation error of smaller sample sizes. 
+The test is based on recursive estimations of the copula model at each time point $t \in \{\lfloor \epsilon T \rfloor, \dots, T\}$, with $0 < \epsilon < 1$. We write the recursive parameter as $\btheta_t$. For its estimation, all information from the first period up to point $t$ is used. The strictly positive trimming parameter $\epsilon$ has to be chosen such that the model parameters don't fluctuate too much due to the larger estimation error of smaller sample sizes. In the following applications we usually choose $\epsilon$ such that the first recursive period starts at $t = 300$. 
 
 The null hypothesis states that the parameters of the factor copula model are stationary while the alternative assumes at least one significant break point in time:
 \begin{equation}
 H_0: \btheta_1 = \btheta_2 = \dots = \btheta_T \hspace{2em} H_1: \btheta_t \neq \btheta_{t+1} \text{ for some } t = \{1, \dots, T\}.
 \end{equation}
 
-The recursive estimator $\hat{\btheta}_t$ is compared to the the estimated parameters of the full model $\hat{\btheta}_T$. If the recursive estimator is significantly far away from the full model estimates, $H_0$ is rejected. Formally, the recursive statistics are calculated as the scaled squared distance between the full model and the recursive estimator. The final test statistic is then given as the maximum distance:
+For each period, the recursive estimator $\hat{\btheta}_t$ is compared to the the estimated parameters of the full model $\hat{\btheta}_T$. If the recursive estimator is significantly far away from the full model estimates, $H_0$ is rejected. Formally, the recursive statistics are calculated as the scaled squared distances between the full model and the recursive estimator. The final test statistic is then given as the maximum distance:
 \begin{equation}
-P = \underset{\epsilon T \leq t \leq T}{\max} \frac{t}{T}^2T(\hat{\btheta}_t- \hat{\btheta}_T)'(\hat{\btheta}_t - \hat{\btheta}_T).
+P = \underset{\epsilon T \leq t \leq T}{\max} (\frac{t}{T})^2T(\hat{\btheta}_t- \hat{\btheta}_T)'(\hat{\btheta}_t - \hat{\btheta}_T).
 \end{equation}
 
-\textcite[10]{Wied2017} also propose a non-parametric alternative test statistic which is solely based on the moment functions as described in section \ref{s:smmfactorcopulas} and does not involve the recursive estimation of a copula model:
+\textcite[10]{Wied2017} also propose a non-parametric alternative test statistic which is solely based on the moment functions calculated with the residuals up to point $t$ as described in section \ref{s:smmfactorcopulas}. It does not involve the recursive estimation of a copula model:
 \begin{equation}
-M = \underset{\epsilon T \leq t \leq T}{\max} (\frac{t}{T})^2T(\bm{\hat{m}}_t - \bm{\hat{m}}_T)'(\bm{\hat{m}}_t - \bm{\hat{m}}_T),
+M = \underset{\epsilon T \leq t \leq T}{\max} (\frac{t}{T})^2T(m_t(\bm{\eta}) - m_T(\bm{\eta}))'(m_t(\bm{\eta}) - m_T(\bm{\eta})),
 \end{equation}
-where $\bm{\hat{m}}_t$ is the recursive vector of dependencies calculated with the residuals up to time $t$.  
+where $m_t(\bm{\eta})$ is the recursive vector of dependencies calculated with the residuals up to time $t$.  
 
-For the break point detection, the test statistic is compared to a critical value (CV). If it is larger than the CV, the corresponding time point of the test statistic is chosen as the breakpoint. The CV is based on the $1-\alpha$ quantile of the distribution of $M$ or $P$ under the null hypothesis. It can be simulated with a bootstrap procedure as described in algorithm \eqref{alg:breaktest}. 
+For the break point detection, the test statistic is compared to a critical value (CV). The CV is based on the $1-\alpha$ quantile of the distribution of $M$ or $P$ given that $H_0$ is true. It can be simulated with a bootstrap procedure as described in algorithm \eqref{alg:breaktest}. If the test statistic is larger than the CV, $H_0$ is rejected and the corresponding time point of the significant test statistic is chosen as the breakpoint. 
 
 \textcite[13]{Wied2017} show, that the test statistics converges in distribution to 
 \begin{align}
@@ -387,52 +387,54 @@ P &\overset{d}{\rightarrow} \underset{\epsilon T \leq t \leq T}{\max} (\bm{A}^*(
 M &\overset{d}{\rightarrow} \underset{\epsilon T \leq t \leq T}{\max} (\bm{A}(\frac{t}{T}) - \frac{t}{T}\bm{A}(1))'(\bm{A}(\frac{t}{T}) - \frac{t}{T}\bm{A}(1)),
 \end{split}
 \end{align}
-with $\bm{A}^*(\frac{t}{T}) = (\bm{G'WG)^{-1}G'W}(A(\frac{t}{T}) - \frac{t}{T}\sqrt{(\frac{T}{S})}A(1))$ and $T, S \rightarrow \infty$. As for the SMM estimator, $\bm{G}$ is the matrix of first order derivatives of the population moment function $\bm{g(\theta)} = \hat{m_t}-\tilde{m_S; \btheta}$, $W$ is the weighting matrix of the SMM estimator and $A(\cdot)$ is a Gaussian process.\footnote{The necessary regulatory assumptions to derive this result are similar in spirit to the assumptions used to derive the asymptotic distribution of the parameters of the factor copula model in section \ref{s:smmfactorcopulas}.}  
+with $\bm{A}^*(\frac{t}{T}) = ((G'WG)^{-1}G'W(A(\frac{t}{T}) - \frac{t}{T}\sqrt{(\frac{T}{S})}A(1))$ and $T, S \rightarrow \infty$. As for the SMM estimator, $G$ is the matrix of first order derivatives of the population moment condition $g(\btheta)$, $W$ is the weighting matrix of the SMM estimator and $A(\cdot)$ is some Gaussian process \parencite[39]{Wied2017}. The necessary regulatory assumptions to derive this result are similar in spirit to the assumptions used to derive the asymptotic distribution of the parameters of the factor copula model in section \ref{s:smmfactorcopulas}.
 
-The distribution of the test statistics under the null hypothesis can be estimated using the following bootstrap procedure:
+Given a sample of residuals, the distribution of the test statistics under the null hypothesis can be estimated using the following bootstrap procedure:
 \begin{algorithm}
-\KwIn{$\hat{\bm{\eta}}_t; \alpha$}
-\KwOut{$K$}
-  compute full sample moments $\hat{\bm{m}}_T$\;
+\KwIn{$\{\bm{\eta}_t\}_{t = 1}^T$}
+\KwOut{$\{\bm{K}_b\}_{b = 1}^B$}
+$\hat{m}_T \gets m_T(\bm{\eta})$\;
   \eIf{test based on $P$}{
-      $L \gets (\hat{G}'\hat{W}\hat{G})^{-1}\hat{G}'$\;
+      $L \gets (G_T'W_TG_T)^{-1}G_T'$\;
   }{
       $L \gets  1$\;
   }
   \For{$b\gets1$ \KwTo $B$}{
-    generate bootstrap sample $\{\hat{\bm{\eta}}_t^{(b)}\}_{t = 1}^T$\;
-    \For{$t\gets \epsilon T$ \KwTo $T$}{
-      compute recursive bootstrap sample moments $\hat{\bm{m}}_t^{(b)}$\;
-      $A^{(b)*}_t \gets L\frac{t}{T}\sqrt{T}(\hat{\bm{m}}_t^{(b)} - \hat{\bm{m}}_T)$\;
-      $K^{(b)}_t \gets (A^{(b)*}_t - \frac{t}{T}A^{(b)*}_T)'(A^{(b)*}_t - \frac{t}{T}A^{(b)*}_T)$\;
+    $\bm{\eta}^{(b)} \gets$ sample $T$ values with replacement from $\{\hat{\bm{\eta}}_t\}_{t = 1}^T$\;
+    \For{$t\gets \lfloor \epsilon T \rfloor$ \KwTo $T$}{
+    $\hat{m}_t^{(b)} \gets m(\bm{\eta}_t^{(b)})$\;
+    $A^{(b)*}_t \gets L\frac{t}{T}\sqrt{T}(\hat{m}_t^{(b)} - \hat{m}_T)$\;
+    $K^{(b)}_t \gets (A^{(b)*}_t - \frac{t}{T}A^{(b)*}_T)'(A^{(b)*}_t - \frac{t}{T}A^{(b)*}_T)$\;
     }
-    calculate the maximum $K^{(b)}$ over all $K^{(b)}_t$\;
+    $K^{(b)} \gets \max(K^{(b)}_{\lfloor \epsilon T \rfloor}, \dots, K^{(b)}_{T})$\;
   }
-  calculate the $1-\alpha$ sample quantile $K$ from all $K^{(b)}$\;
-  \KwRet K;
-  \caption{Bootstrap procedure for estimating the critical value in the structural break test}
+  \KwRet $\{\bm{K}_b\}_{b = 1}^B$;
+  \caption{Bootstrap procedure for estimating the distribution of the test statistics under $H_0$}
   \label{alg:breaktest}
 \end{algorithm}
-Given the empirical standardized residuals and some significance level $\alpha$ the procedures mainly calculates $B$ bootstrap versions of the maximum scaled squared distance between the recursive moments $\hat{\bm{m}}_t$ and the full sample estimate $\hat{\bm{m}}_T$. For the copula based test $(\bm{G'WG})^{-1}\bm{G'W}$ is estimated only once using the full sample estimates and the estimation procedures as described in section \ref{s:smmfactorcopulas} and in algorithm \eqref{alg:sigma}.
+
+The procedures calculates $B$ bootstrap versions of the maximum scaled squared distance between the recursive moments $\hat{m}_t$ and the full sample estimate $\hat{m}_T$. For the copula based test $(G'WG)^{-1}G'W$ is estimated only once using the full sample estimates and the estimation procedures as described in section \ref{s:smmfactorcopulas} and in algorithm \eqref{alg:sigma}.
 
 # \emph{factorcopula} - an R package for simulation and estimation of factor copulas
 \label{s:factorcopulapackage}
 
-In this chapter we focus on the implementation of the previous methods and procedures. Using  the programming language \emph{R} an open-source package was built, such that the methods can be easily tested, installed and distributed \parencite{R2017}.\footnote{See also the appendix notes on data access in section \ref{s:access}.} First, the functions for the configuration and simulation of factor copulas are shortly presented. Second, an overview of the numerical optimization strategy is given in section \ref{s:optimization}). Explained code examples of the main functions can be found in the appendix section \ref{s:code}. Finally, the validity of the package and the discussed procedures is tested in two simulation studies (section \ref{s:simulation}).
+In this chapter we focus on the implementation of the previous methods and procedures. Using  the programming language \emph{R} \parencite{R2017} an open-source package was built, such that the methods can be easily tested, installed and distributed .\footnote{See also the appendix notes on data access in section \ref{s:access}.} First, the functions for the configuration and simulation of factor copulas are shortly presented. Second, an overview of the numerical optimization strategy is given. Explained code examples of the main functions can be found in the appendix section \ref{s:code}. Finally, the validity of the package and the discussed procedures is tested in two simulation studies.
 
-The package consists of a set of high level functions which can be used to construct, simulate and fit various factor copula models. The specification of the factor copula model is handled by the functions `config_factor`, `config_error` and `config_beta`. The two functions `fc_create` and `fc_fit` can be used to either simulate values from a factor copula or to fit a model to a dataset. For conducting the break test as described in section \ref{s:breaktest}, the library offers the functions `fc_critval`, `fc_mstat` and `fc_pstat`. The former simulates critical values for either the moments or copula based test. The latter two calculate the recursive test statistics. A matrix of recursive $\hat{\btheta}_t$ must be provided for the calculation of the copula based test statistic. It can be obtained by recursively applying `fc_fit` to the data. Obtaining the recursive estimates is computationally costly. To speed up the estimation, the HPC cluster of the University of Cologne was utilized \parencite{cheops2018}.
+The package consists of a set of high level functions which can be used to construct, simulate and fit various factor copula models. The specification of the factor copula model is handled by the functions `config_factor`, `config_error` and `config_beta`. The two functions `fc_create` and `fc_fit` can be used to either simulate values from a factor copula or to fit a model to a dataset. For conducting the break test as described in section \ref{s:breaktest}, the library offers the functions `fc_critval`, `fc_mstat` and `fc_pstat`. The former simulates critical values for either the moments or copula based test. The latter two calculate the recursive test statistics. A matrix of recursive parameter estimates $\hat{\btheta}_t$ must be provided for the calculation of the copula based test statistic. It can be obtained by recursively applying `fc_fit` to the data. 
+
+Obtaining the recursive estimates is computationally costly. To speed up the estimation, the HPC cluster of the University of Cologne was utilized for all empirical applications\parencite{cheops2018}.
 
 ## Copula specification and simulation
 
-With the functions `config_factor`, `config_error` and `config_beta`, the user can define the distribution of the latent variables $Z$ and the error term $\epsilon$ as well as the matrix of factor loadings $\bm{\beta}$. For the specification of the distributions, the function name of any available random number generator can be used.
+With the functions `config_factor`, `config_error` and `config_beta`, the user can define the distribution of the latent variables $Z$ and the error term $\epsilon$ as well as the matrix of factor loadings $\bm{\beta}$. For the specification of the distributions, the function name of any available random number generator (e.g. `rnorm`, `rt`, `rst`) can be used.
 
-Additional arguments such as distributional parameters can be declared in a named list. Distributional parameters can either be fixed or passed as non-evaluated expressions. To distinguish free model parameters from fixed distributional parameters, an additional character vector with the name of the model parameters has to be passed to `config_factor` and `config_error`. 
+Additional arguments such as the distributional parameters must be declared in a named list. The parameters can either be pre-defined or passed as non-evaluated expressions similar to the internal `formula` interface of the R programming language. To distinguish free model parameters from fixed distributional parameters, an additional character vector with the name of the model parameters has to be passed to `config_factor` and `config_error`. 
 
-The random number generating functions must have an additional argument `n` which defines the number of observations to be simulated. This argument should not be set explicitly since the number of simulations is controlled by the value $S$ in other functions of the package. 
+The random number generating functions must have an additional argument `n` which defines the number of observations to be simulated. It is not nescessary to set this argument explicitly since the number of simulations is controlled by the value $S$ in other functions of the package. 
 
 For the matrix of factor loadings the user can either manually construct a character matrix of parameters or one can use the function `config_beta`. Given a vector `k` and the number of latent variables $K$ this functions constructs a suitable character matrix of zeros and parameter names. The vector $k$ is of length $N$ and defines the group for each observable variable. Therefore, an equidependence model can be specified with $k_N = (1, 1, \dots, 1)$, an unrestricted model with $k_N = (1, \dots, N)$ and a bloc-equidependence model with $k_N = (1, 1, \dots, 2, 2, \dots, M,M, \dots)$, where $M$ is the number of groups. 
 
-The function `fc_create` returns itself a random number generating function. To simulate values from it, the user has to specify a vector `theta` of parameters, the number of simulations $S$ and an optional random seed. Fixing the seed always returns the same values. The vector `theta` must be a \emph{named} vector for which the names correspond to the model parameters specified during the configuration of the model. 
+Given the copula specifications, the function `fc_create` returns itself a random number generating function. To simulate values from it, the user has to specify a vector `theta` of parameters, the number of simulations $S$ and an optional random seed. Fixing the seed at some ineteger value can be usefull to reproduce the same simulation results over several runs of a program. The vector `theta` must be a \emph{named} vector for which the names correspond to the model parameters specified during the configuration of the model. 
 
 The simulation of new values is a time consuming part. To avoid unnecessary calls to the underlying random number generators, the function remembers the state of the latent variables $Z$ and the error term $\epsilon$ over repeated function calls and only updates the values if necessary. Thus if neither the seed nor the distributional parameters in `theta` change, the function uses the same random values from a previous call. This reduces the computation time at the cost of a higher memory consumption. 
 
@@ -444,11 +446,11 @@ While the function `fc_create` can be used to simulate values from a factor copu
 
 Optionally, the function also estimates standard errors using the bootstrap algorithm given by \eqref{alg:sigma}. For simplicity, the weight matrix $W$ is set to the identity matrix. Previous studies showed no significant improvement when the theoretically efficient weight matrix $W  = \hat{\bm{\Sigma}}_{T,B}^{-1}$ is used \parencite[694]{Patton2013}. 
 
-As back end, the method builds on top the `NLopt` optimization library which implements various algorithms for global, local or derivative-free optimization \parencite{nlopt2018, nloptr2014}. The specific choice of the optimization algorithms and the stopping criteria can be altered by the user via the arguments `control.first.stage` and `control.second.stage`. The authors of the library recommend a two step optimization procedure for global optimization: First, a global optimizer approximates the parameter region in which the global optimum lies. Second, a local derivative free optimizer is then applied using the approximated solution from the first stage. 
+As a back end, the method builds on top the `NLopt` optimization library which implements various algorithms for global, local or derivative-free optimization \parencite{nlopt2018, nloptr2014}. The specific choice of the optimization algorithms and the stopping criteria can be altered by the user via the arguments `control.first.stage` and `control.second.stage`. The authors of the library recommend a two step optimization procedure for global optimization: First, a global optimizer approximates the parameter region in which the global optimum lies. Second, a local derivative free optimizer is then applied using the approximated solution from the first stage. 
 
 By default, `fc_fit` uses the \emph{Multi-Level Single-Linkage} algorithm in the first step. The algorithm creates a sequence of optimal distributed starting values which are then passed to a local optimizer \parencite{Kucherenko2005}. For the local optimizer and the second stage, the \emph{Subplex} algorithm is used, which is based on the popular Nelder-Mead Simplex procedure \parencite{Rowan1990}. 
 
-During the optimization process, many values from the factor copula model are simulated. To avoid numerical instabilities, the random seed is kept fixed, such that always the same random values are drawn. As described in the previous section, the memory functionality of `fc_create` can save some computational costs, since redraws from the distributions are avoided if the distributional parameter don't change. This can improve the overall performance of the optimization process. This is especially true, if only the factor loadings $\bm{\beta}$ are optimized while the distributional parameters are kept fixed. In this case, the random number generators are only called once at the beginning of the optimization routine \parencite[29]{Gourieroux1996}.
+During the optimization process, many values from the factor copula model are simulated. To avoid numerical instabilities, the random seed is kept fixed, such that always the same random values are drawn \parencite[29]{Gourieroux1996}. As described in the previous section, the memory functionality of `fc_create` can save some computational costs, since redraws from the distributions are avoided if the distributional parameter don't change. This can improve the overall performance of the optimization process. This is especially true, if only the factor loadings $\bm{\beta}$ are optimized while the distributional parameters are kept fixed. In this case, the random number generators are only called once at the beginning of the optimization routine.
 
 
 ## Simulation study
@@ -458,11 +460,11 @@ To illustrate the discussed methods and the validity of the package, two simulat
 
 ### Convergence for the equidependence model
 
-The DGP of the first study is based on a simple time-invariant equidependence model with standard-normal marginal distributions, one skew-t distributed latent variable and a t-distributed error term. The copula model produces strong asymmetric tail-dependencies. This is achieved by fixing the degrees of freedom at $df = 4$ and the skewness at $\lambda = -0.8$. The single factor loading is set to $\beta = 1.5$. The only free parameter to be estimated is the factor loading. Thus we can write $\theta = \beta$. The model equations can be written as:
+The DGP of the first study is based on a simple time-invariant equidependence model with standard-normal marginal distributions, one skew-t distributed latent variable and a t-distributed error term. The copula model produces strong asymmetric tail-dependencies. This is achieved by fixing the degrees of freedom at $df = 4$ and the skewness at $\lambda = -0.8$, similar to the upper left graph of figure \ref{fig:equidependence}.  The single factor loading is set to $\beta = 1.5$. The only free parameter to be estimated is the factor loading. The distributional parameters are kept fixed at their true values. Thus we can write $\theta = \beta$. The model equations can be written as:
 
 \begin{equation}
 \begin{aligned}
-Y_i &\sim N(0, 1) ~\forall~ i \in 1, \cdots, N\\
+Y_i &\sim N(0, 1) ~\forall~ i \in 1, \dots, N\\
 Z &\sim \text{skew-t}(df = 4, \lambda = -0.8) \\
 \epsilon &\sim \text{t}(df = 4)\\
 X_i &= \beta Z + \epsilon\\ 
@@ -479,18 +481,20 @@ We repeat the simulation and estimation of $\beta$ over a grid of different valu
 
 Figure \ref{f:montecarlo} shows the results for the first study. For each combination of $N$ and $T$ the kernel density estimator over all Monte-Carlo simulations of is plotted. The bias $\hat{b}_{t, n} = \frac{1}{C}\sum_{c = 1}^{C}  \hat{\beta}_{t, n, c} - \beta$ and the standard deviation is printed in the top left corner. 
 
-The density mass centers around the true value of $\beta = 1.5$. For all simulations the bias is zero or close to it. As the sample size increases, the deviation gets smaller and the SMM estimator converges to the true parameter. But small sample sizes clearly give unreliable results. Note, that more variables improves the quality of the estimator as more information is available to estimate the single parameter. This is due to the fact that the number of latent variables and parameters is constant and does not increase with the number of dimensions. As stated in \eqref{eq:equidependence} for the equidependence model, one averages over all pairwise dependence vectors. Therefore the estimation error of the mean decreases if $N$ and hence the number of pairwise combinations increases.
+The density mass centers around the true value of $\beta = 1.5$. For all simulations the bias is zero or close to it. As the sample size increases, the deviation gets smaller and the SMM estimator converges to the true parameter. But small sample sizes clearly give unreliable results. 
+
+Notably, more variables improve the quality of the estimator as more information is available to estimate the single parameter. This is due to the fact that the number of latent variables and parameters is constant and does not increase with the number of dimensions. As stated in \eqref{eq:equidependence} for the equidependence model one averages over all pairwise dependence vectors. Therefore, the estimation error of the mean decreases if $N$ and the number of pairwise combinations $0.5\dot N\dot(N-1)$ increases.
 
 ### Structural break in a bloc-equidependence model
 \label{s:break}
 
 For the second study, a more sophisticated model is presented to illustrate the effectiveness of the approach even for high dimensional problems and complicated dependence structures. Analogous to the empirical examples in \textcite{Wied2017} and \textcite{Patton2017} the DGP is based on a \emph{bloc-equidependence} model as described in section \ref{s:restrictions}. 
 
-The model consists of $N = 21$ standard normal distributed variables which are partitioned in $M = 3$ groups of equal size. Each variable is affected by a common and a group specific factor.  The common latent factor is skew-t distributed with strong asymmetric tail-dependency. The three group specific latent factors and the error term are t-distributed. Due to the bloc-equidependence structure, the number of factor loadings reduces from $0.5*N*(N-1) = 210$ to just $2M = 6$. All distributional parameters are kept fixed and only the factor loadings are estimated such that the recursive estimator can be written as $\btheta_t = (\beta_{1,t}, \dots, \beta_{6,t})'$. 
+The model consists of $N = 21$ standard normal distributed variables which are partitioned in $M = 3$ groups of equal size. Each variable is affected by a common and a group specific factor.  The common latent factor is skew-t distributed with strong asymmetric tail-dependency. The three group specific latent factors and the error term are t-distributed. Due to the bloc-equidependence structure, the number of factor loadings reduces from $0.5*N*(N-1) = 210$ to just $2M = 6$. Aggain, all distributional parameters are kept fixed at their true values and only the factor loadings are estimated such that the recursive estimator can be written as $\btheta_t = (\beta_{1,t}, \dots, \beta_{6,t})'$. 
 
 We chose $T = 1500$, $S = 25 \times T$ and a breakpoint in the parameters of the copula at $t = 1000$. Before the break, $\btheta_{pre} = (0, 1, 1, 0, 1, 1)'$ and after the break $\btheta_{post} = (1.5, 1, 1, 1.5, 1, 1)'$. Thus, only the intra- and interdependence for the first group increases from $0$ to $1.5$ while the remaining factor loadings stay constant.
 
-The test statistics and critical values are based on three different recursive calculations over a range from $t = 300$ to $T = 1500$: First, all parameters are estimated via recursive SMM. Second, only a subset of $\btheta_t$ is estimated recursively while fixing the common and group specific factor for the first group at their full sample estimates. Hence, for this calculation $\btheta_t = (\hat{\beta}_{1, T}, \beta_{2, t}, \beta_{3, t}, \hat{\beta}_{4, T}, \beta_{5, t}, \beta_{6, t})$. Finally, the non-parametric test statistics based on the moment functions are calculated.
+The test statistics and critical values are based on three different recursive calculations over a range from $t = 300$ to $T = 1500$: First, all parameters are estimated via recursive SMM. Second, only a subset of $\btheta_t$ is estimated recursively while fixing the common and group specific factor for the first group at their full sample estimates $\hat{\beta}_{1, T}$ and $\hat{\beta}_{4, T}$. Hence, for this calculation $\btheta_t = (\beta_{2, t}, \beta_{3, t}, \beta_{5, t}, \beta_{6, t})$. Finally, the non-parametric test statistics based on the moment functions are calculated.
 
 We expect, that a breakpoint is detected around $t = 1000$ only for the first and third recursive calculations. For the second calculation no breakpoint should be detected since the factor loadings of the second and third group are not affected by the simulated structural break.   
 
@@ -502,9 +506,9 @@ Figure \ref{f:breaktest} shows the test statistics of the three different break 
 	\label{f:breaktest}  
 \end{figure}
 
-As expected, both the full copula and the moments based test statistics in the top and lower panel fluctuate strongly. For both tests the maximum distance is very close to the true breakpoint and lies above the CV. The CV for the moments based test is relatively far away from the maximum while this is not true for the full copula based test. This could indicate that the moments based test is less restrictive. This observation is also confirmed in the empirical example in the following chapter. The copula based test statistics for the second and third group are clearly below their critical value. Hence, for this groups the null hypothesis of no parameter change cannot be rejected. 
+As expected, both the full copula and the moments based test statistics in the top and lower panel fluctuate strongly. For both tests the maximum distance occurs close at the true breakpoint and lies above the CV. The CV for the moments based test is relatively far away from the maximum while this is not true for the full copula based test. This could indicate that the moments based test is less restrictive. This observation can also be made in the empirical example in the following chapter. The copula based test statistics for the second and third group are clearly below their critical value. Hence, for this groups the null hypothesis of no parameter change cannot be rejected. 
 
-Often, numerical problems arise for large parameter vectors or parameter vectors which include distributional parameters, such as the degrees of freedom or the skewness. Therefore, the test statistics can be substantially distorted with unusual extreme outliers above the CV. We advise to always perform a manual graphical analysis of the final test statistics. In addition, clear outliers can be detected by performing a smoothing method such as running medians or smoothing splines (see also section \ref{s:discussion}). 
+Often, numerical problems arise for large parameter vectors or parameter vectors which include distributional parameters, such as the degrees of freedom or the skewness. Therefore, the test statistics can be substantially distorted with unusual extreme outliers above the CV. We advise to always perform a manual graphical analysis of the final test statistics. In addition, clear outliers could be detected by performing a smoothing method such as running medians or smoothing splines (see also section \ref{s:discussion}). 
 
 Finally, table \ref{tab:simulation} shows the results for a copula model estimated on the full sample, before and after the theoretical breakpoint. For all models we fixed the distributional parameters at their true values. The standard errors $(\frac{1}{T}+\frac{1}{S})\bm{\Omega}$ as given by \eqref{eq:asymptotic} were estimated with $B = 2000$ bootstrap replications and are reported in parenthesis. 
 
