@@ -10,6 +10,7 @@ A thesis written in RMarkdown using a custom latex template.
 - bloc-equidependence simulation study: `source/fig3.R` and `data/Y.rds`.
 - creation of the facebook dataset: `source/facebook_create.R`.
 - factor copula analysis of facebook dataset: `source/facebook_analysis.R` and `data/topics_residuals.rds`.
+- asylum statistics: `source/asylum.R` and `data/asylum.csv`. 
 
 ### Requirements for re-running all analyses
 
