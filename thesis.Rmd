@@ -206,7 +206,7 @@ X_i^j &= \beta_j Z_0 + \beta_{M+j} Z_j + \epsilon_i.
 \end{split}
 \end{align}
 The loadings matrix $\bm{\beta}$ is of size $N \times (M+1)$ but with only $2M$ actual factor loadings. It has the following structure:
-\begin{aling}
+\begin{align}
 \begin{split}
 \bm{\beta} &= \begin{pmatrix}
 \beta^1	& \beta^{M+1} & 0			&\cdots & 0 \\
@@ -350,7 +350,7 @@ $\hat{m}_T^{(b)} \gets m_T(\bm{\eta}^{(b)})$\;
 \label{alg:sigma}
 \end{algorithm}
 
-Here, $B$ samples with replacement are taken from the residuals and the scaled sample covariance is calculated. Note that in the algorithm the mean over all sample moments $\hat{m}_T^{(b)$ was replaced by the actual moments $\hat{m}_T$ since it holds that $E(\frac{1}{B}\sum_{b = 1}^{B}\hat{m}_T^{(b)}) = \hat{m}_T$.  
+Here, $B$ samples with replacement are taken from the residuals and the scaled sample covariance is calculated. Note that in the algorithm the mean over all sample moments $\hat{m}_T^{(b)}$ was replaced by the actual moments $\hat{m}_T$ since it holds that $E(\frac{1}{B}\sum_{b = 1}^{B}\hat{m}_T^{(b)}) = \hat{m}_T$.  
 
 The derivative $G$ can be estimated using a numerical approximation around the parameter estimator $\hat{\btheta}$. For the $k$th column of $G_{T, S}$ one can write:
 $$
@@ -469,7 +469,7 @@ To illustrate the discussed methods and the validity of the package, two simulat
 
 ### Convergence for the equidependence model
 
-The DGP of the first study is based on a simple time-invariant equidependence model with standard-normal marginal distributions, one skew-t distributed latent variable and a t-distributed error term. The copula model produces strong asymmetric tail-dependencies. This is achieved by fixing the degrees of freedom at $df = 4$ and the skewness at $\lambda = -0.8$, similar to the upper left graph of figure \ref{fig:equidependence}.  The single factor loading is set to $\beta = 1.5$ and the only free parameter to be estimated is the factor loading. The distributional parameters are kept fixed at their true values. Thus, we can write $\theta = \beta$. The model equations can be written as:
+The DGP of the first study is based on a simple time-invariant equidependence model with standard-normal marginal distributions, one skew-t distributed latent variable and a t-distributed error term. The copula model produces strong asymmetric tail-dependencies. This is achieved by fixing the degrees of freedom at $df = 4$ and the skewness at $\lambda = -0.8$. The single factor loading is set to $\beta = 1.5$ and the only free parameter to be estimated is the factor loading. The distributional parameters are kept fixed at their true values. Thus, one can set $\theta = \beta$. The model equations can be written as:
 
 \begin{equation}
 \begin{aligned}
@@ -492,32 +492,32 @@ Figure \ref{f:montecarlo} shows the results for the first study. For each combin
 
 The density mass centers around the true value of $\beta = 1.5$. For all simulations the bias is zero or close to it. As the sample size increases, the deviation gets smaller and the SMM estimator converges to the true parameter. But small sample sizes clearly give unreliable results. 
 
-Notably, more variables improve the quality of the estimator as more information is available to estimate the single parameter. This is due to the fact that the number of latent variables and parameters is constant and does not increase with the number of dimensions. As stated in \eqref{eq:equidependence} for the equidependence model one averages over all pairwise dependence vectors. Therefore, the estimation error of the mean decreases if $N$ and the number of pairwise combinations $0.5\dot N\dot(N-1)$ increases.
+Notably, more variables also improve the quality of the estimator as more information is available to estimate the single parameter. This is due to the fact that the number of latent variables and parameters is constant and does not increase with the number of dimensions. As stated in \eqref{eq:equidependence} for the equidependence model one averages over all pairwise dependence vectors. Therefore, the estimation error of the mean decreases if $N$ and the number of pairwise combinations $0.5\cdot N\cdot (N-1)$ increases.
 
 ### Structural break in a bloc-equidependence model
 \label{s:break}
 
-For the second study, a more sophisticated model is presented to illustrate the effectiveness of the approach even for high dimensional problems and complicated dependence structures. Analogous to the empirical examples in \textcite{Wied2017} and \textcite{Patton2017} the DGP is based on a \emph{bloc-equidependence} model as described in section \ref{s:restrictions}. 
+For the second study, a more sophisticated model is presented to illustrate the effectiveness of the approach even for high dimensional problems and complicated dependence structures. Analogous to the empirical examples in \textcite{Wied2017} and \textcite{Patton2017} the DGP is based on a bloc-equidependence model as described in section \ref{s:restrictions}. 
 
-The model consists of $N = 21$ standard normal distributed variables which are partitioned in $M = 3$ groups of equal size. Each variable is affected by a common and a group specific factor.  The common latent factor is skew-t distributed with strong asymmetric tail-dependency. The three group specific latent factors and the error term are t-distributed. Due to the bloc-equidependence structure, the number of factor loadings reduces from $0.5*N*(N-1) = 210$ to just $2M = 6$. Again, all distributional parameters are kept fixed at their true values and only the factor loadings are estimated such that the recursive estimator can be written as $\btheta_t = (\beta_{1,t}, \dots, \beta_{6,t})'$. 
+The model consists of $N = 21$ standard normal distributed variables which are partitioned in $M = 3$ groups of equal size. Each variable is affected by a common and a group specific factor.  The common latent factor is skew-t distributed with strong asymmetric tail-dependency. The three group specific latent factors and the error term are t-distributed. Due to the bloc-equidependence structure, the number of factor loadings reduces from $0.5\cdot N \cdot (N-1) = 210$ to just $2M = 6$. Again, all distributional parameters are kept fixed at their true values and only the factor loadings are estimated such that the recursive estimator can be written as $\btheta_t = (\beta_{1,t}, \dots, \beta_{6,t})'$. 
 
 We chose $T = 1500$, $S = 25 \times T$ and a breakpoint in the parameters of the copula at $t = 1000$. Before the break, $\btheta_{pre} = (0, 1, 1, 0, 1, 1)'$ and after the break $\btheta_{post} = (1.5, 1, 1, 1.5, 1, 1)'$. Thus, only the intra- and interdependence for the first group increases from $0$ to $1.5$ while the remaining factor loadings stay constant.
 
-The test statistics and critical values are based on three different recursive calculations over a range from $t = 300$ to $T = 1500$: First, all parameters are estimated via recursive SMM. Second, only a subset of $\btheta_t$ is estimated recursively while fixing the common and group specific factor for the first group at their full sample estimates $\hat{\beta}_{1, T}$ and $\hat{\beta}_{4, T}$. Hence, for this calculation $\btheta_t = (\beta_{2, t}, \beta_{3, t}, \beta_{5, t}, \beta_{6, t})$. Finally, the non-parametric test statistics based on the moment functions are calculated.
+The test statistics and critical values are based on three different recursive calculations over a range from $t = 300$ to $T = 1500$: First, all parameters are estimated via recursive SMM. Second, only a subset of $\btheta_t$ is estimated recursively while fixing the common and group specific factor for the first group at their full sample estimates $\hat{\beta}_{1, T}$ and $\hat{\beta}_{4, T}$. Hence, for this calculation $\btheta_t = (\beta_{2, t}, \beta_{3, t}, \beta_{5, t}, \beta_{6, t})$. Third, the non-parametric test statistics based on the finite sample moment functions are calculated.
 
-We expect, that a breakpoint is detected around $t = 1000$ only for the first and third recursive calculations. For the second calculation no breakpoint should be detected since the factor loadings of the second and third group are not affected by the simulated structural break.   
+We expect that a breakpoint is detected around $t = 1000$ only for the first and third recursive calculations. For the second calculation no breakpoint should be detected since the factor loadings of the second and third group are not affected by the simulated structural break.   
 
-Figure \ref{f:breaktest} shows the test statistics of the three different break tests for a single recursive run of the simulation for $t = 300, \dots, 1500$. The horizontal solid line indicates the critical value. Each critical value is calculated using $B = 2000$ bootstrap samples as described in algorithm \eqref{alg:breaktest}. The vertical line indicates the theoretical breakpoint at $t = 1000$.
+Figure \ref{f:breaktest} shows the test statistics of the three different break tests for a single recursive run of the simulation for $t = 300, \dots, 1500$. The horizontal solid line represents the CV. Each one is calculated using $B = 2000$ bootstrap samples as described in algorithm \eqref{alg:breaktest}. The vertical line indicates the theoretical breakpoint at $t = 1000$.
 
 \begin{figure}[H]
 	\includegraphics[width = \textwidth]{./figures/fig3}
-	\caption[Parametric and non-parametric structural break test for a bloc-equidependence model]{Parametric and non-parametric structural break test for a bloc-equidependence model with $N = 21$ and $M = 3$ groups of equal size. The theoretical breakpoint is at $t = 1000$ and is modeled as a change of the intra- and interdependence of the first group from $0$ to $1.5$. The first panel shows the copula based test based on all groups. The second panel the copula based test for only the second, and third group which are not affected by the structural break. The lower panel shows the moment based test.}	
+	\caption[Parametric and non-parametric structural break test for a bloc-equidependence model]{Parametric and non-parametric structural break test for a bloc-equidependence model with $N = 21$ and $M = 3$ groups of equal size. The theoretical breakpoint is at $t = 1000$ and is modeled as a change of the intra- and interdependence of the first group from $0$ to $1.5$. The first panel shows the copula based test based for all groups. The second panel shows the copula based test for only the second, and third group which are not affected by the structural break. The lower panel shows the moment based test.}	
 	\label{f:breaktest}  
 \end{figure}
 
 As expected, both the full copula and the moments based test statistics in the top and lower panel fluctuate strongly. For both tests the maximum distance occurs close at the true breakpoint and lies above the CV. The CV for the moments based test is relatively far away from the maximum while this is not true for the full copula based test. This could indicate that the moments based test is less restrictive. This observation can also be made in the empirical example in the following chapter. The copula based test statistics for the second and third group are clearly below their critical value. Hence, for these groups the null hypothesis of no parameter change cannot be rejected. 
 
-Often, numerical problems arise for large parameter vectors or parameter vectors which include distributional parameters, such as the degrees of freedom or the skewness. Therefore, the test statistics can be substantially distorted with unusual extreme outliers above the CV. We advise to always perform a manual graphical analysis of the final test statistics. In addition, clear outliers could be detected by performing a smoothing method such as running medians or smoothing splines (see also section \ref{s:discussion}). 
+Often, numerical problems arise for large parameter vectors or parameter vectors which include distributional parameters, such as the degrees of freedom or the skewness. Therefore, the test statistics can be substantially distorted with unusual extreme outliers above the CV. We advise to always perform a manual graphical analysis of the final test statistics. In addition, clear outliers could be detected and removed by performing a final smoothing method such as running medians or smoothing splines (see also section \ref{s:discussion}). 
 
 Finally, table \ref{tab:simulation} shows the results for a copula model estimated on the full sample, before and after the theoretical breakpoint. For all models we fixed the distributional parameters at their true values. The standard errors $(\frac{1}{T}+\frac{1}{S})\bm{\Omega}$ as given by \eqref{eq:asymptotic} were estimated with $B = 2000$ bootstrap replications and are reported in parentheses. 
 
@@ -543,17 +543,17 @@ Finally, table \ref{tab:simulation} shows the results for a copula model estimat
 \label{tab:simulation}
 \end{table}
 
-Comparing the estimates and the value of the objective function at the optimal value, one can notice that the model after the breakpoint and for the full sample are less precise. For the former case, this can be due to the small sample size. For the latter case, this can be due to the misspecified copula, which assumes no change in parameters. The estimates for the pre- and post-break sample are close to their true values. The standard errors for the post-break period are larger due to the smaller sample size. However, the coefficients are still significant. 
+Comparing the value of objective function at the optimal parameters, one can notice that the model after the breakpoint and for the full sample are less precise. For the former case, this can be due to the smaller sample size. For the latter case, this can be due to the misspecified copula, which assumes no change in parameters. The estimates for the pre- and post-break sample are close to their true values. The standard errors for the post-break period are larger due to the smaller sample size. However, the coefficients are still significant. 
 
 
 # Modelling dependencies in topic salience over time
 \label{s:btw17}
 
-In this chapter, we apply the previously discussed methods to a real aggregated dataset collected from the social media platform Facebook. Typically, copula models are applied to model the dependency structures of financial data. For example, the structural break test was used to detect changing dependencies between daily returns of stock market assets during the financial crisis \parencite[18]{Wied2017}. The aim of this analysis is to explore other ways of applying the discussed methods in areas outside from applications in finance and risk management.
+In this chapter, we apply the previously discussed methods to a real aggregated dataset collected from the social media platform Facebook. Typically, copula models are used to model the dependency structure of financial data. For example, the structural break test was used to detect changing dependencies between daily returns of stock market assets during the financial crisis \parencite[18]{Wied2017}. The aim of this analysis is to explore other ways of applying the discussed methods in areas outside from applications in finance and risk management.
 
-The analysis in this paper is broadly related to studies of issue or topic salience in politics and the agenda-setting theory. Issue salience generally refers to the importance of certain topics for individuals or political actors \parencite[557]{Wlezien2005}. Here, by "importance", we refer to the prominence or publicity of an issue. Traditionally, agenda setting is a term which stands for the potency of the media to put policy issues on the public agenda. Therefore, this theory can explain positive dependencies between measures of press media coverage and survey measures of topic salience in a society. The growth of social media channels, blogs and online news sites on the internet has led to a more diverse mechanism of agenda-setting but it also allows for more precise measurements of salience and coverage over time \parencite[193-195]{Neuman2014}. 
+The analysis in this paper is broadly related to studies of issue or topic salience in politics and the agenda-setting theory. Issue salience generally refers to the importance of certain topics for individuals or political actors \parencite[557]{Wlezien2005}. Here, by "importance", we refer to the prominence or publicity of an issue. Traditionally, agenda setting is a term which stands for the potency of the media to put policy issues on the public agenda. Therefore, this theory can explain positive dependencies between measures of press media coverage and survey measures of topic salience for a society. The growth of social media channels, blogs and online news sites on the internet leads to a more diverse mechanism of agenda-setting but it also allows for more precise measurements of salience and coverage over time \parencite[193-195]{Neuman2014}. 
 
-Specifically, the case of the German refugee crisis in late 2015 and its perception by the major German parties on the online platform Facebook is analyzed. In 2014 a steady rise of incoming refugees to Germany and Europe could be observed. The majority of them fled from the war in Syria. In 2015 the number of refugees increased rapidly with around 200000 refugees entering Germany in November 2015 (compare to figure \ref{fig:asylum} and \textcite{bpb2018}). 
+Specifically, the case of the German refugee crisis in late 2015 and its perception by the major German parties on the online platform Facebook is analyzed. In 2014 a steady rise of incoming refugees to Germany and Europe could be observed. The majority of them fled from the war in Syria. In 2015 the number of refugees increased rapidly with around 200000 refugees entering Germany in November 2015 (see figure \ref{fig:asylum}). 
 
 \begin{figure}[h]
 	\includegraphics[width=\textwidth]{./figures/asylum}
@@ -568,11 +568,11 @@ In the following, we use the dynamic model as described by \eqref{eq:model} toge
 
 ## The \emph{btw17} social media dataset
 
-The raw data consists of social media posts published by public pages on Facebook between January 2014 and December 2017. Using the official list of the candidates for the Bundestag election in 2017 (btw17), the account for each of the politicians was manually researched. Only candidates from the six factions in the \emph{Bundestag} (CDU/CSU, SPD, Die Linke, Bündnis 90/ Die Grünen, AfD, FDP) are part of the study. Around 84\% of all 2516 candidates have an account on Facebook \parencite[16]{Stier2018}.
+The raw data consists of social media posts published on public Facebook pages between January 2014 and December 2017. Using the official list of the candidates for the Bundestag election in 2017 (btw17), the account for each of the politicians was manually researched. Only candidates from the six factions in the \emph{Bundestag} (CDU/CSU, SPD, Die Linke, Bündnis 90/ Die Grünen, AfD, FDP) are part of the study. Around 84\% of all 2516 candidates have an account on Facebook \parencite[16]{Stier2018}.
 
 Due to API (application programming interface) and privacy restrictions, only information from public pages could be accessed such that around 52\% of the social media accounts could be considered for the data collection. In addition to the candidates pages, $113$ official pages from the political parties, both on the federal and regional level, were included. 
 
-The data collection took place on several days between 2017-11-21 and 2018-02-06. A web-scraping software was built on top of the \emph{restfb} Java client library. It made calls to Facebook's official Graph API \parencite{restfb2018}. The posts are stored in a document orientated database on cloud-servers located in Germany. Besides the actual content of the post, it includes a time-stamp, the user-id of the author and the number of likes, shares and comments it has received upon collecting it from the API.
+The data collection took place on several days between 2017-11-21 and 2018-02-06. A web-scraping software was built on top of the \emph{restfb} Java client library. It made calls to Facebook's official Graph API \parencite{restfb2018}. The posts are stored in a document orientated database on cloud-servers located in Germany. Together with the post's content a time-stamp, the user-id of the author and the number of likes, shares and comments it has received upon collecting it from the API are stored as well.
 
 For this analysis, the data is restricted on cleaned textual posts only.\footnote{A post can also contain a photo, an album or an event with no additional text. The post's text was cleaned by removing links and stop-words, transforming umlauts and converting it to lowercase letters.}. This results in almost 664 thousand posts tagged with the party membership of their authors. The first two panels of figure \ref{f:nPosts} show the monthly number of active accounts and the monthly number of posts for each party. An account was defined active if it published at least one post for a month considered. 
 
@@ -580,20 +580,21 @@ In early 2014, approximately 500 accounts were active. This number increased ste
 
 A similar pattern can also be observed for the monthly number of posts. Until the election year, roughly 10000 posts from political parties were published per month. In the month of the election it was around 4 times more. 
 
-The bottom panel of figure \ref{f:nPosts} shows the absolute number of monthly posts related to refugee and asylum issues. As in \textcite[192-198]{Neuman2014} we define a key identifying term for an issue and simply use it to search and filter the data. 
-
-Specifically, we define a post to be "refugee related" if it matches the regular expression \texttt{flucht|fluecht}. For example, a match occurs if a post contains the words \emph{flüchtlingskrise} (refugee crisis), \emph{fluchtursachen} (causes of flight), \emph{flüchten} (to flee) or \emph{flüchtlingsheime} (refugee hostels). 
-A sharp rise of refugee related posts can be observed in autumn and winter of 2015 and 2016. Notably, this pattern is very similar to the overall number of refugees who entered Germany in 2015 with the peak occurring during in an interval of only a few weeks (compare to figure \ref{fig:asylum}). 
-
-\begin{figure}[h]
+\begin{figure}[H]
 	\includegraphics[width=\textwidth]{./figures/nPosts}
-	\caption[Number of active accounts and posts per party and month]{Number of active accounts and posts per party and month. The bottom panel shows the number of posts matching the regular expression \texttt{flucht|fluecht}. The vertical solid and dashed lines indicate the breakpoint detected by the non-parametric moments and the parametric copula based test.}	
+	\caption[Number of active accounts and posts per party and month]{Number of active accounts and posts per party and month. The bottom panel shows the number of posts matching the regular expression \texttt{flucht|fluecht}. The vertical solid and dashed lines indicate the breakpoint detected by the non-parametric moments and the parametric copula based test (see section \ref{tab:breakpoint}}	
 	\label{f:nPosts}  
 \end{figure}
 
+The bottom panel of figure \ref{f:nPosts} shows the absolute number of monthly posts related to refugee and asylum issues. As in \textcite[192-198]{Neuman2014} we define a key identifying term for the issue and simply use this term to search and filter the textual data. 
+
+Specifically, we define a post to be "refugee related" if it matches the regular expression \texttt{flucht|fluecht}. For example, a match occurs if a post contains the words \emph{flüchtlingskrise} (refugee crisis), \emph{fluchtursachen} (causes of flight), \emph{flüchten} (to flee) or \emph{flüchtlingsheime} (refugee hostels). We are confident that this simple strategy can correctly detect most of the posts related to refugee and asylum issues. 
+
+A sharp rise of refugee related posts can be observed in autumn and winter of 2015 and 2016. Notably, this pattern is very similar to the overall number of refugees who entered Germany in 2015 with the peaks occurring during an interval of only a few weeks. 
+
 Table \ref{t:facebook} summarizes some overall aggregated statistics for each party. It shows the overall number of posts, accounts, summed up likes and shares for posts and the within party share of refugee related posts over the observation period from 2014-01-01 to 2017-12-31. Although the right and left wing parties \emph{AfD} and \emph{Linke} have a relatively small number of accounts and posts they generate by far the greatest number of attention and engagement in terms of likes and shares. The social democratic party \emph{SPD} has over twice more posts than the \emph{AfD} but roughly generates only half of the likes and only a fifth of the shares. Looking at the share of "refugee related" posts one can see that both the far left and far right parties talk more about this topic than the average.
 
-\begin{table}[h]
+\begin{table}[H]
 \centering
 \begin{tabular}{rccccc}
   \toprule
@@ -622,7 +623,7 @@ First, the univariate models for each of the six salience measures are estimated
 
 Standard ARIMA-GARCH models are applied to the univariate time series. In this type of models the conditional mean $\mu_t = E(Y_t|\mathcal{F}_{t-1})$ of some possibly integrated variable is assumed to be a linear function of its own lags and lags of the error term. To also account for volatility clustering, the conditional variance $\sigma_t^2 = V(Y_t|\mathcal{F}_{t-1})$ is assumed to be a linear function of its own lags and squared lags of the error term \parencite[17-19]{Teraesvirta2009}. 
 
-For the conditional variance we assume a GARCH(1, 1) process. For the model of the conditional mean we estimate different ARIMA models. The orders of the auto-regressive and moving average terms of the mean model are determined by testing various candidates over a small grid of order values. The final model is selected by comparing the Bayesian information criteria (BIC). Table \ref{tab:ARIMA} summarizes the final parameter values for the six time series model applied to the measures of topic salience.
+For the conditional variance we assume a GARCH(1, 1) process. For the model of the conditional mean we estimate different ARIMA models. The orders of the auto-regressive and moving average terms of the mean model are determined by testing various candidates over a small grid of values. The final model is selected by comparing the Bayesian information criteria (BIC). Table \ref{tab:ARIMA} summarizes the final parameter values for the six time series model applied to the measures of topic salience.
 
 \begin{table}[H]
 \centering
@@ -642,7 +643,7 @@ For the conditional variance we assume a GARCH(1, 1) process. For the model of t
 \begin{figure}[H]
 	\subfloat[Relative daily within-party frequency of refugee related posts.]{\includegraphics[width = \textwidth]{./figures/flucht_observed}} \\
 	\subfloat[Residuals of ARIMA-GARCH models applied to the time series.]{\includegraphics[width= \textwidth]{./figures/flucht_residuals}}
-	\caption[Univariate time series and estimated residuals for the btw17 dataset]{Univariate time series and estimated residuals for the btw17 dataset. The upper panel shows the daily within-party frequency of refugee related topics. The residuals are estimated by applying ARIMA-GARCH models to the time series.}	
+	\caption[Univariate time series and estimated residuals for the btw17 dataset]{Univariate time series and estimated residuals for the btw17 dataset. The upper panel shows the measures of topic salience calculated as the daily within-party frequency of "refugee related" topics. The residuals are estimated by applying ARIMA-GARCH models to the time series.}	
 	\label{f:residuals}  
 \end{figure}
 
@@ -682,13 +683,13 @@ AfD-CDU/CSU & 0.07 & 0.14 & 0.17 & 0.13 & 0.10 \\
 
 ## Results
 
-To get a first idea of the characteristics of the data various factor copula models are fitted to the complete sample. To determine the number of latent factors $K$, we use an approach by \textcite[p. 148]{Patton2017} and analyze the ordered eigenvalues of the residual rank-correlation matrix. One eigenvalue is above the threshold. Therefore, the analysis is restricted to one-factor copula models (see also figure \ref{f:eigenvalues}). We separately fitted equidependence and unrestricted models for various distributions of the factor and error term. Table \ref{tab:onefactor} summarizes the estimation results for the factor copula models.
+To get a first idea of the characteristics of the data various factor copula models are fitted to the complete sample. To determine the number of latent factors $K$, we adapt the approach by \textcite[p. 148]{Patton2017} and analyze the ordered eigenvalues of the residual rank-correlation matrix. One eigenvalue is above the threshold. Therefore, the analysis is restricted to one-factor copula models (see also figure \ref{f:eigenvalues}). We separately fitted equidependence and unrestricted models for various distributions of the factor and error term. Table \ref{tab:onefactor} summarizes the estimation results for the factor copula models.
 
 \begin{table}[H]
 \centering
 \begin{tabular}{rllllll}
   \toprule
-  & \multicolumn{3}{c}{Equidependence} & \multicolumn{3}{c}{Unrestrictive} \\ 
+  & \multicolumn{3}{c}{Equidependence} & \multicolumn{3}{c}{Unrestricted} \\ 
   & norm-norm & t-t & skewt-t & norm-norm & t-t & skewt-t\\
   \cmidrule(r){2-4} \cmidrule(l){5-7}
   $\beta_1$ & 0.43 & 0.42 & 0.42 & 0.23 & 0.23 & 0.25 \\ 
