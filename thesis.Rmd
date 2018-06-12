@@ -55,7 +55,7 @@ The third chapter focuses on the empirical application. The social-media dataset
 
 # Theoretical foundation
 
-In this chapter we present and summarize the theoretical foundation of this thesis. First, the general idea behind copula functions is introduced. Second, a special class of copula models, the so called \emph{factor copula} model is presented. Third, we discuss copula models in the context of time series data and present a specific framework for modeling dependencies of multivariate time series. Fourth, the Simulated methods of moments (SMM) and its origin in the Generalized methods of moments (GMM) is presented. The SMM is the estimation method which is used throughout this paper. Finally, we summarize the ideas of a structural break test for possibly time varying parameters of a factor copula model. 
+In this chapter we present and summarize the theoretical foundation of this thesis. First, the general idea behind copula functions is introduced. Second, a special class of copula models, the so called \emph{factor copula} model is presented. Third, we discuss copula models in the context of time series data and present a specific framework for modeling dependencies of multivariate time series. Fourth, the Simulated Method of Moments (SMM) and its origin in the Generalized Method of Moments (GMM) is presented. The SMM is the estimation method which is used throughout this paper. Finally, we summarize the ideas of a structural break test for possibly time varying parameters of a factor copula model. 
 
 ## Copula theory
 \label{s:copulatheory}
@@ -172,7 +172,7 @@ F_{X}(\bm{x}) &= C_U(F_{X_1}(x_1), \dots, F_{X_N}(x_N); \btheta)
 \end{split}
 \end{align}
 
-To model the joint cdf $F_Y(\bm{y})$, a two-stage estimation process can be used: First, the marginal distributions $\hat{F}_{Y_i}$ are estimated parametrically or non-parametrically, for instance by using some parametric model or the EDF. Second, the factor structure for the copula function is fitted to the data by finding the optimal $\hat{\btheta}$. In most cases, a closed form of the factor copula does not exist such that one cannot directly relate the copula parameters to the dependency measures as given by \eqref{eq:kendalls} - \eqref{eq:taildependency}. Therefore, one can adapt simulation based estimation methods as described in section \ref{s:SMM}. 
+To model the joint cdf $F_Y(\bm{y})$, a two-stage estimation process can be used: First, the marginal distributions $\hat{F}_{Y_i}$ are estimated parametrically or non-parametrically, for instance by using some parametric model or the EDF. Second, the factor structure for the copula function is fitted to the data by finding the optimal $\hat{\btheta}$. In most cases, a closed form of the factor copula does not exist such that one cannot directly relate the copula parameters to the dependency measures as given by \eqref{eq:kendalls} to \eqref{eq:taildependency}. Therefore, one can adapt simulation based estimation methods as described in section \ref{s:SMM}. 
 
 ### Model restrictions
 \label{s:restrictions}
@@ -263,7 +263,7 @@ Based on the time series model as shown in the previous section \ref{s:dynamicco
 
 In models for which the copula function is known in closed form, standard Maximum Likelihood (ML) estimation can be performed. Given the time series model as described by \eqref{eq:model} multistage ML can be applied for estimating the first level conditional means and variances, the marginal distribution of the residuals and the copula. \textcite[127]{Chen2006} showed that, if the EDF is used for the estimation of the marginal distribution of the residuals, the first level estimates do not affect the asymptotic distribution of the semi-parametric ML estimator of the copula parameters. 
 
-Since the factor copula implied by \eqref{eq:factorcopula} is not given in closed form approximating the Likelihood function is difficult and computationally demanding \parencite[694]{Patton2013}. On the other hand, it is easy and computationally cheap to simulate many values from the factor model. Therefore, an alternative approach is used. It is based on the Generalized Methods of Moments (GMM), for which its moment conditions are calculated with simulated values. As shown by \textcite{Chen2006} for the semi-parametric ML estimator, the conditional distribution of the SMM estimator is also not affected by the first level dynamic estimates of the time series model in \eqref{eq:model} \parencite[692]{Patton2013}. 
+Since the factor copula implied by \eqref{eq:factorcopula} is not given in closed form approximating the Likelihood function is difficult and computationally demanding \parencite[694]{Patton2013}. On the other hand, it is easy and computationally cheap to simulate many values from the factor model. Therefore, an alternative approach is used. It is based on the GMM estimator, for which its moment conditions are calculated with simulated values. As shown by \textcite{Chen2006} for the semi-parametric ML estimator, the conditional distribution of the SMM estimator is also not affected by the first level dynamic estimates of the time series model in \eqref{eq:model} \parencite[692]{Patton2013}. 
 
 ### SMM and the Generalized Method of Moments
 
@@ -295,7 +295,7 @@ For most cases the SMM estimator is consistent and asymptotically normal distrib
 ### SMM for factor copulas
 \label{s:smmfactorcopulas}
 
-The presented estimation method and its asymptotic results are valid for well-defined conditions based on the moments of the variables, e.g. the mean or the variance. For factor copulas, these moments cannot be formulated. The scale-invariant measures of dependency as defined in \eqref{eq:kendalls} - \eqref{eq:taildependency} are functions of the copula. In the estimation approach presented by \textcite{Patton2013}, these dependency measures are used to replacing the moment conditions of the ordinary GMM approach. Therefore, the assumptions and the asymptotic results of the GMM estimator are not applicable. However, as the authors proved, asymptotic results for the distribution of the copula parameters $\hat{\btheta}$ can still be derived. 
+The presented estimation method and its asymptotic results are valid for well-defined conditions based on the moments of the variables, e.g. the mean or the variance. For factor copulas, these moments cannot be formulated. The scale-invariant measures of dependency as defined in \eqref{eq:kendalls} to \eqref{eq:taildependency} are functions of the copula. In the estimation approach presented by \textcite{Patton2013}, these dependency measures are used to replacing the moment conditions of the ordinary GMM approach. Therefore, the assumptions and the asymptotic results of the GMM estimator are not applicable. However, as the authors proved, asymptotic results for the distribution of the copula parameters $\hat{\btheta}$ can still be derived. 
 
 For factor copulas, the "moment" conditions for the SMM estimation consist of vector functions of pairwise dependency measures separately calculated with the observed matrix of residuals $\bm{\eta}$ and $S$ simulations $\bm{X}_s$ from the copula model as given by \eqref{eq:factorcopula}. The moment condition as stated in \eqref{eq:GMM} and the SMM adaption \eqref{eq:SMM} is replaced by
 \begin{equation}
@@ -418,7 +418,7 @@ $\hat{m}_T \gets m_T(\bm{\eta})$\;
     $K^{(b)} \gets \max(K^{(b)}_{\lfloor \epsilon T \rfloor}, \dots, K^{(b)}_{T})$\;
   }
   \KwRet $\{\bm{K}_b\}_{b = 1}^B$;
-  \caption{Bootstrap procedure for estimating the distribution of the test statistics under $H_0$}
+  \caption{Bootstrap procedure for estimating the distribution of the test statistic under $H_0$}
   \label{alg:breaktest}
 \end{algorithm}
 
@@ -539,7 +539,7 @@ Finally, table \ref{tab:simulation} shows the results for a copula model estimat
   $S$ & 37500 & 37500 & 37500 \\
   \bottomrule
 \end{tabular}
-\caption[Estimation results for the bloc-equidependence simulation]{Estimation results for the bloc-equidependence factor copula model before and after the breakpoint and for the full sample. Standard errors in parentheses (estimated with $ B = 2000$ bootstrap samples).}
+\caption[Estimation results for the bloc-equidependence simulation study]{Estimation results for the bloc-equidependence factor copula model before and after the breakpoint and for the full sample. Standard errors in parentheses (estimated with $ B = 2000$ bootstrap samples).}
 \label{tab:simulation}
 \end{table}
 
@@ -557,7 +557,7 @@ Specifically, the case of the German refugee crisis in late 2015 and its percept
 
 \begin{figure}[h]
 	\includegraphics[width=\textwidth]{./figures/asylum}
-	\caption[Monthly asylum seekers and applications from 2014 to 2017]{Monthly asylum seekers and applications from 2014 to 2017. \small{Upon arrival in Germany an asylum seeker is first registered by the authorities (EASY system).  Afterwards, a formal application process can be initialized. The actual number of asylum seekers is smaller, since the old EASY system contains around 13\% - 18\% duplicate entries due to its decentralized structure. After January 2017 in reaction to the crisis, a new registration system was initialized. Source: \textcite{bpb2018}}}	
+	\caption[Monthly asylum seekers and applications in Germany from 2014 to 2017]{Monthly asylum seekers and applications in Germany from 2014 to 2017. \small{Upon arrival in Germany an asylum seeker is first registered by the authorities (EASY system).  Afterwards, a formal application process can be initialized. The actual number of asylum seekers is smaller, since the old EASY system contains around 13\% to 18\% duplicate entries due to its decentralized structure. After January 2017 in reaction to the crisis, a new registration system was initialized. Source: \textcite{bpb2018}}}	
 \label{fig:asylum}  
 \end{figure}
 
@@ -611,7 +611,7 @@ AfD & 74724 & 162 & 18.36 & 7.59 & 6.96 \\
   All parties & \numprint{663638} & 1217 & 69.57 & 17.27 & 4.28\\
   \bottomrule
 \end{tabular}
-\caption[Overall number of posts, active accounts, likes and shares for the btw17 dataset]{Overall number of posts, active accounts, likes and shares over the observation period from "2014-01-01" - "2017-12-31". The last two columns show the fraction of posts matching the regular expression \texttt{flucht|fluecht}.}
+\caption[Overall number of posts, active accounts, likes and shares for the btw17 dataset]{Overall number of posts, active accounts, likes and shares over the observation period from 2014-01-01 to 2017-12-31. The last two columns show the fraction of posts matching the regular expression \texttt{flucht|fluecht}.}
 \label{t:facebook}
 \end{table}
 
@@ -636,13 +636,13 @@ For the conditional variance we assume a GARCH(1, 1) process. For the model of t
   MA & 1 & 2 & 1 & 3 & 2 & 1\\
   \bottomrule
 \end{tabular}
-\caption[Parameters for the ARIMA-GARCH(1,1) model]{Parameters for the ARIMA-GARCH(1,1) model used to model the marginal distributions of the btw17 dataset.}
+\caption[Parameters for the ARIMA-GARCH(1,1) models]{Parameters for the ARIMA-GARCH(1,1) models applied to the marginal time-series of the btw17 dataset.}
 \label{tab:ARIMA}
 \end{table}
 
 \begin{figure}[H]
-	\subfloat[Relative daily within-party frequency of refugee related posts.]{\includegraphics[width = \textwidth]{./figures/flucht_observed}} \\
-	\subfloat[Residuals of ARIMA-GARCH models applied to the time series.]{\includegraphics[width= \textwidth]{./figures/flucht_residuals}}
+	\subfloat[Relative daily within-party frequency of "refugee related" posts (issue salience).]{\includegraphics[width = \textwidth]{./figures/flucht_observed}} \\
+	\subfloat[Residuals of ARIMA-GARCH models applied to the time series above.]{\includegraphics[width= \textwidth]{./figures/flucht_residuals}}
 	\caption[Univariate time series and estimated residuals for the btw17 dataset]{Univariate time series and estimated residuals for the btw17 dataset. The upper panel shows the measures of topic salience calculated as the daily within-party frequency of "refugee related" topics. The residuals are estimated by applying ARIMA-GARCH models to the time series.}	
 	\label{f:residuals}  
 \end{figure}
@@ -772,7 +772,7 @@ In this paper, the focus was on the special class of factor copula functions. Th
 
 Since the parameter vector of a factor copula model can grow very large, two model restrictions were discussed: The equidependence model which assumes equal pairwise dependencies for all variables and the bloc-equidependence model. For the latter, it is assumed that the variables can be naturally partitioned into groups and that the pairwise intra-group and inter-group dependencies are equal. 
 
-The latent factor copula model enables the researcher to describe complex dependence structures. In most cases a closed form mapping from the model parameters to measures of dependency doesn't exist. In addition, obtaining the likelihood function of a factor copula model is difficult and computationally expensive. However, it is computationally cheap to simulate random values from the factor model. This leads to the Simulated Method of Moments estimation procedure: This method is rooted in GMM estimation but the population moment function is replaced by a sample equivalent calculated with simulations from the model. The classical GMM and SMM are based on functions involving moments of the variables. But the SMM for factor copulas is based on scale-free measures of dependencies. The finite sample versions of these dependency statistics are functions of the EDF and the empirical copula. Despite the lack of proper moment conditions, asymptotic results can still be derived and it can be shown that the parameter estimates are asymptotically normal distributed. 
+The latent factor copula model enables the researcher to describe complex dependence structures. In most cases a closed form mapping from the model parameters to measures of dependency doesn't exist. In addition, obtaining the likelihood function of a factor copula model is difficult and computationally expensive. However, it is computationally cheap to simulate random values from the factor model. This leads to the SMM estimation procedure: This method is rooted in GMM estimation but the population moment function is replaced by a sample equivalent calculated with simulations from the model. The classical GMM and SMM are based on functions involving moments of the variables. But the SMM for factor copulas is based on scale-free measures of dependencies. The finite sample versions of these dependency statistics are functions of the EDF and the empirical copula. Despite the lack of proper moment conditions, asymptotic results can still be derived and it can be shown that the parameter estimates are asymptotically normal distributed. 
 
 For many applications it is of interest whether the dependence structure is time invariant. Therefore, a structural break test for a change in the parameters of the factor copula model was presented. It requires the recursive estimation of the factor copula parameters and compares them to the full sample estimates. If the distance is significantly large, a structural break is detected. The parametric test allows for the detection of breaks in subsets of the parameter vector but it is computationally costly due to its recursive model estimates. As an alternative, the test can also be formulated non-parametrically involving only finite sample versions of dependency measures applied to the residual data. 
 

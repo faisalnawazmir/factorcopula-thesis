@@ -121,7 +121,9 @@ pdfauthor={$author$}
 \numberwithin{table}{section}
 \numberwithin{equation}{section}
 
-\interfootnotelinepenalty=10000
+\interfootnotelinepenalty=100000
+\usepackage[all]{nowidow}
+
 
 \usepackage[super]{nth}
 %% default template
@@ -253,15 +255,15 @@ $institue$\\
 \vspace{1.5em}
 \footnotesize{
 
-Multivariate statistical models based on copula functions have gained much popularity during the last years. In the field of finance they are used to model complex dependence structures between financial assets. A multivariate distribution, can always be expressed in terms of its marginal distributions and a copula function. In contrast to the linear correlation coefficient, the dependencies described by a copula are invariant to monotone transformations of the marginal distributions. For multivariate time series, copulas allow for a multistage estimation process, in which first the marginal distributions are estimated using standard univariate time series models and second a static copula model is applied to the residuals. 
+Multivariate statistical models based on copula functions have gained much popularity during the last years. In the field of finance they are used to model complex dependence structures between financial assets. A multivariate distribution can always be expressed in terms of its marginal distributions and a copula function. In contrast to the linear correlation coefficient, the dependencies described by a copula are invariant to monotone transformations of the marginal distributions. For multivariate time series, copula models can be part of a multistage estimation process, in which first the marginal distributions are estimated using standard univariate time series models and second a static copula model is applied to the residuals. 
 
-A new class of copula models, the so called factor copulas, are useful for high dimensional problems. Here, the dependence structure is modeled as a linear factor model for which the dependencies are described by a lower dimensional set of latent variables. For estimation, a simulation based technique based on the Generalized Method of Moments can be adapted to this type of model.
+A recent type of copula models, the so called factor copulas are presented. They are useful for high dimensional problems. Here, the dependence structure is modeled as a linear factor model for which the dependencies are described by a lower dimensional set of latent variables. For estimation, a simulation based technique based on the Generalized Method of Moments can be adapted to this type of model.
 
-This work summarizes and structures the current state of development in the field of factor copula models including the estimation procedure and a test for structural breaks in its parameters. It contributes to the current research by providing an open-source software package for the programming language \emph{R} which implements the methods and makes them available to a broader audience. This can improve future research on this topic.
+This work summarizes and structures the current state of development in the field of factor copula models including the estimation procedure and a test for structural breaks in its parameters. It contributes to the current research by providing an open-source software package for the programming language \emph{R}. The package implements the methods and makes them available to a broader audience.
 
-The validity and functionality of the theory and its implementation is tested in two simulation studies. Further, we investigate how these methods can be used for the detection of breaks in other research areas. Using real text data from an online social network, the case of the German refugee crisis in late 2015 is analyzed: For each major German party we derive the importance of topics related to refugees in the online political discourse over time. The non-parametric structural break test detects a break during the time of the refugee crisis but a copula model estimated before and after the break yields no significant difference in its parameters.
+The validity and functionality of the theory and its implementation is assessed in two simulation studies. Further, we investigate how these methods can be used for the detection of breaks in other applied research areas. Using real text data from an online social network, the case of the German refugee crisis in late 2015 is analyzed: For each major German party we derive a dynamic measure of topic salience. It measures the importance of refugee and asylum related issues in the online political discourse over time. Both the non-parametric and the parametric structural break test detect a break in the dependence structure during the time of the refugee crisis. 
 
-The package is capable of estimating high dimensional factor copula models. However, due to the simulation based estimation technique and the non-regular properties of the objective function the numerical methods are often unstable, inefficient and computationally demanding. The choice of the underlying optimization algorithm strongly effects the estimation results. Future research should therefore concentrate on improving the stability and efficiency of the estimation techniques and the underlying optimization procedures.
+The package is capable of estimating high dimensional factor copula models. However, due to the simulation based estimation technique and the non-smoothness of the objective function the numerical methods are often unstable, inefficient and computationally demanding. The choice of the underlying optimization algorithm strongly effects the estimation results. Future research should therefore concentrate on improving the stability and efficiency of the estimation techniques and the underlying optimization procedures.
 }
 \end{abstract}
 
@@ -285,10 +287,10 @@ cdf & Cumulative distribution function\\
 CV & Critical value\\
 DGP & Data generating process \\
 EDF & Empirical distribution function\\
-GMM & Generalized Methods of Moments\\
+GMM & Generalized Method of Moments\\
 iid & Independent and identically distributed\\
 ML & Maximum Likelihood \\
-SMM & Simulated methods of moments\\
+SMM & Simulated Method of Moments\\
 \end{tabular}
 \newpage
 

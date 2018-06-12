@@ -4,12 +4,12 @@ library(ggthemes)
 asylum <- read.csv("./data/asylum.csv", stringsAsFactors = FALSE)
 asylum$Date <- as.Date(asylum$Date)
 
-cols <- c("asylum applications"="indianred3","asylum seekers (EASY system)"="steelblue","asylum seekers (EASY system, successor)"="dodgerblue4")
+cols <- c("Asylum applications"="indianred3","Asylum seekers (EASY system)"="steelblue","Asylum seekers (EASY system, successor)"="dodgerblue4")
 
 ggplot(asylum, aes(x = Date))+
-  geom_line(aes(y = Erstantrag, col = "asylum applications")) + 
-  geom_line(aes(y = EASY.Asylsuchende, col = "asylum seekers (EASY system)")) + 
-  geom_line(aes(y = Asylsuchende, col = "asylum seekers (EASY system, successor)")) + 
+  geom_line(aes(y = Erstantrag, col = "Asylum applications"), size = 1.5) + 
+  geom_line(aes(y = EASY.Asylsuchende, col = "Asylum seekers (EASY system)"), size = 1.5) + 
+  geom_line(aes(y = Asylsuchende, col = "Asylum seekers (EASY system, successor)"), size = 1.5) + 
   scale_x_date(date_breaks = "1 year", date_minor_breaks = "3 month", date_labels = "%Y", expand = c(0.0, 365/4)) + 
   scale_colour_manual(name="",values=cols) + 
   labs(x = "Date", y = "N") + 

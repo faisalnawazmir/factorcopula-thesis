@@ -159,9 +159,9 @@ results$statTypeFact <- factor(results$statType, levels = c("allGroups", "second
                            labels = c("Copula based test (all groups)", "Copula based test (second and third group)", "Moments based test"))
 
 ggplot(results, aes(x = t, y = stat)) +
-  geom_vline(xintercept = 1000, color = "black", linetype = 1) +
-  geom_hline(aes(yintercept = crit), na.rm = TRUE, linetype = 1, color = "black") + 
-  geom_line(color = "indianred3") + 
+  geom_vline(xintercept = 1000, color = "black", linetype = 1, size = 0.8) +
+  geom_hline(aes(yintercept = crit), na.rm = TRUE, linetype = 1, color = "black", size = 0.8) + 
+  geom_line(color = "indianred3", size = 0.8) + 
   labs(y = "recursive test statistic") + 
   facet_wrap(~ statTypeFact, scales = "free_y", nrow = 3) + 
   theme_hc() + 

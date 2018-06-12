@@ -57,8 +57,8 @@ topicsTrend <- posts %>%
   spread(party, topic) %>%
   ungroup
 
-topicsTrendRes <- data.frame(apply(topicsTrend[,-1], 2, standardize))
-names(topicsTrendRes) <- names(topicsTrend)[-1]
+#topicsTrendRes <- data.frame(apply(topicsTrend[,-1], 2, standardize))
+#names(topicsTrendRes) <- names(topicsTrend)[-1]
 
 # saveRDS(topicsTrendRes, "./data/topics_residuals.rds")
 
@@ -79,7 +79,7 @@ posts %>%
   mutate(type = factor(type, levels = c("nAccounts", "nPosts", "nMatch"), ordered = TRUE)) %>%
   ggplot(aes(x = createdDate, y = n, fill = party)) + 
   geom_area(color = "black", alpha = 0.8, size = 0.3) + 
-  facet_grid(type ~ ., scales = "free_y", labeller = as_labeller(c(nAccounts = "Active accounts", nPosts = "Posts", nMatch = "\"refugee\" posts"))) + 
+  facet_grid(type ~ ., scales = "free_y", labeller = as_labeller(c(nAccounts = "Active accounts", nPosts = "Posts", nMatch = "\"Refugee related\" posts"))) + 
   guides(fill = guide_legend(nrow = 1)) + 
   scale_x_date(date_breaks = "1 year", date_minor_breaks = "3 month", date_labels = "%Y", expand = c(0.0, 365/4)) + 
   scale_fill_manual(values = PARTIES) + 
